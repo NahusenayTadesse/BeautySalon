@@ -18,3 +18,13 @@ export const inventoryItemSchema = z.object({
 });
 
 export type InventoryItemSchema = typeof inventoryItemSchema;
+
+
+export const serviceSchema = z.object({
+  serviceName: z.string().min(1, { message: 'Service Name is required.' }),
+  description: z.string().optional(),
+  durationMinutes: z.coerce.number().int().positive({ message: 'Duration Minutes must be a positive integer.' }),
+  price: z.coerce.number().positive({ message: 'Price must be a positive number.' }),
+});
+
+export type ServiceSchema = typeof serviceSchema;

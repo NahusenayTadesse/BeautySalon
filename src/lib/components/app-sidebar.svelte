@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Settings, Users, ChartArea, Hexagon, Home, Calendar, Package } from '@lucide/svelte';
+	import { Settings, Users, ChartArea, Hexagon, Home, Calendar, Package, SquareChartGantt } from '@lucide/svelte';
 	import * as Sidebar from '$lib/components/ui/sidebar/index.js';
 	import type { ComponentProps } from 'svelte';
 	import { page } from '$app/state';
@@ -10,6 +10,7 @@
 		{ name: 'Customers', href: '/dashboard/customers', icon: Users },
 		{ name: 'Appointments', href: '/dashboard/appointments', icon: Calendar },
 		{ name: 'Inventory', href: '/dashboard/inventory', icon: Package },
+		{ name: 'Services', href: '/dashboard/services', icon: SquareChartGantt },
 		{ name: 'Reports', href: '/dashboard/reports', icon: ChartArea },
 		{ name: 'Settings', href: '/dashbaord/settings', icon: Settings }
 	];
