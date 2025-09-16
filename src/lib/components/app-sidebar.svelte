@@ -6,12 +6,12 @@
 	import DarkMode from './DarkMode.svelte';
 	import { bgGradient } from '$lib/global.svelte';
 	const navigation = [
-		{ name: 'Dashboard', href: '/', icon: Home },
-		{ name: 'Customers', href: '/customers', icon: Users },
-		{ name: 'Appointments', href: '/appointments', icon: Calendar },
-		{ name: 'Inventory', href: '/inventory', icon: Package },
-		{ name: 'Reports', href: '/reports', icon: ChartArea },
-		{ name: 'Settings', href: '/settings', icon: Settings }
+		{ name: 'Dashboard', href: '/dashboard', icon: Home },
+		{ name: 'Customers', href: '/dashboard/customers', icon: Users },
+		{ name: 'Appointments', href: '/dashboard/appointments', icon: Calendar },
+		{ name: 'Inventory', href: '/dashboard/inventory', icon: Package },
+		{ name: 'Reports', href: '/dashboard/reports', icon: ChartArea },
+		{ name: 'Settings', href: '/dashbaord/settings', icon: Settings }
 	];
 	let { ...restProps }: ComponentProps<typeof Sidebar.Root> = $props();
 </script>

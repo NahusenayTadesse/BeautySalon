@@ -1,14 +1,21 @@
 <script lang="ts">
-	import { enhance } from '$app/forms';
-	import type { ActionData } from './$types';
 	import Login from '$lib/forms/Login.svelte';
+	
+	import type { ActionData } from './$types';
 
-	let { form }: { form: ActionData } = $props();
+	let { data, form }: { form: ActionData  } = $props();
 </script>
+<svelte:head>
+	<title>Login</title>
+</svelte:head>
 
-<h1>Login/Register</h1>
-<Login />
-<form method="post" action="?/login" use:enhance>
+
+
+<div class="flex h-screen w-full items-center justify-center px-4">
+<Login data={data?.form}  action="?/login"/>
+</div>
+
+<!-- <form method="post" action="?/login" use:enhance>
 	<label>
 		Username
 		<input
@@ -33,4 +40,4 @@
 		>Register</button
 	>
 </form>
-<p style="color: red">{form?.message ?? ''}</p>
+<p style="color: red">{form?.message ?? ''}</p> -->

@@ -1,6 +1,5 @@
 <script lang="ts">
-  import * as Sidebar from "$lib/components/ui/sidebar/index.js";
-  import AppSidebar from "$lib/components/app-sidebar.svelte";
+
     import { ModeWatcher } from "mode-watcher";
 	import '../app.css';
  
@@ -8,16 +7,14 @@
 </script>
  <ModeWatcher />
 
-<Sidebar.Provider>
-  <AppSidebar />
-  <main>
-    <Sidebar.Trigger  />
-    <div class="p-4">
+ <svelte:head>
+		<link rel="icon" href="/logo.png" />
+ </svelte:head>
+
       {@render children?.()}
-    </div>
+
     
-  </main>
-</Sidebar.Provider>
+
 
 
 
