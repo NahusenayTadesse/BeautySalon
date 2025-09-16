@@ -13,101 +13,42 @@
 
 	Hexagon,
 
-	ScrollText
+	ScrollText,
+
+	Home,
+
+	Calendar,
+
+	Package,
+
+
+
+
+
+
+
 
 
 
   } from "@lucide/svelte";
   import * as Sidebar from "$lib/components/ui/sidebar/index.js";
   import type { ComponentProps } from "svelte";
-  const data = {
-    user: {
-      name: "shadcn",
-      email: "m@example.com",
-      avatar: "/avatars/shadcn.jpg",
-    },
-    navMain: [
-      {
-        title: "Dashboard",
-        url: "#",
-        icon: LayoutDashboard,
-      },
-      {
-        title: "Analytics",
-        url: "#",
-        icon: ChartArea,
-      },
-      {
-        title: "Projects",
-        url: "#",
-        icon: Folder,
-      },
-      {
-        title: "Team",
-        url: "#",
-        icon: Users,
-      },
-    ],
-    navClouds: [
-      {
-        title: "Capture",
-        icon: Camera,
-        isActive: true,
-        url: "#",
-        items: [
-          {
-            title: "Active Proposals",
-            url: "#",
-          },
-          {
-            title: "Archived",
-            url: "#",
-          },
-        ],
-      },
-      
-      
-    ],  
-     navSecondary: [
-      {
-        title: "Settings",
-        url: "#",
-        icon: Settings,
-      },
-      {
-        title: "Get Help",
-        url: "#",
-        icon: HelpCircle,
-      },
-      {
-        title: "Search",
-        url: "#",
-        icon: Search,
-      },
-    ],
-    documents: [
-      {
-        name: "Data Library",
-        url: "#",
-        icon: Database,
-      },
-      {
-        name: "Reports",
-        url: "#",
-        icon: ScrollText,
-      },
-      {
-        name: "Word Assistant",
-        url: "#",
-        icon: File,
-      },
-    ],
-  };
+	import { page } from "$app/state";
+	import DarkMode from "./DarkMode.svelte";
+	import { bgGradient } from "$lib/global.svelte";
+  const navigation = [
+    { name: 'Dashboard', href: '/', icon: Home },
+    { name: 'Customers', href: '/customers', icon: Users },
+    { name: 'Appointments', href: '/appointments', icon: Calendar },
+    { name: 'Inventory', href: '/inventory', icon: Package },
+    { name: 'Reports', href: '/reports', icon: ChartArea },
+    { name: 'Settings', href: '/settings', icon: Settings }
+  ];
   let { ...restProps }: ComponentProps<typeof Sidebar.Root> = $props();
 </script>
-<Sidebar.Root collapsible="offcanvas" {...restProps}>
-  <Sidebar.Header>
-    <Sidebar.Menu>
+<Sidebar.Root collapsible="offcanvas" {...restProps} >
+  <Sidebar.Header class={bgGradient}>
+    <Sidebar.Menu class={bgGradient}>
       <Sidebar.MenuItem>
         <Sidebar.MenuButton class="data-[slot=sidebar-menu-button]:!p-1.5">
           {#snippet child({ props })}
@@ -117,12 +58,29 @@
             </a>
           {/snippet}
         </Sidebar.MenuButton>
+
       </Sidebar.MenuItem>
     </Sidebar.Menu>
   </Sidebar.Header>
-  <Sidebar.Content>
-
+  <Sidebar.Content class={bgGradient} >
+     <ul class="flex flex-col justify-center items-start gap-2 w-full p-2 mt-8">
+      {#each navigation as item}
+       <li class="w-full">
+        <a
+          href={item.href}
+          class="flex items-center gap-3 rounded-lg px-3 py-2 text-md 
+          font-medium transition-colors duration-300 hover:bg-sidebar-accent 
+          hover:text-sidebar-accent-foreground 
+          {page.url.pathname === item.href ? 'bg-sidebar-primary text-sidebar-primary-foreground' : 'text-sidebar-foreground'}"
+        >
+          <item.icon class="h-4 w-4" />
+          {item.name}
+        </a>
+        </li>
+      {/each}
+      </ul>
   </Sidebar.Content>
-  <Sidebar.Footer>
+  <Sidebar.Footer class="bg-white dark:bg-black">
+    <DarkMode />
   </Sidebar.Footer>
 </Sidebar.Root>
