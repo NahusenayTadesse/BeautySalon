@@ -6,16 +6,29 @@ import * as auth from '$lib/server/auth';
 import { db } from '$lib/server/db';
 import * as table from '$lib/server/db/schema';
 import type { Actions, PageServerLoad } from './$types';
+import { superValidate } from 'sveltekit-superforms';
+import { zod4 } from 'sveltekit-superforms/adapters';
+import { loginSchema } from '$lib/ZodSchema';
+
 
 export const load: PageServerLoad = async (event) => {
+	
 	if (event.locals.user) {
-		return redirect(302, '/demo/lucia');
+		return redirect(302, '/dashboard');
 	}
-	return {};
+	 const form = await superValidate(zod4(loginSchema));
+
+  return { form };
 };
 
 export const actions: Actions = {
 	login: async (event) => {
+
+		const form = await superValidate(zod4(loginSchema));
+		if (!form.valid) {
+      return fail(400, { form });
+    }
+		
 		const formData = await event.request.formData();
 		const username = formData.get('username');
 		const password = formData.get('password');

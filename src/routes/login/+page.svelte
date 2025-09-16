@@ -1,11 +1,13 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
 	import type { ActionData } from './$types';
+	import Login from '$lib/forms/Login.svelte';
 
 	let { form }: { form: ActionData } = $props();
 </script>
 
 <h1>Login/Register</h1>
+<Login />
 <form method="post" action="?/login" use:enhance>
 	<label>
 		Username

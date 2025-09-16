@@ -24,6 +24,7 @@
 	size="icon"
 	class={cn("size-7", className)}
 	type="button"
+	title="Toggle Sidebar"
 	onclick={(e) => {
 		onclick?.(e);
 		sidebar.toggle();
