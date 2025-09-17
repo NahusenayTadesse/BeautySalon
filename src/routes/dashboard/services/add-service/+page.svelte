@@ -17,7 +17,7 @@ import { Input } from "$lib/components/ui/input/index.js";
 
 	let { data } = $props();
 
-	const { form, errors, enhance, delayed, capture, restore } = superForm(
+	const { form, errors, enhance, delayed, message, capture, restore } = superForm(
 		data.form,
 		{
 			taintedMessage: () => {
@@ -26,7 +26,7 @@ import { Input } from "$lib/components/ui/input/index.js";
 				});
 			},
 
-			validators: zod4Client(serviceSchema)
+			validators: zod4Client(serviceSchema),
 
 		}
 	);
@@ -37,6 +37,7 @@ import { Input } from "$lib/components/ui/input/index.js";
 //   return item ? item.name : null; // returns null if not found
 // }
 
+    
 
 
 

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Settings, Users, ChartArea, Hexagon, Home, Calendar, Package, SquareChartGantt } from '@lucide/svelte';
+	import {  Users, ChartArea, Hexagon, Home, Calendar, Package, SquareChartGantt, IdCardLanyard } from '@lucide/svelte';
 	import * as Sidebar from '$lib/components/ui/sidebar/index.js';
 	import type { ComponentProps } from 'svelte';
 	import { page } from '$app/state';
@@ -12,7 +12,7 @@
 		{ name: 'Inventory', href: '/dashboard/inventory', icon: Package },
 		{ name: 'Services', href: '/dashboard/services', icon: SquareChartGantt },
 		{ name: 'Reports', href: '/dashboard/reports', icon: ChartArea },
-		{ name: 'Settings', href: '/dashbaord/settings', icon: Settings }
+		{ name: 'Staff', href: '/dashboard/staff', icon: IdCardLanyard }
 	];
 	let { ...restProps }: ComponentProps<typeof Sidebar.Root> = $props();
 </script>

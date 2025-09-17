@@ -7,6 +7,7 @@ import { db } from '$lib/server/db';
 import { inventory } from '$lib/server/db/schema.js';
 import type {  Actions } from "./$types";
 import type { PageServerLoad } from './$types.js';
+import { setFlash } from 'sveltekit-flash-message/server';
 
 
 export const load: PageServerLoad = async () => {
@@ -18,13 +19,13 @@ export const load: PageServerLoad = async () => {
 };
 
 export const actions: Actions = {
-  addProduct: async ({ request }) => {
+  addProduct: async ({ request, cookies }) => {
     const form = await superValidate(request, zod4(inventoryItemSchema));
 
     if (!form.valid) {
-      return fail(400, {
-        form
-      });
+      // Stay on the same page and set a flash message
+      setFlash({ type: 'error', message: "Please check your form data." }, cookies);
+      return fail(400, { form });
     }
 
 
@@ -33,9 +34,11 @@ export const actions: Actions = {
     
     try{
      await db.insert(inventory).values({productName, description, quantity, price, supplier});
-     
 
-
+ 
+      // Stay on the same page and set a flash message
+      setFlash({ type: 'success', message: "Inventory Successuflly Updated" }, cookies);
+  
     return {
       form
     } } catch(err){
