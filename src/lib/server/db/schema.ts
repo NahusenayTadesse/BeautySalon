@@ -1,4 +1,4 @@
-import { relations } from 'drizzle-orm';
+import { relations, sql } from 'drizzle-orm';
 import {
 	mysqlTable,
 	mysqlEnum,
@@ -10,23 +10,23 @@ import {
 	decimal,
 	boolean,
 	date,
-	time,
+	time
 } from 'drizzle-orm/mysql-core';
 
 const secureFields = {
 	isActive: boolean('is_active').default(true).notNull(),
 	createdBy: varchar('created_by', { length: 255 })
-		.notNull()
 		.references(() => user.id),
 	updatedBy: varchar('updated_by', { length: 255 })
-		.notNull()
 		.references(() => user.id),
 	createdAt: timestamp('created_at').defaultNow().notNull(),
-	updatedAt: timestamp('updated_at').defaultNow().notNull(),
+    updatedAt: timestamp('updated_at').default(sql`CURRENT_TIMESTAMP(3) on update CURRENT_TIMESTAMP(3)`).notNull(),
 	branchId: int('branch_id')
-		.notNull()
 		.references(() => branches.id)
-		.default(0)
+		.default(0),
+    deletedAt: datetime('deleted_at'),
+    deletedBy: varchar('deleted_by', { length: 255 })
+        .references(() => user.id),
 };
 
 export const branches = mysqlTable('branch', {
@@ -41,16 +41,11 @@ export const user = mysqlTable('user', {
 	email: varchar('email', { length: 100 }).notNull().unique(),
 	passwordHash: varchar('password_hash', { length: 255 }).notNull(),
 	isActive: boolean('is_active').default(true).notNull(),
-	staffId: int('staff_id')
-		.notNull()
-		.references(() => staff.id, { onDelete: 'cascade' }),
-	roleId: int('role_id')
-		.notNull()
-		.references(() => roles.id, { onDelete: 'restrict' }),
+	staffId: int('staff_id').references(() => staff.id, { onDelete: 'set null' }),
+	roleId: int('role_id').references(() => roles.id, { onDelete: 'restrict' }).notNull(),
 	createdAt: timestamp('created_at').defaultNow().notNull(),
-	updatedAt: timestamp('updated_at').defaultNow().notNull(),
+    updatedAt: timestamp('updated_at').default(sql`CURRENT_TIMESTAMP(3) on update CURRENT_TIMESTAMP(3)`).notNull(),
 	branchId: int('branch_id')
-		.notNull()
 		.references(() => branches.id)
 		.default(0)
 });
@@ -60,7 +55,9 @@ export const session = mysqlTable('session', {
 	userId: varchar('user_id', { length: 255 })
 		.notNull()
 		.references(() => user.id, { onDelete: 'cascade' }),
-	expiresAt: datetime('expires_at').notNull()
+	expiresAt: datetime('expires_at').notNull(),
+	createdAt: timestamp('created_at').defaultNow().notNull(),
+    updatedAt: timestamp('updated_at').default(sql`CURRENT_TIMESTAMP(3) on update CURRENT_TIMESTAMP(3)`).notNull(),
 });
 
 export const roles = mysqlTable('roles', {
@@ -72,10 +69,12 @@ export const roles = mysqlTable('roles', {
 export const customers = mysqlTable('customers', {
 	id: int('id').primaryKey().autoincrement(),
 	firstName: varchar('first_name', { length: 255 }).notNull(),
+	gender: mysqlEnum('gender', ["male", "female"]).notNull(),
 	lastName: varchar('last_name', { length: 255 }).notNull(),
 	email: varchar('email', { length: 255 }).unique().notNull(),
 	phone: varchar('phone', { length: 50 }),
 	address: text('address'),
+	notes: text('notes'),
 	...secureFields
 });
 
@@ -91,8 +90,12 @@ export const staff = mysqlTable('staff', {
 	email: varchar('email', { length: 255 }).unique().notNull(),
 	phone: varchar('phone', { length: 50 }),
 	hireDate: timestamp('hire_date').notNull(),
-
+	govtId: varchar('govt_id', {length: 255}),
+	contract: varchar('contract', {length: 255}),
+	terminationDate: datetime('termination_date'),
+    employmentStatus: mysqlEnum('employment_status', ['active', 'on_leave', 'terminated']).default('active'),
 	...secureFields
+
 });
 
 export const supplies = mysqlTable(
@@ -106,7 +109,6 @@ export const supplies = mysqlTable(
 		costPerUnit: decimal('cost_per_unit', { precision: 10, scale: 2 }).notNull(),
 		supplier: varchar('supplier', { length: 255 }),
 		reorderLevel: int('reorder_level'),
-
 		...secureFields
 	});
 
@@ -116,6 +118,7 @@ export const products = mysqlTable(
 		id: int('id').primaryKey().autoincrement(),
 		productName: varchar('product_name', { length: 255 }).notNull(),
 		description: text('description'),
+		categoryId: int('category_id').references(()=> productCategories.id),
 		quantity: int('quantity').notNull().default(0),
 		price: decimal('price', { precision: 10, scale: 2 }).notNull(),
 		cost: decimal('cost', { precision: 10, scale: 2 }).notNull(),
@@ -125,17 +128,30 @@ export const products = mysqlTable(
 		...secureFields
 	});
 
+export const serviceCategories = mysqlTable('service_categories', {
+    id: int('id').autoincrement().primaryKey(),
+    name: varchar('name', { length: 255 }).notNull(),
+    description: text('description')
+});
+export const productCategories = mysqlTable('product_categories', {
+    id: int('id').autoincrement().primaryKey(),
+    name: varchar('name', { length: 255 }).notNull(),
+    description: text('description')
+});
+
 export const services = mysqlTable(
 	'services',
 	{
 		id: int('id').primaryKey().autoincrement(),
 		serviceName: varchar('service_name', { length: 255 }).notNull(),
+		categoryId: int('category_id').references(()=> serviceCategories.id),
 		description: text('description'),
 		price: decimal('price', { precision: 10, scale: 2 }).notNull(),
 		durationMinutes: int('duration_minutes').notNull(),
 		commissionAmount: decimal('commission_amount', { precision: 10, scale: 2 }).notNull(),
 		...secureFields
 	});
+
 
 // Table for Appointments
 export const appointments = mysqlTable(
@@ -151,7 +167,8 @@ export const appointments = mysqlTable(
 		serviceId: int('service_id')
 			.notNull()
 			.references(() => services.id),
-		appointmentDate: timestamp('appointment_date').notNull(), // Use timestamp for date and time
+		appointmentDate: date('appointment_date').notNull(),
+        appointmentTime: time('appointment_time').notNull(),
 		statusId: int('status_id')
 			.notNull()
 			.references(() => appointmentStatuses.id)
@@ -223,9 +240,9 @@ export const salaries = mysqlTable(
 	'salaries',
 	{
 		id: int('salary_id').primaryKey().autoincrement(),
-		staffId: int('employee_id')
+		staffId: int('staff_id')
 			.notNull()
-			.references(() => staff.id), // FK to employees
+			.references(() => staff.id),
 		amount: decimal('amount', { precision: 10, scale: 2 }).notNull(),
 		startDate: date('start_date').notNull(),
 		endDate: date('end_date'),
@@ -236,7 +253,7 @@ export const bonuses = mysqlTable(
 	'bonuses',
 	{
 		id: int('bonus_id').primaryKey().autoincrement(),
-		staffId: int('employee_id')
+		staffId: int('staff_id')
 			.notNull()
 			.references(() => staff.id),
 		description: varchar('description', { length: 255 }),
@@ -245,20 +262,16 @@ export const bonuses = mysqlTable(
 		...secureFields
 	});
 
-export const commissions = mysqlTable(
-	'commissions',
-	{
-		id: int('commission_id').primaryKey().autoincrement(),
-		staffId: int('staff_id')
-			.notNull()
-			.references(() => staff.id),
-		serviceId: int('service_id').references(() => services.id),
-		salesItemsId: int('sale_items_id').references(() => saleItems.id),
-		productId: int('product_id').references(() => products.id),
-		amount: decimal('amount', { precision: 10, scale: 2 }).notNull(),
-		commissionDate: date('commission_date').notNull(),
-		...secureFields
-	});
+export const commissions = mysqlTable('commissions', {
+    saleItemId: int('sale_item_id')
+        .notNull()
+        .references(() => saleItems.id),
+    staffId: int('staff_id')
+        .notNull()
+        .references(() => staff.id),
+    amount: decimal('amount', { precision: 10, scale: 2 }).notNull(),
+    commissionDate: date('commission_date').notNull(),
+});
 
 // 1. A table for all possible permissions in the system
 export const permissions = mysqlTable('permissions', {
@@ -327,7 +340,6 @@ export const rolePermissionsRelations = relations(rolePermissions, ({ one }) => 
 export const sales = mysqlTable('sales', {
 	id: int('id').autoincrement().primaryKey(),
 	customerId: int('customer_id')
-		.notNull()
 		.references(() => customers.id),
 	staffId: int('staff_id')
 		.notNull()
@@ -340,9 +352,7 @@ export const sales = mysqlTable('sales', {
 });
 
 // A join table to detail what was included in the sale
-export const saleItems = mysqlTable(
-	'sale_items',
-	{
+export const saleItems = mysqlTable('sale_items',{
 		id: int('id').autoincrement().primaryKey(),
 		saleId: int('sale_id')
 			.notNull()
@@ -350,15 +360,39 @@ export const saleItems = mysqlTable(
 		serviceId: int('service_id').references(() => services.id),
 		productId: int('product_id').references(() => products.id),
 		quantity: int('quantity').notNull().default(1),
-		unitPrice: decimal('unit_price', { precision: 10, scale: 2 }).notNull(), // Price at the time of sale
+		unitPrice: decimal('unit_price', { precision: 10, scale: 2 }).notNull(), 
 		...secureFields
 	});
 
 export const salesRelations = relations(sales, ({ one, many }) => ({
-	customer: one(customers, { fields: [sales.customerId], references: [customers.id] }),
-	staff: one(staff, { fields: [sales.staffId], references: [staff.id] }),
-	saleItems: many(saleItems)
+	customer: one(customers, {
+		fields: [sales.customerId],
+		references: [customers.id],
+	}),
+	staff: one(staff, {
+		fields: [sales.staffId],
+		references: [staff.id],
+	}),
+	saleItems: many(saleItems), // this will be connected via saleId
 }));
+
+export const saleItemsRelations = relations(saleItems, ({ one }) => ({
+	sale: one(sales, {
+		fields: [saleItems.saleId],
+		references: [sales.id],
+	}),
+	service: one(services, {
+		fields: [saleItems.serviceId],
+		references: [services.id],
+	}),
+	product: one(products, {
+		fields: [saleItems.productId],
+		references: [products.id],
+	}),
+}));
+
+
+
 
 export const staffServices = mysqlTable('staff_services', {
 	id: int('id').autoincrement().primaryKey(),
@@ -423,8 +457,19 @@ export const payrollRuns = mysqlTable('payroll_runs', {
 	status: mysqlEnum('status', ['pending', 'processing', 'completed', 'failed'])
 		.notNull()
 		.default('pending'),
+	
+    totalNet: decimal('total_net', { precision: 10, scale: 2 }),
+    totalDeductions: decimal('total_deductions', { precision: 10, scale: 2 }),
+	totalPaid: decimal('total_paid', { precision: 10, scale: 2 }),
 
 	...secureFields
+});
+
+export const payrollEntries = mysqlTable('payroll_entries', {
+    payrollRunId: int('payroll_run_id').references(() => payrollRuns.id),
+    staffId: int('staff_id').references(() => staff.id),
+    netAmount: decimal('net_amount', { precision: 10, scale: 2 }),
+    paidAmount: decimal('paid_amount', { precision: 10, scale: 2 }),
 });
 
 export const deductions = mysqlTable('deductions', {
@@ -457,6 +502,18 @@ export const staffScheduleRelations = relations(staffSchedule, ({ one }) => ({
 		references: [staff.id]
 	})
 }));
+
+export const auditLog = mysqlTable('audit_log', {
+    id: int('id').autoincrement().primaryKey(),
+    userId: varchar('user_id', { length: 255 }).references(() => user.id),
+    action: varchar('action', { length: 100 }).notNull(),
+    tableName: varchar('table_name', { length: 100 }).notNull(),
+    recordId: varchar('record_id', { length: 255 }).notNull(),
+    oldValues: text('old_values'),
+    newValues: text('new_values'),
+    timestamp: timestamp('timestamp').defaultNow().notNull(),
+    ipAddress: varchar('ip_address', { length: 45 })
+});
 
 export type Session = typeof session.$inferSelect;
 
