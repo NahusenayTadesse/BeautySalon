@@ -14,7 +14,6 @@
    <Dialog.Title>{title}</Dialog.Title>
   </Dialog.Header>
   <ScrollArea class="h-128 rounded-md border p-2">
-
   {@render content()}
   </ScrollArea>
  </Dialog.Content>

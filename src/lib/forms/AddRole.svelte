@@ -2,22 +2,23 @@
 	
 import { Input } from "$lib/components/ui/input/index.js";
 	import { Label } from '$lib/components/ui/label/index.js';
-	import type { Snapshot } from "@sveltejs/kit";
   import { Textarea } from "$lib/components/ui/textarea/index.js";
   import LoadingBtn from "$lib/formComponents/LoadingBtn.svelte";
     import { ScrollArea } from "$lib/components/ui/scroll-area/index.js";
 
 	import { Plus } from "@lucide/svelte";
   import { Button } from "$lib/components/ui/button/index.js";
-	import { zod4Client } from "sveltekit-superforms/adapters";
+	// import { zod4Client } from "sveltekit-superforms/adapters";
 	import type { CreateRoleSchema } from "$lib/ZodSchema";
-    import { createRoleSchema } from "$lib/ZodSchema";
-	import { superForm, type Infer, type SuperValidated } from "sveltekit-superforms/client";
+    // import { createRoleSchema } from "$lib/ZodSchema";
+	import  type {  Infer, SuperValidated } from "sveltekit-superforms";
+	  import { superForm } from 'sveltekit-superforms'
 
 
-  let { data, permissions, action="?/addRole" } : { data : SuperValidated<Infer<CreateRoleSchema>> } = $props();
+type Permission = { id: string; name: string; description: string }   // whatever shape you use
+  let { data, permissions, action="?/addRole" } : { data : SuperValidated<Infer<CreateRoleSchema>>, permissions: Permission[], action: string } = $props();
 
-	const { form, errors, enhance, delayed, capture, restore } = superForm(
+	const { form, errors, enhance, delayed } = superForm(
 		data,
 		{
 			taintedMessage: () => {
@@ -26,12 +27,11 @@ import { Input } from "$lib/components/ui/input/index.js";
 				});
 			},
 
-			validators: zod4Client(createRoleSchema)
+			// validators: zod4Client(createRoleSchema)
 
 		}
 	);
 
-	export const snapshot: Snapshot = { capture, restore };
 	 function getItemNameById(items: any, id: any) {
   const item = items.find(i=> i.id === id);
   return item ? item.name : null; // returns null if not found
@@ -62,12 +62,12 @@ import { Input } from "$lib/components/ui/input/index.js";
 {/snippet}
 
 
-<form use:enhance {action} id="main" class="flex flex-col gap-4" method="POST" >
+<form use:enhance {action} class="flex flex-col gap-4" method="POST" >
   {@render fe('Role Name', 'name', 'text', "Enter Role Name", true)}
     
 
     <div class="flex w-full flex-col gap-2 justify-start">
-		<Label for="notes" >Role Description </Label>
+		<Label for="description" >Role Description </Label>
 
         <Textarea name="description" 
         required
@@ -106,7 +106,7 @@ import { Input } from "$lib/components/ui/input/index.js";
   <!-- </div> -->
   </div>
     
-		<Button type="submit" class="mt-4" form="main" >
+		<Button type="submit" class="mt-4"  >
 	{#if $delayed}
 	
 		<LoadingBtn name="Adding Role" />

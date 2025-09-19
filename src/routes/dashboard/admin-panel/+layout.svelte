@@ -4,9 +4,9 @@
     let { data, children } = $props();
 </script>
 {#snippet roles()}
-    <AddRole data={data.form} permissions={data.allPermissions} action="/dashboard/admin-panel/?/addRoles" />
+    <AddRole data={data.form} permissions={data.allPermissions} action="/dashboard/admin-panel?/addRole" />
 {/snippet}
-
+ 
 <DialogComp title="Add New Role" content={roles} />
 
 {@render children?.()}

@@ -4,31 +4,21 @@ import { fail } from '@sveltejs/kit';
 
 import { createRoleSchema as schema } from '$lib/ZodSchema';
 import { db } from '$lib/server/db';
-import { permissions, rolePermissions, roles } from '$lib/server/db/schema.js';
+import {  rolePermissions, roles } from '$lib/server/db/schema.js';
 import type {  Actions } from "./$types";
-import type { PageServerLoad } from './$types.js';
+// import type { PageServerLoad } from './$types.js';
 
 
 
-export const load: PageServerLoad = async () => {
-  const form = await superValidate(zod4(schema));
-
-  const allPermissions = await db.select({
-      value: permissions.id,
-      name: permissions.name
-  }).from(permissions)
-
-  return {
-    form,
-    allPermissions
-  };
-};
+// export const load: PageServerLoad = async () => {
+ 
+// };
 
 
 import { setFlash} from 'sveltekit-flash-message/server';
 
 export const actions: Actions = {
-  addRoles: async ({ request, cookies }) => {
+  addRole: async ({ request, cookies }) => {
     const form = await superValidate(request, zod4(schema));
 
     if (!form.valid) {
@@ -51,9 +41,9 @@ const {
     
     try{
 
-      const role = await db
+      const [role] = await db
         .insert(roles)
-        .values({ name, description });
+        .values({ name, description }).$returningId();
 
       await db.insert(rolePermissions).values(
         permissions.map((permId) => ({
