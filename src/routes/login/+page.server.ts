@@ -32,6 +32,7 @@ export const actions: Actions = {
 		const formData = await event.request.formData();
 		const email = formData.get('email');
 		const password = formData.get('password');
+		
 
 		const results = await db.select().from(table.user).where(eq(table.user.email, email));
 
@@ -108,4 +109,19 @@ function validateUsername(username: unknown): username is string {
 
 function validatePassword(password: unknown): password is string {
 	return typeof password === 'string' && password.length >= 6 && password.length <= 255;
+}
+
+function extractUsername(email: string) {
+  if (typeof email !== "string") {
+    throw new Error("Input must be a string");
+  }
+
+  // Find the part before the '@'
+  const atIndex = email.indexOf("@");
+  
+  if (atIndex === -1) {
+    throw new Error("Invalid email address: missing '@'");
+  }
+
+  return email.substring(0, atIndex);
 }

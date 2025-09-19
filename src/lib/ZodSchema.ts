@@ -4,8 +4,24 @@ export const loginSchema = z.object({
 	email: z.email({ error: 'Invalid email address' }),
 	password: z.string().min(8, { error: 'Password must be at least 8 characters' })
 });
-
 export type LoginSchema = typeof loginSchema;
+
+export const addUserSchema = z.object({
+  name: z
+    .string()
+    .min(1, "Full Name is required")
+    .max(100, "Full Name must be less than 100 characters"),
+  email: z
+    .email("Invalid email address")
+    .min(1, "Email is required"),
+  password: z
+    .string()
+    .min(6, "Password must be at least 6 characters")
+    .max(128, "Password must be less than 128 characters"),
+  role: z.number("Role is required"),
+});
+
+export type AddUserSchema = typeof addUserSchema;
 
 export const inventoryItemSchema = z.object({
 	productName: z.string().min(1, { message: 'Product Name is required.' }),
@@ -60,4 +76,26 @@ export const staffSchema = z.object({
     .number("Position is required")
 });
 
+
+
 export type StaffForm = z.infer<typeof staffSchema>;
+
+
+export const createRoleSchema = z.object({
+  name: z
+    .string()
+    .min(1, "Role name is required")
+    .max(100, "Role name must be under 100 characters"),
+
+  description: z
+    .string()
+    .min(1, "Role description is required")
+    .max(500, "Role description must be under 500 characters"),
+
+  permissions: z
+    .array(z.string().min(1))
+    .nonempty("At least one permission must be selected")
+});
+
+
+export type CreateRoleSchema = z.infer<typeof createRoleSchema>;

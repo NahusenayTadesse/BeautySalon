@@ -3,16 +3,14 @@
 import { Input } from "$lib/components/ui/input/index.js";
 	import { Label } from '$lib/components/ui/label/index.js';
 	import type { Snapshot } from "@sveltejs/kit";
-
-  import { Textarea } from "$lib/components/ui/textarea/index.js";
-
     import * as Card from "$lib/components/ui/card/index.js";
 	import { Plus } from "@lucide/svelte";
   import { Button } from "$lib/components/ui/button/index.js";
 	import { zod4Client } from "sveltekit-superforms/adapters";
-	import { serviceSchema } from "$lib/ZodSchema";
+	import { addUserSchema } from "$lib/ZodSchema";
 	import { superForm } from "sveltekit-superforms/client";
 	import LoadingBtn from "$lib/formComponents/LoadingBtn.svelte";
+	import SelectComp from "$lib/formComponents/SelectComp.svelte";
 
 
 	let { data } = $props();
@@ -26,7 +24,7 @@ import { Input } from "$lib/components/ui/input/index.js";
 				});
 			},
 
-			validators: zod4Client(serviceSchema)
+			validators: zod4Client(addUserSchema)
 
 		}
 	);
@@ -65,39 +63,37 @@ import { Input } from "$lib/components/ui/input/index.js";
 		{/if}
 	</div>
 {/snippet}
+{#snippet selects(name, items)}
+
+<div class="flex w-full flex-col justify-start gap-2">
+		<Label for={name} class="capitalize">{name.replace(/([a-z])([A-Z])/g, '$1 $2')}:</Label>
+
+		<SelectComp {name} bind:value={$form[name]} {items} />
+		{#if $errors[name]}<span class="text-red-500">{$errors[name]}</span>{/if}
+	</div>
+    
+{/snippet}
 <Card.Root class="w-lg flex flex-col gap-4">
   <Card.Header>
     <Card.Title class="text-2xl">Add New User</Card.Title>
   </Card.Header>
   <Card.Content>
 
-<form use:enhance action="?/addProduct" id="main" class="flex flex-col gap-4" method="POST">
-  {@render fe('Service Name', 'serviceName', 'text', "Enter Service Name", true)}
-
-    <div class="flex w-full flex-col gap-2 justify-start">
-		<Label for="notes" >Service Description (optional)</Label>
-
-        <Textarea name="description" 
-         placeholder="Enter added product description"			
-			bind:value={$form.description}
-			aria-invalid={$errors.description ? 'true' : undefined}
-         />
-
-		{#if $errors.description}<span class="text-red-500">{$errors.description}</span>{/if}
-	</div>
-  {@render fe('Duration of Service', 'durationMinutes', 'number', "Enter the average number of minutes it takes to complete service", true, "0")}
-  {@render fe('Price', 'price', 'number', "Enter the price of item", true, "0")}
-
-
+<form use:enhance action="?/addUser" id="main" class="flex flex-col gap-4" method="POST">
+      {@render fe('Full Name', 'name', 'text', 'Enter the full name of new user',true)}
+      {@render fe('Email', 'email', 'email', 'Enter the email user',true)}
+      {@render fe('Password', 'password', 'password', 'Enter password',true)}
+      {@render selects('role', data.allRoles)}
     
-		<Button type="submit" class="mt-4" form="main">
+    
+		<Button type="submit" class="mt-4" form="main" >
 	{#if $delayed}
 	
 		<LoadingBtn name="Adding Service" />
 	{:else}
 		<Plus class="h-4 w-4" />
     
-		Add Service
+		Add User
         {/if}
       </Button>
 	</form>

@@ -4,7 +4,7 @@ import { fail } from '@sveltejs/kit';
 
 import { inventoryItemSchema } from '$lib/ZodSchema';
 import { db } from '$lib/server/db';
-import { inventory } from '$lib/server/db/schema.js';
+import { products as inventory } from '$lib/server/db/schema.js';
 import type {  Actions } from "./$types";
 import type { PageServerLoad } from './$types.js';
 import { setFlash } from 'sveltekit-flash-message/server';
@@ -37,8 +37,7 @@ export const actions: Actions = {
 
  
       // Stay on the same page and set a flash message
-      setFlash({ type: 'success', message: "Inventory Successuflly Updated" }, cookies);
-  
+      setFlash({ type: 'success', message: "New Inventory Successuflly Added" }, cookies);
     return {
       form
     } } catch(err){

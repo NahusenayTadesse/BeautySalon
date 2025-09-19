@@ -2,9 +2,6 @@
  import * as Dialog from "$lib/components/ui/dialog/index.js";
   import { ScrollArea } from "$lib/components/ui/scroll-area/index.js";
     import { Button } from "$lib/components/ui/button/index.js";
-
-
-
  let { title, content} = $props();
 </script>
  
