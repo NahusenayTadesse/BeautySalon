@@ -10,8 +10,8 @@
 </svelte:head>
 
 
-
 <div class="flex h-screen w-full items-center justify-center px-4">
+	<p style="color: red">{form?.message ?? ''}</p>
 <Login data={data?.form}  action="?/login"/>
 </div>
 

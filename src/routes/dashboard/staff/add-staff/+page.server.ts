@@ -15,11 +15,16 @@ export const load: PageServerLoad = async () => {
   const allPositions = await db.select({
       value: positions.id,
       name: positions.name
-  }).from(positions)
+  }).from(positions);
+
+  const allStaff = await db.select({
+       name: staff.firstName,
+  }).from(staff)
 
   return {
     form,
-    allPositions
+    allPositions,
+    allStaff
   };
 };
 

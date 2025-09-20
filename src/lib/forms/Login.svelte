@@ -34,7 +34,7 @@
     <div class="grid gap-4">
       <div class="grid gap-2">
         <Label for="email">Email</Label>
-        <Input id="email" type="email" placeholder="m@example.com" bind:value={$form.email} required />
+        <Input id="email" name="email" type="email" placeholder="m@example.com" bind:value={$form.email} required />
             {#if $errors.email}<span class="text-red-500">{$errors.email}</span>{/if}
       </div>
       <div class="grid gap-2">
@@ -45,7 +45,7 @@
           </a>
         </div>
         <div class="relative">
-        <Input id="password" type={eye ? "text": "password"}  bind:value={$form.password} required />
+        <Input id="password" name="password" type={eye ? "text": "password"}  bind:value={$form.password} required />
         <button type="button" onclick={()=>eye = !eye} title="Make Password Visible">
         <EyeIcon class="h-6 w-6 absolute top-0.5 right-2 transition-transform ease-in-out duration-300" />
         </button>

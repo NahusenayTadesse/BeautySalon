@@ -5,7 +5,7 @@
  let { title, content} = $props();
 </script>
  
-<Dialog.Root>
+<Dialog.Root >
  <Dialog.Trigger class="w-auto px-4"
   ><Button>{title}</Button></Dialog.Trigger
  >
@@ -13,7 +13,7 @@
   <Dialog.Header>
    <Dialog.Title>{title}</Dialog.Title>
   </Dialog.Header>
-  <ScrollArea class="h-128 rounded-md border p-2">
+  <ScrollArea class="h-auto rounded-md border p-2">
   {@render content()}
   </ScrollArea>
  </Dialog.Content>

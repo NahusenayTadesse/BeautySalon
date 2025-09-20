@@ -42,6 +42,7 @@ export type InventoryItemSchema = typeof inventoryItemSchema;
 export const serviceSchema = z.object({
 	serviceName: z.string().min(1, { message: 'Service Name is required.' }),
 	description: z.string().optional(),
+  category: z.number('Category cannot be empty. Please select a Category'),
 	durationMinutes: z.coerce
 		.number()
 		.int()
@@ -99,3 +100,32 @@ export const createRoleSchema = z.object({
 
 
 export type CreateRoleSchema = z.infer<typeof createRoleSchema>;
+
+export const positionSchema = z.object({
+  name: z
+    .string()
+    .min(1, "Role name is required")
+    .max(100, "Role name must be under 100 characters"),
+
+  description: z
+    .string()
+    .min(1, "Role description is required")
+    .max(500, "Role description must be under 500 characters")
+});
+export type PositionSchema = z.infer<typeof positionSchema>;
+
+export const serviceCategorySchema = z.object({
+  name: z
+    .string()
+    .min(1, "Role name is required")
+    .max(100, "Role name must be under 100 characters"),
+
+  description: z
+    .string()
+    .min(1, "Role description is required")
+    .max(500, "Role description must be under 500 characters")
+});
+
+
+
+export type ServiceCategorySchema = z.infer<typeof serviceCategorySchema>;
