@@ -16,6 +16,7 @@ import { Input } from "$lib/components/ui/input/index.js";
 	import ServiceCategory from "$lib/forms/ServiceCategory.svelte";
 	import DialogComp from "$lib/formComponents/DialogComp.svelte";
 	import SelectComp from "$lib/formComponents/SelectComp.svelte";
+	import ChildrenTable from "$lib/ChildrenTable.svelte";
 
 
 	let { data } = $props();
@@ -41,7 +42,7 @@ import { Input } from "$lib/components/ui/input/index.js";
 // }
 
     
-
+let search = true;
 
 
 
@@ -83,12 +84,16 @@ import { Input } from "$lib/components/ui/input/index.js";
 	</div>
     
 {/snippet}
-<div>
-<div>
-{#each data.allCategories as cat}
-	{cat.name}<br />
-	{cat.description} <br />
-{/each}
+<div class="grid grid-cols-2 gap-8">
+<div>          <div> 
+	                <h1>Service Categories</h1>
+					<ChildrenTable mainlist = {data.allCategories}  {search} link="positions"/>
+					</div>
+					<div> <h1>Services</h1>
+					<ChildrenTable mainlist = {data.allServices}  {search} link="positions"/>
+					</div>
+
+
 </div>
 
 <Card.Root class="w-lg flex flex-col gap-4">

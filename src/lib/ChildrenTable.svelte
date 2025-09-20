@@ -9,11 +9,9 @@
   
 
      let { mainlist,  tableHeaders = [{name:'Id', key: 'id'}, 
-   {name:'First Name', key: 'firstName'},
-   {name:'lastName', key: 'lastName'},
-   {name:'Gender', key: 'gender'},
-   {name:'Position', key: 'position'},
-   {name: 'Active', key: 'isActive'}], link = 'students', search = false} = $props();
+   {name:'Name', key: 'name'},
+   {name:'Description', key: 'description'},
+], link = 'students', search = false} = $props();
    let hover = $state(false);
    let table = $state()
    

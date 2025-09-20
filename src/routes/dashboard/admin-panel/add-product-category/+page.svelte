@@ -10,6 +10,7 @@
 	import { superForm } from 'sveltekit-superforms';
 	import type { Snapshot } from '@sveltejs/kit';
 	import { positionSchema } from '$lib/ZodSchema.js';
+	import ChildrenTable from '$lib/ChildrenTable.svelte';
 
 	let { data } = $props();
 
@@ -24,6 +25,7 @@
 	});
 
 	export const snapshot: Snapshot = { capture, restore };
+	let search = true;
 </script>
 
 <svelte:head>
@@ -57,12 +59,9 @@
 	</div>
 {/snippet}
 
-<div class="flex flex-row flex-wrap justify-between gap-16">
+<div class="grid grid-cols-2 justify-between gap-16">
 	<div class="my-8 flex flex-col gap-2">
-		{#each data.allPositions as role}
-			{role.name} <br />
-			{role.description}<br />
-		{/each}
+				<ChildrenTable mainlist = {data.allPositions}  {search} link="positions"/>
 	</div>
 
 	<Card.Root class="flex w-lg flex-col gap-4">

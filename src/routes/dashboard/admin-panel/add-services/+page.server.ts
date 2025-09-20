@@ -12,22 +12,55 @@ import type { PageServerLoad, Actions } from './$types.js';
 
 
 export const load: PageServerLoad = async () => {
-  const form = await superValidate(zod4(schema));
+  try {
+    const form = await superValidate(zod4(schema));
 
+    const allCategories = await db
+      .select({
+        value: serviceCategories.id,
+        name: serviceCategories.name,
+        description: serviceCategories.description
+      })
+      .from(serviceCategories);
 
+    const allServices = await db
+      .select({
+        value: services.id,
+        name: services.name,
+        description: services.description
+      })
+      .from(services);
 
-  const allCategories = await db.select({
-      value: serviceCategories.id,
-      name: serviceCategories.name,
-      description: serviceCategories.description
-  }).from(serviceCategories);
+    // Check for empty data
+    if (!allCategories.length) {
+      console.warn('No categories found in DB');
+    }
 
-  return {
-    form,
-    allCategories
-  };
+    if (!allServices.length) {
+      console.warn('No services found in DB');
+    }
+
+    return {
+      form,
+      allCategories,
+      allServices
+    };
+  } catch (err) {
+    console.error('Error in load function:', err);
+
+    // You can either throw an HTTP error...
+    // throw error(500, 'Failed to load data');
+
+    // Or if you prefer the page to still load but with fallback data:
+    
+    return {
+      form: await superValidate(zod4(schema)),
+      allCategories: [],
+      allServices: []
+    };
+    
+  }
 };
-
 
 export const actions: Actions = {
   

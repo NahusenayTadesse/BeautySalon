@@ -11,6 +11,7 @@ import { Input } from "$lib/components/ui/input/index.js";
 	  import { superForm } from 'sveltekit-superforms'
 	import type { Snapshot } from "@sveltejs/kit";
     	import * as Card from '$lib/components/ui/card/index.js';
+	import ChildrenTable from "$lib/ChildrenTable.svelte";
 
 
 
@@ -32,7 +33,7 @@ import { Input } from "$lib/components/ui/input/index.js";
 
     	export const snapshot: Snapshot = { capture, restore };
 
-
+let search = true
  
 </script>
 <svelte:head>
@@ -59,19 +60,13 @@ import { Input } from "$lib/components/ui/input/index.js";
 	</div>
 {/snippet}
 
-<div class="flex flex-row flex-wrap">
-<div class="flex flex-col gap-2 my-8">
-     {#each data.allRoles as role}
-      
-      {role.name} <br />
-      {role.description}<br />
-        
-     {/each}
+<div class="grid grid-cols-2 gap-8">
+<div>
+<ChildrenTable mainlist = {data.allRoles}  {search} link="positions"/>
 </div>
- {#if $errors._errors} 
 
- <h1 class="animate-pulse text-5xl">{$message._errors}</h1>
- {/if}
+
+
 	<Card.Root class="flex w-lg flex-col gap-4">
 		<Card.Header>
 			<Card.Title class="text-2xl">Add New Roles for Users</Card.Title>
