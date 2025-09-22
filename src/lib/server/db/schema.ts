@@ -130,12 +130,12 @@ export const products = mysqlTable(
 
 export const serviceCategories = mysqlTable('service_categories', {
     id: int('id').autoincrement().primaryKey(),
-    name: varchar('name', { length: 255 }).notNull(),
+    name: varchar('name', { length: 255 }).notNull().unique(),
     description: text('description')
 });
 export const productCategories = mysqlTable('product_categories', {
     id: int('id').autoincrement().primaryKey(),
-    name: varchar('name', { length: 255 }).notNull(),
+    name: varchar('name', { length: 255 }).notNull().unique(),
     description: text('description')
 });
 

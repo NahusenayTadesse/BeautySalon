@@ -17,7 +17,8 @@ export const load: PageServerLoad = async () => {
   const allRoles = await db.select({
       value: roles.id,
       name: roles.name
-  }).from(roles)
+  }).from(roles);
+  
 
   return {
     form,
@@ -78,7 +79,7 @@ const {
            if(err.code === 'ER_DUP_ENTRY')
            return setError(form, 'email', 'E-mail already exists.');
 
-                    return fail(400, {
+        return fail(400, {
         form
       });
     }

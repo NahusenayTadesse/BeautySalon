@@ -55,7 +55,7 @@ import { Input } from "$lib/components/ui/input/index.js";
 
 
 <form use:enhance {action} class="flex flex-col gap-4" method="POST" >
-  {@render fe('Category Name', 'name', 'text', "Enter Role Name", true)}
+  {@render fe('Category Name', 'name', 'text', "Enter Category Name", true)}
     
 
     <div class="flex w-full flex-col gap-2 justify-start">

@@ -1,4 +1,4 @@
-import type { Actions } from './$types';
+import type { Actions,  } from './$types';
 import TelegramBot from 'node-telegram-bot-api';
 
 const token = "6723272379:AAEeBpAquYauL3r7SYnE_9eI0jlyYQHEP4Y" as string;

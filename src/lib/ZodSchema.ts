@@ -27,7 +27,7 @@ export const inventoryItemSchema = z.object({
 	productName: z.string().min(1, { message: 'Product Name is required.' }),
 	description: z
 		.string()
-		.max(10, { message: "Product description can't be more than 500 characters." })
+		.max(500, { message: "Product description can't be more than 500 characters." })
 		.optional(),
 	quantity: z.coerce
 		.number()
