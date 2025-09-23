@@ -26,14 +26,15 @@
 
     ]
 </script> 
-{#snippet menu(trigger, array)}
+
+{#snippet menu(trigger = "", array= [{name: '', href: ''}])}
 <Menubar.Menu>
   <Menubar.Trigger class={selectItem} >{trigger} <ChevronDown /></Menubar.Trigger>
 
  <div transition:fly={{y:20, duration: 300}}>
   <Menubar.Content>
 {#each array as menu }
-       <Menubar.Item class={selectItem}><a href={menu.href} transition:slide|global>{menu.name}</a></Menubar.Item>
+       <Menubar.Item class={selectItem} ><a href={menu.href} class="w-full" transition:slide|global>{menu.name}</a></Menubar.Item>
            <Menubar.Separator />
 {/each}
 

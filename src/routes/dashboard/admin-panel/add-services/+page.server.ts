@@ -6,7 +6,7 @@ import { fail } from '@sveltejs/kit';
 
 import { serviceCategorySchema as schema, serviceSchema } from '$lib/ZodSchema';
 import { db } from '$lib/server/db';
-import {   serviceCategories, services } from '$lib/server/db/schema.js';
+import {  serviceCategories, services } from '$lib/server/db/schema.js';
 import type { PageServerLoad, Actions } from './$types.js';
 
 

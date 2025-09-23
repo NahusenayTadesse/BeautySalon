@@ -1,0 +1,30 @@
+import {
+
+    varchar,
+    datetime,
+    timestamp,
+
+    int,
+
+    boolean,
+    
+} from 'drizzle-orm/mysql-core';
+import { user } from './user';
+import { branches } from './branches';
+import { sql } from 'drizzle-orm';
+
+export const secureFields = {
+    isActive: boolean('is_active').default(true).notNull(),
+    createdBy: varchar('created_by', { length: 255 })
+        .references(() => user.id),
+    updatedBy: varchar('updated_by', { length: 255 })
+        .references(() => user.id),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+    updatedAt: timestamp('updated_at').default(sql`CURRENT_TIMESTAMP(3) on update CURRENT_TIMESTAMP(3)`).notNull(),
+    branchId: int('branch_id')
+        .references(() => branches.id)
+        .default(0),
+    deletedAt: datetime('deleted_at'),
+    deletedBy: varchar('deleted_by', { length: 255 })
+        .references(() => user.id),
+};

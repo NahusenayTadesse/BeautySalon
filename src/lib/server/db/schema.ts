@@ -41,7 +41,6 @@ export const user = mysqlTable('user', {
 	email: varchar('email', { length: 100 }).notNull().unique(),
 	passwordHash: varchar('password_hash', { length: 255 }).notNull(),
 	isActive: boolean('is_active').default(true).notNull(),
-	staffId: int('staff_id').references(() => staff.id, { onDelete: 'set null' }),
 	roleId: int('role_id').references(() => roles.id, { onDelete: 'restrict' }).notNull(),
 	createdAt: timestamp('created_at').defaultNow().notNull(),
     updatedAt: timestamp('updated_at').default(sql`CURRENT_TIMESTAMP(3) on update CURRENT_TIMESTAMP(3)`).notNull(),
@@ -80,15 +79,23 @@ export const customers = mysqlTable('customers', {
 
 // Table for Staff
 
+export const staffTypes = mysqlTable('staff_types', {
+ 	id: int('id').autoincrement().primaryKey(),
+    name: varchar('name', { length: 255 }).notNull().unique(),
+    description: text('description')
+
+})
+
+
 export const staff = mysqlTable('staff', {
 	id: int('id').primaryKey().autoincrement(),
 	firstName: varchar('first_name', { length: 255 }).notNull(),
 	lastName: varchar('last_name', { length: 255 }).notNull(),
-	positionId: int('position_id')
-		.notNull()
-		.references(() => positions.id),
+	userId: int('user_id').references(() => user.id),
 	email: varchar('email', { length: 255 }).unique().notNull(),
 	phone: varchar('phone', { length: 50 }),
+	type: int('type_id').notNull()
+		.references(() =>  staffTypes.id),
 	hireDate: timestamp('hire_date').notNull(),
 	govtId: varchar('govt_id', {length: 255}),
 	contract: varchar('contract', {length: 255}),
@@ -97,6 +104,16 @@ export const staff = mysqlTable('staff', {
 	...secureFields
 
 });
+
+export const staffContacts = mysqlTable('contacts', {
+
+		id: int('id').primaryKey().autoincrement(),
+        staffId: int('staff_id')
+			.notNull()
+			.references(() => staff.id),
+		contactType: varchar('contact_type', {length: 50}).notNull(),
+		contactDetail: varchar('contact_detail', {length: 255}).notNull(),	 
+})
 
 export const supplies = mysqlTable(
 	'supplies',
@@ -220,10 +237,6 @@ export const appointmentsRelations = relations(appointments, ({ one }) => ({
 }));
 
 export const usersRelations = relations(user, ({ one }) => ({
-	staff: one(staff, {
-		fields: [user.staffId],
-		references: [staff.id]
-	}),
 	role: one(roles, {
 		fields: [user.roleId],
 		references: [roles.id]
