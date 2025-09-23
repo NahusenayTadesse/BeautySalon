@@ -8,6 +8,8 @@ import {
 	int,
 	decimal,
 	date,
+  year,
+  unique,
 } from 'drizzle-orm/mysql-core';
 import { appointments, customers } from './customer-appointment';
 import { staff } from './staff';
@@ -24,10 +26,8 @@ export const paymentMethods = mysqlTable('payment_methods', {
 });
 
 
-
 export const transactions = mysqlTable('transactions', {
   id: int('id').primaryKey().autoincrement(),
-  staffId: int('staff_id').references(()=>staff.id),
   amount: decimal('amount', { precision: 10, scale: 2 }).notNull(),
   paymentStatus: mysqlEnum('payment_status', ['pending', 'paid', 'refunded']).default('pending'),
   paymentMethodId: int('payment_method_id').references(() => paymentMethods.id),  
@@ -46,6 +46,8 @@ export const transactionsRelations = relations(transactions, ({ one }) => ({
 export const transactionServices = mysqlTable('transaction_services', {
   id: int('id').primaryKey().autoincrement(),
   customerId: int('customer_id').references(() => customers.id),
+  appointmentId: int('appointment_id').references(() => appointments.id),
+  staffId: int('staff_id').references(() => staff.id).notNull(),
   transactionId: int('transaction_id')
     .notNull()
     .references(() => transactions.id),
@@ -54,10 +56,10 @@ export const transactionServices = mysqlTable('transaction_services', {
     .references(() => services.id),
   price: decimal('price', { precision: 10, scale: 2 }).notNull(),
   tip: decimal('tip', { precision: 10, scale: 2 }).notNull().default('0'),
-  discount: int('discount').default(0),
-  tax: decimal('tax', { precision: 10, scale: 2 }).notNull().default('0'),
-  total: decimal('total', { precision: 10, scale: 2 }).default(''),
-  
+  discount: int('discount').references(()=> discounts.id),
+  tax: decimal('tax', { precision: 10, scale: 2 }),
+  total: decimal('total', { precision: 10, scale: 2 }),
+  ...secureFields
 });
 
 
@@ -68,12 +70,25 @@ export const transactionProducts = mysqlTable('transaction_products', {
   transactionId: int('transaction_id')
     .notNull()
     .references(() => transactions.id),
+  staffId: int('staff_id').references(() => staff.id),
   tip: decimal('tip', { precision: 10, scale: 2 }).notNull().default('0'),
   productId: int('product_id')
     .notNull().references(()=>products.id),
   quantity: decimal('quantity', { precision: 10, scale: 2 }).notNull().default('1'),
   unitPrice: decimal('unit_price', { precision: 10, scale: 2 }).notNull(), 
+  discount: int('discount').references(()=> discounts.id),
+  tax: decimal('tax', { precision: 10, scale: 2 }),
+  total: decimal('total', { precision: 10, scale: 2 }),
+  ...secureFields
 });
+
+export const discounts = mysqlTable('discounts', {
+    id: int('id').primaryKey().autoincrement(),
+    amount: decimal('amount', {precision: 10, scale: 2}),
+    name: varchar('name', {length: 50}).notNull().unique(),
+    description: text('description'),
+    ...secureFields
+})
 
 export const transactionSupplies = mysqlTable('transaction_supplies', {
   id: int('id').primaryKey().autoincrement(),
@@ -84,16 +99,18 @@ export const transactionSupplies = mysqlTable('transaction_supplies', {
     .notNull().references(()=>supplies.id), 
   quantity: decimal('quantity', { precision: 10, scale: 2 }).notNull().default("1"),
   unitPrice: decimal('unit_price', { precision: 10, scale: 2 }).notNull(), 
+  ...secureFields
 });
 
-export const transactionBookingFee = mysqlTable('transaction_supplies', {
+export const transactionBookingFee = mysqlTable('transaction_booking_fees', {
   id: int('id').primaryKey().autoincrement(),
   transactionId: int('transaction_id')
     .notNull()
     .references(() => transactions.id),
   appointmentId: int('appointment_id')
-    .notNull().references(()=>appointments.id), // you’ll need a products table
-   fee: decimal('fee', { precision: 10, scale: 2 }).notNull(), 
+    .notNull().references(()=>appointments.id), 
+  fee: decimal('fee', { precision: 10, scale: 2 }).notNull(), 
+   ...secureFields
 });
 
 
@@ -102,18 +119,19 @@ export const transactionBookingFee = mysqlTable('transaction_supplies', {
 export const expenses = mysqlTable('expenses', {
 	id: int('id').autoincrement().primaryKey(),
 	expenseDate: date('expense_date').notNull(),
-	type: int('type').notNull().references(()=> expensesType.id), // e.g., 'Rent', 'Utilities', 'Marketing', 'Supplies'
+	type: int('type').notNull().references(()=> expensesType.id),
 	description: text('description'),
 	total: decimal('total', { precision: 10, scale: 2 }).notNull(),
-      transactionId: int('transaction_id')
+  transactionId: int('transaction_id')
     .notNull()
     .references(() => transactions.id),
+  ...secureFields
 });
 
 export const expensesType = mysqlTable('expenses_type', {
      	id: int('id').autoincrement().primaryKey(),
-        name: varchar('name', {length: 255}).notNull().unique(),
-        description: text('description'),
+      name: varchar('name', {length: 255}).notNull().unique(),
+      description: text('description'),
 })
 
 
@@ -123,32 +141,62 @@ export const payrollRuns = mysqlTable('payroll_runs', {
 	payPeriodStart: date('pay_period_start').notNull(),
 	payPeriodEnd: date('pay_period_end').notNull(),
 	paymentDate: date('payment_date').notNull(),
+
+   month: mysqlEnum("month", [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ]).notNull(),
+  
+  year: year('year').notNull(),
 	status: mysqlEnum('status', ['pending', 'processing', 'completed', 'failed'])
 		.notNull()
 		.default('pending'),
 	
     totalNet: decimal('total_net', { precision: 10, scale: 2 }),
     totalDeductions: decimal('total_deductions', { precision: 10, scale: 2 }),
-	totalPaid: decimal('total_paid', { precision: 10, scale: 2 }),
+	  totalPaid: decimal('total_paid', { precision: 10, scale: 2 }),
 	...secureFields
-});
+}, (t) => [
+  unique().on(t.month, t.year)]);
 
 export const payrollEntries = mysqlTable('payroll_entries', {
-    payrollRunId: int('payroll_run_id').references(() => payrollRuns.id),
+    payrollRunId: int('id').references(() => payrollRuns.id),
     staffId: int('staff_id').references(() => staff.id),
+    month: mysqlEnum("month", [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May", 
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ]).notNull(),
+    year: year('year').notNull(),
     netAmount: decimal('net_amount', { precision: 10, scale: 2 }),
     paidAmount: decimal('paid_amount', { precision: 10, scale: 2 }),
     paymentMethodId: int('payment_method_id').references(() => paymentMethods.id),  
-     recieptLink: varchar('reciept_link', {length: 255}),
-     ...secureFields
-});
+    recieptLink: varchar('reciept_link', {length: 255}),
+    ...secureFields
+}, (t) => [
+  unique().on(t.staffId,t.month, t.year)]);
 
-export const transactionRelations = relations(transactions, ({ one, many }) => ({
+export const transactionRelations = relations(transactions, ({ many }) => ({
 	
-	staff: one(staff, {
-		fields: [transactions.staffId],
-		references: [staff.id],
-	}),
 	transactionProductss: many(transactionProducts), // this will be connected via saleId
 	transactionServices: many(transactionServices), // this will be connected via saleId
 }));

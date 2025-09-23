@@ -14,6 +14,7 @@ import {
 import { user } from './user';
 import { branches } from './branches';
 import { appointments } from './customer-appointment';
+import { uniqueIndex } from 'drizzle-orm/mysql-core';
 
 const secureFields = {
 	isActive: boolean('is_active').default(true).notNull(),
@@ -34,21 +35,24 @@ const secureFields = {
 export const serviceCategories = mysqlTable('service_categories', {
     id: int('id').autoincrement().primaryKey(),
     name: varchar('name', { length: 255 }).notNull().unique(),
-    description: text('description')
+    description: text('description'),
+	...secureFields
 });
 
 export const services = mysqlTable(
 	'services',
 	{
 		id: int('id').primaryKey().autoincrement(),
-		serviceName: varchar('service_name', { length: 255 }).notNull(),
+		serviceName: varchar('service_name', { length: 255 }).notNull().unique(),
 		categoryId: int('category_id').references(()=> serviceCategories.id),
 		description: text('description'),
 		price: decimal('price', { precision: 10, scale: 2 }).notNull(),
 		durationMinutes: int('duration_minutes').notNull(),
 		commissionAmount: decimal('commission_amount', { precision: 10, scale: 2 }).notNull(),
 		...secureFields
-	});
+	}, (table) => [
+	  uniqueIndex("service_name_idx").on(table.serviceName),
+	]);
 
 export const servicesRelations = relations(services, ({ many }) => ({
 	appointments: many(appointments)

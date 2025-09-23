@@ -5,17 +5,16 @@ import {
 	mysqlTable,
 
 	varchar,
-	timestamp,
 	text,
 	int,
 	decimal,
+	uniqueIndex,
 
 } from 'drizzle-orm/mysql-core';
 import { secureFields } from './secureFields';
 
 
 
-import { user } from './user';
 import { transactionProducts, transactionSupplies } from './finance';
 
 
@@ -48,12 +47,16 @@ export const products = mysqlTable(
 		supplier: varchar('supplier', { length: 255 }),
 		reorderLevel: int('reorder_level'),
 		...secureFields
-	});
+	}, (table) => [
+	  
+	  uniqueIndex("product_name_idx").on(table.productName),
+	]);
 
 export const productCategories = mysqlTable('product_categories', {
     id: int('id').autoincrement().primaryKey(),
     name: varchar('name', { length: 255 }).notNull().unique(),
-    description: text('description')
+    description: text('description'),
+	...secureFields
 });
 
 export const productAdjustments = mysqlTable('product_adjustments', {
@@ -62,13 +65,9 @@ export const productAdjustments = mysqlTable('product_adjustments', {
 		.notNull()
 		.references(() => products.id),
 	adjustment: int('adjustment').notNull(), // e.g., +50 for new stock, -1 for a sale, -1 for internal use
-	reason: text('reason').notNull(),
 	notes: text('notes'),
-	transactionId: int('transaction_id').references(() => transactionProducts.id), // Link directly to the sale that caused the adjustment
-	createdAt: timestamp('created_at').defaultNow().notNull(),
-	createdBy: varchar('created_by', { length: 255 })
-		.notNull()
-		.references(() => user.id)
+	transactionId: int('transaction_id').references(() => transactionProducts.id).notNull(), // Link directly to the sale that caused the adjustment
+    ...secureFields
 });
 
 export const suppliesAdjustments = mysqlTable('supplies_adjustments', {
@@ -77,11 +76,8 @@ export const suppliesAdjustments = mysqlTable('supplies_adjustments', {
 		.notNull()
 		.references(() => supplies.id),
 	adjustment: int('adjustment').notNull(), // e.g., +50 for new stock, -1 for a sale, -1 for internal use
-	reason: text('reason').notNull(),
+	reason: text('reason'),
 	notes: text('notes'),
-	transactionId: int('transaction_id').references(() => transactionSupplies.id), // Link directly to the sale that caused the adjustment
-	createdAt: timestamp('created_at').defaultNow().notNull(),
-	createdBy: varchar('created_by', { length: 255 })
-		.notNull()
-		.references(() => user.id)
+	transactionId: int('transaction_id').references(() => transactionSupplies.id), //if the adjustment is caused by new stuff coming in
+	...secureFields
 });

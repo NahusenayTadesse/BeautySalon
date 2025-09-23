@@ -7,6 +7,7 @@ import {
     char,
     boolean,
     timestamp,
+    index,
     
 } from 'drizzle-orm/mysql-core';
 export const branches = mysqlTable('branches', {
@@ -28,4 +29,6 @@ export const branches = mysqlTable('branches', {
     is_active: boolean('is_active').default(true),
     created_at: timestamp('created_at').defaultNow(),
     updatedAt: timestamp('updated_at').default(sql`CURRENT_TIMESTAMP(3) on update CURRENT_TIMESTAMP(3)`).notNull(),
-});
+},  (table) => [
+  index("branch_id_idx").on(table.id),
+]);

@@ -1,9 +1,228 @@
 {
   "version": "5",
   "dialect": "mysql",
-  "id": "65c97943-1e17-459d-aa12-a4d2d27f6e69",
+  "id": "61c82417-9697-46af-858a-06b562343cf0",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
+    "branches": {
+      "name": "branches",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "company_id": {
+          "name": "company_id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "parent_branch_id": {
+          "name": "parent_branch_id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(64)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "address_line1": {
+          "name": "address_line1",
+          "type": "varchar(128)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "address_line2": {
+          "name": "address_line2",
+          "type": "varchar(128)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "city": {
+          "name": "city",
+          "type": "varchar(64)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "state": {
+          "name": "state",
+          "type": "varchar(64)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "postal_code": {
+          "name": "postal_code",
+          "type": "varchar(16)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "country_code": {
+          "name": "country_code",
+          "type": "char(2)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "phone_number": {
+          "name": "phone_number",
+          "type": "varchar(32)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "email": {
+          "name": "email",
+          "type": "varchar(128)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "timezone": {
+          "name": "timezone",
+          "type": "varchar(64)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "latitude": {
+          "name": "latitude",
+          "type": "decimal(10,8)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "longitude": {
+          "name": "longitude",
+          "type": "decimal(11,8)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "is_active": {
+          "name": "is_active",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "default": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "default": "(now())"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "CURRENT_TIMESTAMP(3) on update CURRENT_TIMESTAMP(3)"
+        }
+      },
+      "indexes": {
+        "branch_id_idx": {
+          "name": "branch_id_idx",
+          "columns": [
+            "id"
+          ],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {
+        "branches_id": {
+          "name": "branches_id",
+          "columns": [
+            "id"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "checkConstraint": {}
+    },
+    "appointment_services": {
+      "name": "appointment_services",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "appointment_id": {
+          "name": "appointment_id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "service_id": {
+          "name": "service_id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "appointment_services_appointment_id_appointments_id_fk": {
+          "name": "appointment_services_appointment_id_appointments_id_fk",
+          "tableFrom": "appointment_services",
+          "tableTo": "appointments",
+          "columnsFrom": [
+            "appointment_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "appointment_services_service_id_services_id_fk": {
+          "name": "appointment_services_service_id_services_id_fk",
+          "tableFrom": "appointment_services",
+          "tableTo": "services",
+          "columnsFrom": [
+            "service_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "appointment_services_id": {
+          "name": "appointment_services_id",
+          "columns": [
+            "id"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "checkConstraint": {}
+    },
     "appointment_statuses": {
       "name": "appointment_statuses",
       "columns": {
@@ -66,20 +285,6 @@
           "notNull": true,
           "autoincrement": false
         },
-        "staff_id": {
-          "name": "staff_id",
-          "type": "int",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "service_id": {
-          "name": "service_id",
-          "type": "int",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
         "appointment_date": {
           "name": "appointment_date",
           "type": "date",
@@ -99,8 +304,21 @@
           "type": "int",
           "primaryKey": false,
           "notNull": true,
-          "autoincrement": false,
-          "default": 1
+          "autoincrement": false
+        },
+        "booking_fee": {
+          "name": "booking_fee",
+          "type": "decimal(10,2)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "transaction_id": {
+          "name": "transaction_id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
         },
         "notes": {
           "name": "notes",
@@ -152,8 +370,7 @@
           "type": "int",
           "primaryKey": false,
           "notNull": false,
-          "autoincrement": false,
-          "default": 0
+          "autoincrement": false
         },
         "deleted_at": {
           "name": "deleted_at",
@@ -185,38 +402,25 @@
           "onDelete": "no action",
           "onUpdate": "no action"
         },
-        "appointments_staff_id_staff_id_fk": {
-          "name": "appointments_staff_id_staff_id_fk",
-          "tableFrom": "appointments",
-          "tableTo": "staff",
-          "columnsFrom": [
-            "staff_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        },
-        "appointments_service_id_services_id_fk": {
-          "name": "appointments_service_id_services_id_fk",
-          "tableFrom": "appointments",
-          "tableTo": "services",
-          "columnsFrom": [
-            "service_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        },
         "appointments_status_id_appointment_statuses_id_fk": {
           "name": "appointments_status_id_appointment_statuses_id_fk",
           "tableFrom": "appointments",
           "tableTo": "appointment_statuses",
           "columnsFrom": [
             "status_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "appointments_transaction_id_transactions_id_fk": {
+          "name": "appointments_transaction_id_transactions_id_fk",
+          "tableFrom": "appointments",
+          "tableTo": "transactions",
+          "columnsFrom": [
+            "transaction_id"
           ],
           "columnsTo": [
             "id"
@@ -250,10 +454,10 @@
           "onDelete": "no action",
           "onUpdate": "no action"
         },
-        "appointments_branch_id_branch_id_fk": {
-          "name": "appointments_branch_id_branch_id_fk",
+        "appointments_branch_id_branches_id_fk": {
+          "name": "appointments_branch_id_branches_id_fk",
           "tableFrom": "appointments",
-          "tableTo": "branch",
+          "tableTo": "branches",
           "columnsFrom": [
             "branch_id"
           ],
@@ -288,8 +492,8 @@
       "uniqueConstraints": {},
       "checkConstraint": {}
     },
-    "audit_log": {
-      "name": "audit_log",
+    "customerContacts": {
+      "name": "customerContacts",
       "columns": {
         "id": {
           "name": "id",
@@ -298,125 +502,23 @@
           "notNull": true,
           "autoincrement": true
         },
-        "user_id": {
-          "name": "user_id",
-          "type": "varchar(255)",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "action": {
-          "name": "action",
-          "type": "varchar(100)",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "table_name": {
-          "name": "table_name",
-          "type": "varchar(100)",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "record_id": {
-          "name": "record_id",
-          "type": "varchar(255)",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "old_values": {
-          "name": "old_values",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "new_values": {
-          "name": "new_values",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "timestamp": {
-          "name": "timestamp",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": "(now())"
-        },
-        "ip_address": {
-          "name": "ip_address",
-          "type": "varchar(45)",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "audit_log_user_id_user_id_fk": {
-          "name": "audit_log_user_id_user_id_fk",
-          "tableFrom": "audit_log",
-          "tableTo": "user",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {
-        "audit_log_id": {
-          "name": "audit_log_id",
-          "columns": [
-            "id"
-          ]
-        }
-      },
-      "uniqueConstraints": {},
-      "checkConstraint": {}
-    },
-    "bonuses": {
-      "name": "bonuses",
-      "columns": {
-        "bonus_id": {
-          "name": "bonus_id",
-          "type": "int",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": true
-        },
-        "staff_id": {
-          "name": "staff_id",
+        "customer_id": {
+          "name": "customer_id",
           "type": "int",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
-        "description": {
-          "name": "description",
-          "type": "varchar(255)",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "amount": {
-          "name": "amount",
-          "type": "decimal(10,2)",
+        "contact_type": {
+          "name": "contact_type",
+          "type": "varchar(50)",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
-        "bonus_date": {
-          "name": "bonus_date",
-          "type": "date",
+        "contact_detail": {
+          "name": "contact_detail",
+          "type": "varchar(255)",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
@@ -464,8 +566,7 @@
           "type": "int",
           "primaryKey": false,
           "notNull": false,
-          "autoincrement": false,
-          "default": 0
+          "autoincrement": false
         },
         "deleted_at": {
           "name": "deleted_at",
@@ -484,12 +585,12 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "bonuses_staff_id_staff_id_fk": {
-          "name": "bonuses_staff_id_staff_id_fk",
-          "tableFrom": "bonuses",
-          "tableTo": "staff",
+        "customerContacts_customer_id_customers_id_fk": {
+          "name": "customerContacts_customer_id_customers_id_fk",
+          "tableFrom": "customerContacts",
+          "tableTo": "customers",
           "columnsFrom": [
-            "staff_id"
+            "customer_id"
           ],
           "columnsTo": [
             "id"
@@ -497,9 +598,9 @@
           "onDelete": "no action",
           "onUpdate": "no action"
         },
-        "bonuses_created_by_user_id_fk": {
-          "name": "bonuses_created_by_user_id_fk",
-          "tableFrom": "bonuses",
+        "customerContacts_created_by_user_id_fk": {
+          "name": "customerContacts_created_by_user_id_fk",
+          "tableFrom": "customerContacts",
           "tableTo": "user",
           "columnsFrom": [
             "created_by"
@@ -510,9 +611,9 @@
           "onDelete": "no action",
           "onUpdate": "no action"
         },
-        "bonuses_updated_by_user_id_fk": {
-          "name": "bonuses_updated_by_user_id_fk",
-          "tableFrom": "bonuses",
+        "customerContacts_updated_by_user_id_fk": {
+          "name": "customerContacts_updated_by_user_id_fk",
+          "tableFrom": "customerContacts",
           "tableTo": "user",
           "columnsFrom": [
             "updated_by"
@@ -523,10 +624,10 @@
           "onDelete": "no action",
           "onUpdate": "no action"
         },
-        "bonuses_branch_id_branch_id_fk": {
-          "name": "bonuses_branch_id_branch_id_fk",
-          "tableFrom": "bonuses",
-          "tableTo": "branch",
+        "customerContacts_branch_id_branches_id_fk": {
+          "name": "customerContacts_branch_id_branches_id_fk",
+          "tableFrom": "customerContacts",
+          "tableTo": "branches",
           "columnsFrom": [
             "branch_id"
           ],
@@ -536,9 +637,9 @@
           "onDelete": "no action",
           "onUpdate": "no action"
         },
-        "bonuses_deleted_by_user_id_fk": {
-          "name": "bonuses_deleted_by_user_id_fk",
-          "tableFrom": "bonuses",
+        "customerContacts_deleted_by_user_id_fk": {
+          "name": "customerContacts_deleted_by_user_id_fk",
+          "tableFrom": "customerContacts",
           "tableTo": "user",
           "columnsFrom": [
             "deleted_by"
@@ -551,123 +652,13 @@
         }
       },
       "compositePrimaryKeys": {
-        "bonuses_bonus_id": {
-          "name": "bonuses_bonus_id",
-          "columns": [
-            "bonus_id"
-          ]
-        }
-      },
-      "uniqueConstraints": {},
-      "checkConstraint": {}
-    },
-    "branch": {
-      "name": "branch",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "int",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": true
-        },
-        "name": {
-          "name": "name",
-          "type": "varchar(32)",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "location": {
-          "name": "location",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {},
-      "compositePrimaryKeys": {
-        "branch_id": {
-          "name": "branch_id",
+        "customerContacts_id": {
+          "name": "customerContacts_id",
           "columns": [
             "id"
           ]
         }
       },
-      "uniqueConstraints": {
-        "branch_name_unique": {
-          "name": "branch_name_unique",
-          "columns": [
-            "name"
-          ]
-        }
-      },
-      "checkConstraint": {}
-    },
-    "commissions": {
-      "name": "commissions",
-      "columns": {
-        "sale_item_id": {
-          "name": "sale_item_id",
-          "type": "int",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "staff_id": {
-          "name": "staff_id",
-          "type": "int",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "amount": {
-          "name": "amount",
-          "type": "decimal(10,2)",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "commission_date": {
-          "name": "commission_date",
-          "type": "date",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "commissions_sale_item_id_sale_items_id_fk": {
-          "name": "commissions_sale_item_id_sale_items_id_fk",
-          "tableFrom": "commissions",
-          "tableTo": "sale_items",
-          "columnsFrom": [
-            "sale_item_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        },
-        "commissions_staff_id_staff_id_fk": {
-          "name": "commissions_staff_id_staff_id_fk",
-          "tableFrom": "commissions",
-          "tableTo": "staff",
-          "columnsFrom": [
-            "staff_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "checkConstraint": {}
     },
@@ -688,43 +679,30 @@
           "notNull": true,
           "autoincrement": false
         },
-        "gender": {
-          "name": "gender",
-          "type": "enum('male','female')",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
         "last_name": {
           "name": "last_name",
           "type": "varchar(255)",
           "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "email": {
-          "name": "email",
-          "type": "varchar(255)",
-          "primaryKey": false,
-          "notNull": true,
+          "notNull": false,
           "autoincrement": false
         },
         "phone": {
           "name": "phone",
           "type": "varchar(50)",
           "primaryKey": false,
-          "notNull": false,
+          "notNull": true,
           "autoincrement": false
+        },
+        "gender": {
+          "name": "gender",
+          "type": "enum('male','female')",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "default": "'female'"
         },
         "address": {
           "name": "address",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "notes": {
-          "name": "notes",
           "type": "text",
           "primaryKey": false,
           "notNull": false,
@@ -773,8 +751,7 @@
           "type": "int",
           "primaryKey": false,
           "notNull": false,
-          "autoincrement": false,
-          "default": 0
+          "autoincrement": false
         },
         "deleted_at": {
           "name": "deleted_at",
@@ -791,7 +768,29 @@
           "autoincrement": false
         }
       },
-      "indexes": {},
+      "indexes": {
+        "first_name_idx": {
+          "name": "first_name_idx",
+          "columns": [
+            "first_name"
+          ],
+          "isUnique": false
+        },
+        "last_name_idx": {
+          "name": "last_name_idx",
+          "columns": [
+            "last_name"
+          ],
+          "isUnique": false
+        },
+        "phone_idx": {
+          "name": "phone_idx",
+          "columns": [
+            "phone"
+          ],
+          "isUnique": true
+        }
+      },
       "foreignKeys": {
         "customers_created_by_user_id_fk": {
           "name": "customers_created_by_user_id_fk",
@@ -819,10 +818,10 @@
           "onDelete": "no action",
           "onUpdate": "no action"
         },
-        "customers_branch_id_branch_id_fk": {
-          "name": "customers_branch_id_branch_id_fk",
+        "customers_branch_id_branches_id_fk": {
+          "name": "customers_branch_id_branches_id_fk",
           "tableFrom": "customers",
-          "tableTo": "branch",
+          "tableTo": "branches",
           "columnsFrom": [
             "branch_id"
           ],
@@ -855,17 +854,17 @@
         }
       },
       "uniqueConstraints": {
-        "customers_email_unique": {
-          "name": "customers_email_unique",
+        "customers_phone_unique": {
+          "name": "customers_phone_unique",
           "columns": [
-            "email"
+            "phone"
           ]
         }
       },
       "checkConstraint": {}
     },
-    "deductions": {
-      "name": "deductions",
+    "discounts": {
+      "name": "discounts",
       "columns": {
         "id": {
           "name": "id",
@@ -874,39 +873,25 @@
           "notNull": true,
           "autoincrement": true
         },
-        "staff_id": {
-          "name": "staff_id",
-          "type": "int",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "payroll_run_id": {
-          "name": "payroll_run_id",
-          "type": "int",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "type": {
-          "name": "type",
-          "type": "varchar(100)",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
         "amount": {
           "name": "amount",
           "type": "decimal(10,2)",
           "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(50)",
+          "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
-        "deduction_date": {
-          "name": "deduction_date",
-          "type": "date",
+        "description": {
+          "name": "description",
+          "type": "text",
           "primaryKey": false,
-          "notNull": true,
+          "notNull": false,
           "autoincrement": false
         },
         "is_active": {
@@ -952,8 +937,7 @@
           "type": "int",
           "primaryKey": false,
           "notNull": false,
-          "autoincrement": false,
-          "default": 0
+          "autoincrement": false
         },
         "deleted_at": {
           "name": "deleted_at",
@@ -972,35 +956,9 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "deductions_staff_id_staff_id_fk": {
-          "name": "deductions_staff_id_staff_id_fk",
-          "tableFrom": "deductions",
-          "tableTo": "staff",
-          "columnsFrom": [
-            "staff_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        },
-        "deductions_payroll_run_id_payroll_runs_id_fk": {
-          "name": "deductions_payroll_run_id_payroll_runs_id_fk",
-          "tableFrom": "deductions",
-          "tableTo": "payroll_runs",
-          "columnsFrom": [
-            "payroll_run_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        },
-        "deductions_created_by_user_id_fk": {
-          "name": "deductions_created_by_user_id_fk",
-          "tableFrom": "deductions",
+        "discounts_created_by_user_id_fk": {
+          "name": "discounts_created_by_user_id_fk",
+          "tableFrom": "discounts",
           "tableTo": "user",
           "columnsFrom": [
             "created_by"
@@ -1011,9 +969,9 @@
           "onDelete": "no action",
           "onUpdate": "no action"
         },
-        "deductions_updated_by_user_id_fk": {
-          "name": "deductions_updated_by_user_id_fk",
-          "tableFrom": "deductions",
+        "discounts_updated_by_user_id_fk": {
+          "name": "discounts_updated_by_user_id_fk",
+          "tableFrom": "discounts",
           "tableTo": "user",
           "columnsFrom": [
             "updated_by"
@@ -1024,10 +982,10 @@
           "onDelete": "no action",
           "onUpdate": "no action"
         },
-        "deductions_branch_id_branch_id_fk": {
-          "name": "deductions_branch_id_branch_id_fk",
-          "tableFrom": "deductions",
-          "tableTo": "branch",
+        "discounts_branch_id_branches_id_fk": {
+          "name": "discounts_branch_id_branches_id_fk",
+          "tableFrom": "discounts",
+          "tableTo": "branches",
           "columnsFrom": [
             "branch_id"
           ],
@@ -1037,9 +995,9 @@
           "onDelete": "no action",
           "onUpdate": "no action"
         },
-        "deductions_deleted_by_user_id_fk": {
-          "name": "deductions_deleted_by_user_id_fk",
-          "tableFrom": "deductions",
+        "discounts_deleted_by_user_id_fk": {
+          "name": "discounts_deleted_by_user_id_fk",
+          "tableFrom": "discounts",
           "tableTo": "user",
           "columnsFrom": [
             "deleted_by"
@@ -1052,14 +1010,21 @@
         }
       },
       "compositePrimaryKeys": {
-        "deductions_id": {
-          "name": "deductions_id",
+        "discounts_id": {
+          "name": "discounts_id",
           "columns": [
             "id"
           ]
         }
       },
-      "uniqueConstraints": {},
+      "uniqueConstraints": {
+        "discounts_name_unique": {
+          "name": "discounts_name_unique",
+          "columns": [
+            "name"
+          ]
+        }
+      },
       "checkConstraint": {}
     },
     "expenses": {
@@ -1079,9 +1044,9 @@
           "notNull": true,
           "autoincrement": false
         },
-        "category": {
-          "name": "category",
-          "type": "varchar(100)",
+        "type": {
+          "name": "type",
+          "type": "int",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
@@ -1093,9 +1058,16 @@
           "notNull": false,
           "autoincrement": false
         },
-        "amount": {
-          "name": "amount",
+        "total": {
+          "name": "total",
           "type": "decimal(10,2)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "transaction_id": {
+          "name": "transaction_id",
+          "type": "int",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
@@ -1143,8 +1115,7 @@
           "type": "int",
           "primaryKey": false,
           "notNull": false,
-          "autoincrement": false,
-          "default": 0
+          "autoincrement": false
         },
         "deleted_at": {
           "name": "deleted_at",
@@ -1163,6 +1134,32 @@
       },
       "indexes": {},
       "foreignKeys": {
+        "expenses_type_expenses_type_id_fk": {
+          "name": "expenses_type_expenses_type_id_fk",
+          "tableFrom": "expenses",
+          "tableTo": "expenses_type",
+          "columnsFrom": [
+            "type"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "expenses_transaction_id_transactions_id_fk": {
+          "name": "expenses_transaction_id_transactions_id_fk",
+          "tableFrom": "expenses",
+          "tableTo": "transactions",
+          "columnsFrom": [
+            "transaction_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
         "expenses_created_by_user_id_fk": {
           "name": "expenses_created_by_user_id_fk",
           "tableFrom": "expenses",
@@ -1189,10 +1186,10 @@
           "onDelete": "no action",
           "onUpdate": "no action"
         },
-        "expenses_branch_id_branch_id_fk": {
-          "name": "expenses_branch_id_branch_id_fk",
+        "expenses_branch_id_branches_id_fk": {
+          "name": "expenses_branch_id_branches_id_fk",
           "tableFrom": "expenses",
-          "tableTo": "branch",
+          "tableTo": "branches",
           "columnsFrom": [
             "branch_id"
           ],
@@ -1227,11 +1224,101 @@
       "uniqueConstraints": {},
       "checkConstraint": {}
     },
+    "expenses_type": {
+      "name": "expenses_type",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {
+        "expenses_type_id": {
+          "name": "expenses_type_id",
+          "columns": [
+            "id"
+          ]
+        }
+      },
+      "uniqueConstraints": {
+        "expenses_type_name_unique": {
+          "name": "expenses_type_name_unique",
+          "columns": [
+            "name"
+          ]
+        }
+      },
+      "checkConstraint": {}
+    },
+    "payment_methods": {
+      "name": "payment_methods",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {
+        "payment_methods_id": {
+          "name": "payment_methods_id",
+          "columns": [
+            "id"
+          ]
+        }
+      },
+      "uniqueConstraints": {
+        "payment_methods_name_unique": {
+          "name": "payment_methods_name_unique",
+          "columns": [
+            "name"
+          ]
+        }
+      },
+      "checkConstraint": {}
+    },
     "payroll_entries": {
       "name": "payroll_entries",
       "columns": {
-        "payroll_run_id": {
-          "name": "payroll_run_id",
+        "id": {
+          "name": "id",
           "type": "int",
           "primaryKey": false,
           "notNull": false,
@@ -1242,6 +1329,20 @@
           "type": "int",
           "primaryKey": false,
           "notNull": false,
+          "autoincrement": false
+        },
+        "month": {
+          "name": "month",
+          "type": "enum('January','February','March','April','May','June','July','August','September','October','November','December')",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "year": {
+          "name": "year",
+          "type": "year",
+          "primaryKey": false,
+          "notNull": true,
           "autoincrement": false
         },
         "net_amount": {
@@ -1257,16 +1358,89 @@
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
+        },
+        "payment_method_id": {
+          "name": "payment_method_id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "reciept_link": {
+          "name": "reciept_link",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "is_active": {
+          "name": "is_active",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": true
+        },
+        "created_by": {
+          "name": "created_by",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "updated_by": {
+          "name": "updated_by",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(now())"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "CURRENT_TIMESTAMP(3) on update CURRENT_TIMESTAMP(3)"
+        },
+        "branch_id": {
+          "name": "branch_id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "deleted_at": {
+          "name": "deleted_at",
+          "type": "datetime",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "deleted_by": {
+          "name": "deleted_by",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
         }
       },
       "indexes": {},
       "foreignKeys": {
-        "payroll_entries_payroll_run_id_payroll_runs_id_fk": {
-          "name": "payroll_entries_payroll_run_id_payroll_runs_id_fk",
+        "payroll_entries_id_payroll_runs_id_fk": {
+          "name": "payroll_entries_id_payroll_runs_id_fk",
           "tableFrom": "payroll_entries",
           "tableTo": "payroll_runs",
           "columnsFrom": [
-            "payroll_run_id"
+            "id"
           ],
           "columnsTo": [
             "id"
@@ -1286,10 +1460,84 @@
           ],
           "onDelete": "no action",
           "onUpdate": "no action"
+        },
+        "payroll_entries_payment_method_id_payment_methods_id_fk": {
+          "name": "payroll_entries_payment_method_id_payment_methods_id_fk",
+          "tableFrom": "payroll_entries",
+          "tableTo": "payment_methods",
+          "columnsFrom": [
+            "payment_method_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "payroll_entries_created_by_user_id_fk": {
+          "name": "payroll_entries_created_by_user_id_fk",
+          "tableFrom": "payroll_entries",
+          "tableTo": "user",
+          "columnsFrom": [
+            "created_by"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "payroll_entries_updated_by_user_id_fk": {
+          "name": "payroll_entries_updated_by_user_id_fk",
+          "tableFrom": "payroll_entries",
+          "tableTo": "user",
+          "columnsFrom": [
+            "updated_by"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "payroll_entries_branch_id_branches_id_fk": {
+          "name": "payroll_entries_branch_id_branches_id_fk",
+          "tableFrom": "payroll_entries",
+          "tableTo": "branches",
+          "columnsFrom": [
+            "branch_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "payroll_entries_deleted_by_user_id_fk": {
+          "name": "payroll_entries_deleted_by_user_id_fk",
+          "tableFrom": "payroll_entries",
+          "tableTo": "user",
+          "columnsFrom": [
+            "deleted_by"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
+      "uniqueConstraints": {
+        "payroll_entries_staff_id_month_year_unique": {
+          "name": "payroll_entries_staff_id_month_year_unique",
+          "columns": [
+            "staff_id",
+            "month",
+            "year"
+          ]
+        }
+      },
       "checkConstraint": {}
     },
     "payroll_runs": {
@@ -1319,6 +1567,20 @@
         "payment_date": {
           "name": "payment_date",
           "type": "date",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "month": {
+          "name": "month",
+          "type": "enum('January','February','March','April','May','June','July','August','September','October','November','December')",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "year": {
+          "name": "year",
+          "type": "year",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
@@ -1395,8 +1657,7 @@
           "type": "int",
           "primaryKey": false,
           "notNull": false,
-          "autoincrement": false,
-          "default": 0
+          "autoincrement": false
         },
         "deleted_at": {
           "name": "deleted_at",
@@ -1441,10 +1702,10 @@
           "onDelete": "no action",
           "onUpdate": "no action"
         },
-        "payroll_runs_branch_id_branch_id_fk": {
-          "name": "payroll_runs_branch_id_branch_id_fk",
+        "payroll_runs_branch_id_branches_id_fk": {
+          "name": "payroll_runs_branch_id_branches_id_fk",
           "tableFrom": "payroll_runs",
-          "tableTo": "branch",
+          "tableTo": "branches",
           "columnsFrom": [
             "branch_id"
           ],
@@ -1476,11 +1737,19 @@
           ]
         }
       },
-      "uniqueConstraints": {},
+      "uniqueConstraints": {
+        "payroll_runs_month_year_unique": {
+          "name": "payroll_runs_month_year_unique",
+          "columns": [
+            "month",
+            "year"
+          ]
+        }
+      },
       "checkConstraint": {}
     },
-    "permissions": {
-      "name": "permissions",
+    "transaction_booking_fees": {
+      "name": "transaction_booking_fees",
       "columns": {
         "id": {
           "name": "id",
@@ -1489,43 +1758,181 @@
           "notNull": true,
           "autoincrement": true
         },
-        "name": {
-          "name": "name",
-          "type": "varchar(100)",
+        "transaction_id": {
+          "name": "transaction_id",
+          "type": "int",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
-        "description": {
-          "name": "description",
-          "type": "text",
+        "appointment_id": {
+          "name": "appointment_id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "fee": {
+          "name": "fee",
+          "type": "decimal(10,2)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "is_active": {
+          "name": "is_active",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": true
+        },
+        "created_by": {
+          "name": "created_by",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "updated_by": {
+          "name": "updated_by",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(now())"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "CURRENT_TIMESTAMP(3) on update CURRENT_TIMESTAMP(3)"
+        },
+        "branch_id": {
+          "name": "branch_id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "deleted_at": {
+          "name": "deleted_at",
+          "type": "datetime",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "deleted_by": {
+          "name": "deleted_by",
+          "type": "varchar(255)",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
         }
       },
       "indexes": {},
-      "foreignKeys": {},
+      "foreignKeys": {
+        "transaction_booking_fees_transaction_id_transactions_id_fk": {
+          "name": "transaction_booking_fees_transaction_id_transactions_id_fk",
+          "tableFrom": "transaction_booking_fees",
+          "tableTo": "transactions",
+          "columnsFrom": [
+            "transaction_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "transaction_booking_fees_appointment_id_appointments_id_fk": {
+          "name": "transaction_booking_fees_appointment_id_appointments_id_fk",
+          "tableFrom": "transaction_booking_fees",
+          "tableTo": "appointments",
+          "columnsFrom": [
+            "appointment_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "transaction_booking_fees_created_by_user_id_fk": {
+          "name": "transaction_booking_fees_created_by_user_id_fk",
+          "tableFrom": "transaction_booking_fees",
+          "tableTo": "user",
+          "columnsFrom": [
+            "created_by"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "transaction_booking_fees_updated_by_user_id_fk": {
+          "name": "transaction_booking_fees_updated_by_user_id_fk",
+          "tableFrom": "transaction_booking_fees",
+          "tableTo": "user",
+          "columnsFrom": [
+            "updated_by"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "transaction_booking_fees_branch_id_branches_id_fk": {
+          "name": "transaction_booking_fees_branch_id_branches_id_fk",
+          "tableFrom": "transaction_booking_fees",
+          "tableTo": "branches",
+          "columnsFrom": [
+            "branch_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "transaction_booking_fees_deleted_by_user_id_fk": {
+          "name": "transaction_booking_fees_deleted_by_user_id_fk",
+          "tableFrom": "transaction_booking_fees",
+          "tableTo": "user",
+          "columnsFrom": [
+            "deleted_by"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
       "compositePrimaryKeys": {
-        "permissions_id": {
-          "name": "permissions_id",
+        "transaction_booking_fees_id": {
+          "name": "transaction_booking_fees_id",
           "columns": [
             "id"
           ]
         }
       },
-      "uniqueConstraints": {
-        "permissions_name_unique": {
-          "name": "permissions_name_unique",
-          "columns": [
-            "name"
-          ]
-        }
-      },
+      "uniqueConstraints": {},
       "checkConstraint": {}
     },
-    "positions": {
-      "name": "positions",
+    "transaction_products": {
+      "name": "transaction_products",
       "columns": {
         "id": {
           "name": "id",
@@ -1534,26 +1941,895 @@
           "notNull": true,
           "autoincrement": true
         },
-        "name": {
-          "name": "name",
-          "type": "varchar(50)",
+        "transaction_id": {
+          "name": "transaction_id",
+          "type": "int",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
-        "description": {
-          "name": "description",
-          "type": "text",
+        "staff_id": {
+          "name": "staff_id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "tip": {
+          "name": "tip",
+          "type": "decimal(10,2)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'0'"
+        },
+        "product_id": {
+          "name": "product_id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "quantity": {
+          "name": "quantity",
+          "type": "decimal(10,2)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'1'"
+        },
+        "unit_price": {
+          "name": "unit_price",
+          "type": "decimal(10,2)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "discount": {
+          "name": "discount",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "tax": {
+          "name": "tax",
+          "type": "decimal(10,2)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "total": {
+          "name": "total",
+          "type": "decimal(10,2)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "is_active": {
+          "name": "is_active",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": true
+        },
+        "created_by": {
+          "name": "created_by",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "updated_by": {
+          "name": "updated_by",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(now())"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "CURRENT_TIMESTAMP(3) on update CURRENT_TIMESTAMP(3)"
+        },
+        "branch_id": {
+          "name": "branch_id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "deleted_at": {
+          "name": "deleted_at",
+          "type": "datetime",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "deleted_by": {
+          "name": "deleted_by",
+          "type": "varchar(255)",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
         }
       },
       "indexes": {},
-      "foreignKeys": {},
+      "foreignKeys": {
+        "transaction_products_transaction_id_transactions_id_fk": {
+          "name": "transaction_products_transaction_id_transactions_id_fk",
+          "tableFrom": "transaction_products",
+          "tableTo": "transactions",
+          "columnsFrom": [
+            "transaction_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "transaction_products_staff_id_staff_id_fk": {
+          "name": "transaction_products_staff_id_staff_id_fk",
+          "tableFrom": "transaction_products",
+          "tableTo": "staff",
+          "columnsFrom": [
+            "staff_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "transaction_products_product_id_products_id_fk": {
+          "name": "transaction_products_product_id_products_id_fk",
+          "tableFrom": "transaction_products",
+          "tableTo": "products",
+          "columnsFrom": [
+            "product_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "transaction_products_discount_discounts_id_fk": {
+          "name": "transaction_products_discount_discounts_id_fk",
+          "tableFrom": "transaction_products",
+          "tableTo": "discounts",
+          "columnsFrom": [
+            "discount"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "transaction_products_created_by_user_id_fk": {
+          "name": "transaction_products_created_by_user_id_fk",
+          "tableFrom": "transaction_products",
+          "tableTo": "user",
+          "columnsFrom": [
+            "created_by"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "transaction_products_updated_by_user_id_fk": {
+          "name": "transaction_products_updated_by_user_id_fk",
+          "tableFrom": "transaction_products",
+          "tableTo": "user",
+          "columnsFrom": [
+            "updated_by"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "transaction_products_branch_id_branches_id_fk": {
+          "name": "transaction_products_branch_id_branches_id_fk",
+          "tableFrom": "transaction_products",
+          "tableTo": "branches",
+          "columnsFrom": [
+            "branch_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "transaction_products_deleted_by_user_id_fk": {
+          "name": "transaction_products_deleted_by_user_id_fk",
+          "tableFrom": "transaction_products",
+          "tableTo": "user",
+          "columnsFrom": [
+            "deleted_by"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
       "compositePrimaryKeys": {
-        "positions_id": {
-          "name": "positions_id",
+        "transaction_products_id": {
+          "name": "transaction_products_id",
+          "columns": [
+            "id"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "checkConstraint": {}
+    },
+    "transaction_services": {
+      "name": "transaction_services",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "customer_id": {
+          "name": "customer_id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "appointment_id": {
+          "name": "appointment_id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "staff_id": {
+          "name": "staff_id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "transaction_id": {
+          "name": "transaction_id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "service_id": {
+          "name": "service_id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "price": {
+          "name": "price",
+          "type": "decimal(10,2)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "tip": {
+          "name": "tip",
+          "type": "decimal(10,2)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'0'"
+        },
+        "discount": {
+          "name": "discount",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "tax": {
+          "name": "tax",
+          "type": "decimal(10,2)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "total": {
+          "name": "total",
+          "type": "decimal(10,2)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "is_active": {
+          "name": "is_active",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": true
+        },
+        "created_by": {
+          "name": "created_by",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "updated_by": {
+          "name": "updated_by",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(now())"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "CURRENT_TIMESTAMP(3) on update CURRENT_TIMESTAMP(3)"
+        },
+        "branch_id": {
+          "name": "branch_id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "deleted_at": {
+          "name": "deleted_at",
+          "type": "datetime",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "deleted_by": {
+          "name": "deleted_by",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "transaction_services_customer_id_customers_id_fk": {
+          "name": "transaction_services_customer_id_customers_id_fk",
+          "tableFrom": "transaction_services",
+          "tableTo": "customers",
+          "columnsFrom": [
+            "customer_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "transaction_services_appointment_id_appointments_id_fk": {
+          "name": "transaction_services_appointment_id_appointments_id_fk",
+          "tableFrom": "transaction_services",
+          "tableTo": "appointments",
+          "columnsFrom": [
+            "appointment_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "transaction_services_staff_id_staff_id_fk": {
+          "name": "transaction_services_staff_id_staff_id_fk",
+          "tableFrom": "transaction_services",
+          "tableTo": "staff",
+          "columnsFrom": [
+            "staff_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "transaction_services_transaction_id_transactions_id_fk": {
+          "name": "transaction_services_transaction_id_transactions_id_fk",
+          "tableFrom": "transaction_services",
+          "tableTo": "transactions",
+          "columnsFrom": [
+            "transaction_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "transaction_services_service_id_services_id_fk": {
+          "name": "transaction_services_service_id_services_id_fk",
+          "tableFrom": "transaction_services",
+          "tableTo": "services",
+          "columnsFrom": [
+            "service_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "transaction_services_discount_discounts_id_fk": {
+          "name": "transaction_services_discount_discounts_id_fk",
+          "tableFrom": "transaction_services",
+          "tableTo": "discounts",
+          "columnsFrom": [
+            "discount"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "transaction_services_created_by_user_id_fk": {
+          "name": "transaction_services_created_by_user_id_fk",
+          "tableFrom": "transaction_services",
+          "tableTo": "user",
+          "columnsFrom": [
+            "created_by"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "transaction_services_updated_by_user_id_fk": {
+          "name": "transaction_services_updated_by_user_id_fk",
+          "tableFrom": "transaction_services",
+          "tableTo": "user",
+          "columnsFrom": [
+            "updated_by"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "transaction_services_branch_id_branches_id_fk": {
+          "name": "transaction_services_branch_id_branches_id_fk",
+          "tableFrom": "transaction_services",
+          "tableTo": "branches",
+          "columnsFrom": [
+            "branch_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "transaction_services_deleted_by_user_id_fk": {
+          "name": "transaction_services_deleted_by_user_id_fk",
+          "tableFrom": "transaction_services",
+          "tableTo": "user",
+          "columnsFrom": [
+            "deleted_by"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "transaction_services_id": {
+          "name": "transaction_services_id",
+          "columns": [
+            "id"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "checkConstraint": {}
+    },
+    "transaction_supplies": {
+      "name": "transaction_supplies",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "transaction_id": {
+          "name": "transaction_id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "supply_id": {
+          "name": "supply_id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "quantity": {
+          "name": "quantity",
+          "type": "decimal(10,2)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'1'"
+        },
+        "unit_price": {
+          "name": "unit_price",
+          "type": "decimal(10,2)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "is_active": {
+          "name": "is_active",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": true
+        },
+        "created_by": {
+          "name": "created_by",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "updated_by": {
+          "name": "updated_by",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(now())"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "CURRENT_TIMESTAMP(3) on update CURRENT_TIMESTAMP(3)"
+        },
+        "branch_id": {
+          "name": "branch_id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "deleted_at": {
+          "name": "deleted_at",
+          "type": "datetime",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "deleted_by": {
+          "name": "deleted_by",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "transaction_supplies_transaction_id_transactions_id_fk": {
+          "name": "transaction_supplies_transaction_id_transactions_id_fk",
+          "tableFrom": "transaction_supplies",
+          "tableTo": "transactions",
+          "columnsFrom": [
+            "transaction_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "transaction_supplies_supply_id_supplies_id_fk": {
+          "name": "transaction_supplies_supply_id_supplies_id_fk",
+          "tableFrom": "transaction_supplies",
+          "tableTo": "supplies",
+          "columnsFrom": [
+            "supply_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "transaction_supplies_created_by_user_id_fk": {
+          "name": "transaction_supplies_created_by_user_id_fk",
+          "tableFrom": "transaction_supplies",
+          "tableTo": "user",
+          "columnsFrom": [
+            "created_by"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "transaction_supplies_updated_by_user_id_fk": {
+          "name": "transaction_supplies_updated_by_user_id_fk",
+          "tableFrom": "transaction_supplies",
+          "tableTo": "user",
+          "columnsFrom": [
+            "updated_by"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "transaction_supplies_branch_id_branches_id_fk": {
+          "name": "transaction_supplies_branch_id_branches_id_fk",
+          "tableFrom": "transaction_supplies",
+          "tableTo": "branches",
+          "columnsFrom": [
+            "branch_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "transaction_supplies_deleted_by_user_id_fk": {
+          "name": "transaction_supplies_deleted_by_user_id_fk",
+          "tableFrom": "transaction_supplies",
+          "tableTo": "user",
+          "columnsFrom": [
+            "deleted_by"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "transaction_supplies_id": {
+          "name": "transaction_supplies_id",
+          "columns": [
+            "id"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "checkConstraint": {}
+    },
+    "transactions": {
+      "name": "transactions",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "amount": {
+          "name": "amount",
+          "type": "decimal(10,2)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "payment_status": {
+          "name": "payment_status",
+          "type": "enum('pending','paid','refunded')",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "default": "'pending'"
+        },
+        "payment_method_id": {
+          "name": "payment_method_id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "reciept_link": {
+          "name": "reciept_link",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "is_active": {
+          "name": "is_active",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": true
+        },
+        "created_by": {
+          "name": "created_by",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "updated_by": {
+          "name": "updated_by",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(now())"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "CURRENT_TIMESTAMP(3) on update CURRENT_TIMESTAMP(3)"
+        },
+        "branch_id": {
+          "name": "branch_id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "deleted_at": {
+          "name": "deleted_at",
+          "type": "datetime",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "deleted_by": {
+          "name": "deleted_by",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "transactions_payment_method_id_payment_methods_id_fk": {
+          "name": "transactions_payment_method_id_payment_methods_id_fk",
+          "tableFrom": "transactions",
+          "tableTo": "payment_methods",
+          "columnsFrom": [
+            "payment_method_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "transactions_created_by_user_id_fk": {
+          "name": "transactions_created_by_user_id_fk",
+          "tableFrom": "transactions",
+          "tableTo": "user",
+          "columnsFrom": [
+            "created_by"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "transactions_updated_by_user_id_fk": {
+          "name": "transactions_updated_by_user_id_fk",
+          "tableFrom": "transactions",
+          "tableTo": "user",
+          "columnsFrom": [
+            "updated_by"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "transactions_branch_id_branches_id_fk": {
+          "name": "transactions_branch_id_branches_id_fk",
+          "tableFrom": "transactions",
+          "tableTo": "branches",
+          "columnsFrom": [
+            "branch_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "transactions_deleted_by_user_id_fk": {
+          "name": "transactions_deleted_by_user_id_fk",
+          "tableFrom": "transactions",
+          "tableTo": "user",
+          "columnsFrom": [
+            "deleted_by"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "transactions_id": {
+          "name": "transactions_id",
           "columns": [
             "id"
           ]
@@ -1586,13 +2862,6 @@
           "notNull": true,
           "autoincrement": false
         },
-        "reason": {
-          "name": "reason",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
         "notes": {
           "name": "notes",
           "type": "text",
@@ -1600,9 +2869,31 @@
           "notNull": false,
           "autoincrement": false
         },
-        "sale_id": {
-          "name": "sale_id",
+        "transaction_id": {
+          "name": "transaction_id",
           "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "is_active": {
+          "name": "is_active",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": true
+        },
+        "created_by": {
+          "name": "created_by",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "updated_by": {
+          "name": "updated_by",
+          "type": "varchar(255)",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
@@ -1615,11 +2906,33 @@
           "autoincrement": false,
           "default": "(now())"
         },
-        "created_by": {
-          "name": "created_by",
-          "type": "varchar(255)",
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
           "primaryKey": false,
           "notNull": true,
+          "autoincrement": false,
+          "default": "CURRENT_TIMESTAMP(3) on update CURRENT_TIMESTAMP(3)"
+        },
+        "branch_id": {
+          "name": "branch_id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "deleted_at": {
+          "name": "deleted_at",
+          "type": "datetime",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "deleted_by": {
+          "name": "deleted_by",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false,
           "autoincrement": false
         }
       },
@@ -1638,12 +2951,12 @@
           "onDelete": "no action",
           "onUpdate": "no action"
         },
-        "product_adjustments_sale_id_sales_id_fk": {
-          "name": "product_adjustments_sale_id_sales_id_fk",
+        "product_adjustments_transaction_id_transaction_products_id_fk": {
+          "name": "product_adjustments_transaction_id_transaction_products_id_fk",
           "tableFrom": "product_adjustments",
-          "tableTo": "sales",
+          "tableTo": "transaction_products",
           "columnsFrom": [
-            "sale_id"
+            "transaction_id"
           ],
           "columnsTo": [
             "id"
@@ -1657,6 +2970,45 @@
           "tableTo": "user",
           "columnsFrom": [
             "created_by"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "product_adjustments_updated_by_user_id_fk": {
+          "name": "product_adjustments_updated_by_user_id_fk",
+          "tableFrom": "product_adjustments",
+          "tableTo": "user",
+          "columnsFrom": [
+            "updated_by"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "product_adjustments_branch_id_branches_id_fk": {
+          "name": "product_adjustments_branch_id_branches_id_fk",
+          "tableFrom": "product_adjustments",
+          "tableTo": "branches",
+          "columnsFrom": [
+            "branch_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "product_adjustments_deleted_by_user_id_fk": {
+          "name": "product_adjustments_deleted_by_user_id_fk",
+          "tableFrom": "product_adjustments",
+          "tableTo": "user",
+          "columnsFrom": [
+            "deleted_by"
           ],
           "columnsTo": [
             "id"
@@ -1699,10 +3051,122 @@
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
+        },
+        "is_active": {
+          "name": "is_active",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": true
+        },
+        "created_by": {
+          "name": "created_by",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "updated_by": {
+          "name": "updated_by",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(now())"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "CURRENT_TIMESTAMP(3) on update CURRENT_TIMESTAMP(3)"
+        },
+        "branch_id": {
+          "name": "branch_id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "deleted_at": {
+          "name": "deleted_at",
+          "type": "datetime",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "deleted_by": {
+          "name": "deleted_by",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
         }
       },
       "indexes": {},
-      "foreignKeys": {},
+      "foreignKeys": {
+        "product_categories_created_by_user_id_fk": {
+          "name": "product_categories_created_by_user_id_fk",
+          "tableFrom": "product_categories",
+          "tableTo": "user",
+          "columnsFrom": [
+            "created_by"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "product_categories_updated_by_user_id_fk": {
+          "name": "product_categories_updated_by_user_id_fk",
+          "tableFrom": "product_categories",
+          "tableTo": "user",
+          "columnsFrom": [
+            "updated_by"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "product_categories_branch_id_branches_id_fk": {
+          "name": "product_categories_branch_id_branches_id_fk",
+          "tableFrom": "product_categories",
+          "tableTo": "branches",
+          "columnsFrom": [
+            "branch_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "product_categories_deleted_by_user_id_fk": {
+          "name": "product_categories_deleted_by_user_id_fk",
+          "tableFrom": "product_categories",
+          "tableTo": "user",
+          "columnsFrom": [
+            "deleted_by"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
       "compositePrimaryKeys": {
         "product_categories_id": {
           "name": "product_categories_id",
@@ -1711,7 +3175,14 @@
           ]
         }
       },
-      "uniqueConstraints": {},
+      "uniqueConstraints": {
+        "product_categories_name_unique": {
+          "name": "product_categories_name_unique",
+          "columns": [
+            "name"
+          ]
+        }
+      },
       "checkConstraint": {}
     },
     "products": {
@@ -1831,8 +3302,7 @@
           "type": "int",
           "primaryKey": false,
           "notNull": false,
-          "autoincrement": false,
-          "default": 0
+          "autoincrement": false
         },
         "deleted_at": {
           "name": "deleted_at",
@@ -1849,7 +3319,15 @@
           "autoincrement": false
         }
       },
-      "indexes": {},
+      "indexes": {
+        "product_name_idx": {
+          "name": "product_name_idx",
+          "columns": [
+            "product_name"
+          ],
+          "isUnique": true
+        }
+      },
       "foreignKeys": {
         "products_category_id_product_categories_id_fk": {
           "name": "products_category_id_product_categories_id_fk",
@@ -1890,10 +3368,10 @@
           "onDelete": "no action",
           "onUpdate": "no action"
         },
-        "products_branch_id_branch_id_fk": {
-          "name": "products_branch_id_branch_id_fk",
+        "products_branch_id_branches_id_fk": {
+          "name": "products_branch_id_branches_id_fk",
           "tableFrom": "products",
-          "tableTo": "branch",
+          "tableTo": "branches",
           "columnsFrom": [
             "branch_id"
           ],
@@ -1926,6 +3404,598 @@
         }
       },
       "uniqueConstraints": {},
+      "checkConstraint": {}
+    },
+    "supplies": {
+      "name": "supplies",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "item_name": {
+          "name": "item_name",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "quantity": {
+          "name": "quantity",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 0
+        },
+        "unit_of_measure": {
+          "name": "unit_of_measure",
+          "type": "varchar(20)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "cost_per_unit": {
+          "name": "cost_per_unit",
+          "type": "decimal(10,2)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "supplier": {
+          "name": "supplier",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "reorder_level": {
+          "name": "reorder_level",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "is_active": {
+          "name": "is_active",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": true
+        },
+        "created_by": {
+          "name": "created_by",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "updated_by": {
+          "name": "updated_by",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(now())"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "CURRENT_TIMESTAMP(3) on update CURRENT_TIMESTAMP(3)"
+        },
+        "branch_id": {
+          "name": "branch_id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "deleted_at": {
+          "name": "deleted_at",
+          "type": "datetime",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "deleted_by": {
+          "name": "deleted_by",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "supplies_created_by_user_id_fk": {
+          "name": "supplies_created_by_user_id_fk",
+          "tableFrom": "supplies",
+          "tableTo": "user",
+          "columnsFrom": [
+            "created_by"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "supplies_updated_by_user_id_fk": {
+          "name": "supplies_updated_by_user_id_fk",
+          "tableFrom": "supplies",
+          "tableTo": "user",
+          "columnsFrom": [
+            "updated_by"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "supplies_branch_id_branches_id_fk": {
+          "name": "supplies_branch_id_branches_id_fk",
+          "tableFrom": "supplies",
+          "tableTo": "branches",
+          "columnsFrom": [
+            "branch_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "supplies_deleted_by_user_id_fk": {
+          "name": "supplies_deleted_by_user_id_fk",
+          "tableFrom": "supplies",
+          "tableTo": "user",
+          "columnsFrom": [
+            "deleted_by"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "supplies_id": {
+          "name": "supplies_id",
+          "columns": [
+            "id"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "checkConstraint": {}
+    },
+    "supplies_adjustments": {
+      "name": "supplies_adjustments",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "product_id": {
+          "name": "product_id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "adjustment": {
+          "name": "adjustment",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "reason": {
+          "name": "reason",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "notes": {
+          "name": "notes",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "transaction_id": {
+          "name": "transaction_id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "is_active": {
+          "name": "is_active",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": true
+        },
+        "created_by": {
+          "name": "created_by",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "updated_by": {
+          "name": "updated_by",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(now())"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "CURRENT_TIMESTAMP(3) on update CURRENT_TIMESTAMP(3)"
+        },
+        "branch_id": {
+          "name": "branch_id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "deleted_at": {
+          "name": "deleted_at",
+          "type": "datetime",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "deleted_by": {
+          "name": "deleted_by",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "supplies_adjustments_product_id_supplies_id_fk": {
+          "name": "supplies_adjustments_product_id_supplies_id_fk",
+          "tableFrom": "supplies_adjustments",
+          "tableTo": "supplies",
+          "columnsFrom": [
+            "product_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "supplies_adjustments_transaction_id_transaction_supplies_id_fk": {
+          "name": "supplies_adjustments_transaction_id_transaction_supplies_id_fk",
+          "tableFrom": "supplies_adjustments",
+          "tableTo": "transaction_supplies",
+          "columnsFrom": [
+            "transaction_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "supplies_adjustments_created_by_user_id_fk": {
+          "name": "supplies_adjustments_created_by_user_id_fk",
+          "tableFrom": "supplies_adjustments",
+          "tableTo": "user",
+          "columnsFrom": [
+            "created_by"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "supplies_adjustments_updated_by_user_id_fk": {
+          "name": "supplies_adjustments_updated_by_user_id_fk",
+          "tableFrom": "supplies_adjustments",
+          "tableTo": "user",
+          "columnsFrom": [
+            "updated_by"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "supplies_adjustments_branch_id_branches_id_fk": {
+          "name": "supplies_adjustments_branch_id_branches_id_fk",
+          "tableFrom": "supplies_adjustments",
+          "tableTo": "branches",
+          "columnsFrom": [
+            "branch_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "supplies_adjustments_deleted_by_user_id_fk": {
+          "name": "supplies_adjustments_deleted_by_user_id_fk",
+          "tableFrom": "supplies_adjustments",
+          "tableTo": "user",
+          "columnsFrom": [
+            "deleted_by"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "supplies_adjustments_id": {
+          "name": "supplies_adjustments_id",
+          "columns": [
+            "id"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "checkConstraint": {}
+    },
+    "audit_log": {
+      "name": "audit_log",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "report_date": {
+          "name": "report_date",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "booked_appointments": {
+          "name": "booked_appointments",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "default": 0
+        },
+        "cancelled_appointments": {
+          "name": "cancelled_appointments",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "default": 0
+        },
+        "products_sold": {
+          "name": "products_sold",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 0
+        },
+        "services_rendered": {
+          "name": "services_rendered",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "daily_expenses": {
+          "name": "daily_expenses",
+          "type": "decimal(10,2)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "daily_income": {
+          "name": "daily_income",
+          "type": "decimal(10,2)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "transactions": {
+          "name": "transactions",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "staff_paid": {
+          "name": "staff_paid",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "total_staff_paid": {
+          "name": "total_staff_paid",
+          "type": "decimal(10,2)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "staff_hired": {
+          "name": "staff_hired",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "staff_fired": {
+          "name": "staff_fired",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {
+        "audit_log_id": {
+          "name": "audit_log_id",
+          "columns": [
+            "id"
+          ]
+        }
+      },
+      "uniqueConstraints": {
+        "audit_log_report_date_unique": {
+          "name": "audit_log_report_date_unique",
+          "columns": [
+            "report_date"
+          ]
+        }
+      },
+      "checkConstraint": {}
+    },
+    "positions": {
+      "name": "positions",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {
+        "positions_id": {
+          "name": "positions_id",
+          "columns": [
+            "id"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "checkConstraint": {}
+    },
+    "permissions": {
+      "name": "permissions",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        }
+      },
+      "indexes": {
+        "name_idx": {
+          "name": "name_idx",
+          "columns": [
+            "name"
+          ],
+          "isUnique": true
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {
+        "permissions_id": {
+          "name": "permissions_id",
+          "columns": [
+            "id"
+          ]
+        }
+      },
+      "uniqueConstraints": {
+        "permissions_name_unique": {
+          "name": "permissions_name_unique",
+          "columns": [
+            "name"
+          ]
+        }
+      },
       "checkConstraint": {}
     },
     "role_permissions": {
@@ -1995,8 +4065,7 @@
           "type": "int",
           "primaryKey": false,
           "notNull": false,
-          "autoincrement": false,
-          "default": 0
+          "autoincrement": false
         },
         "deleted_at": {
           "name": "deleted_at",
@@ -2067,10 +4136,10 @@
           "onDelete": "no action",
           "onUpdate": "no action"
         },
-        "role_permissions_branch_id_branch_id_fk": {
-          "name": "role_permissions_branch_id_branch_id_fk",
+        "role_permissions_branch_id_branches_id_fk": {
+          "name": "role_permissions_branch_id_branches_id_fk",
           "tableFrom": "role_permissions",
-          "tableTo": "branch",
+          "tableTo": "branches",
           "columnsFrom": [
             "branch_id"
           ],
@@ -2105,8 +4174,8 @@
       "uniqueConstraints": {},
       "checkConstraint": {}
     },
-    "roles": {
-      "name": "roles",
+    "special_permissions": {
+      "name": "special_permissions",
       "columns": {
         "id": {
           "name": "id",
@@ -2115,261 +4184,16 @@
           "notNull": true,
           "autoincrement": true
         },
-        "name": {
-          "name": "name",
-          "type": "varchar(32)",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "description": {
-          "name": "description",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {},
-      "compositePrimaryKeys": {
-        "roles_id": {
-          "name": "roles_id",
-          "columns": [
-            "id"
-          ]
-        }
-      },
-      "uniqueConstraints": {
-        "roles_name_unique": {
-          "name": "roles_name_unique",
-          "columns": [
-            "name"
-          ]
-        }
-      },
-      "checkConstraint": {}
-    },
-    "salaries": {
-      "name": "salaries",
-      "columns": {
-        "salary_id": {
-          "name": "salary_id",
-          "type": "int",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": true
-        },
-        "staff_id": {
-          "name": "staff_id",
-          "type": "int",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "amount": {
-          "name": "amount",
-          "type": "decimal(10,2)",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "start_date": {
-          "name": "start_date",
-          "type": "date",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "end_date": {
-          "name": "end_date",
-          "type": "date",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "is_active": {
-          "name": "is_active",
-          "type": "boolean",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": true
-        },
-        "created_by": {
-          "name": "created_by",
+        "user_id": {
+          "name": "user_id",
           "type": "varchar(255)",
           "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "updated_by": {
-          "name": "updated_by",
-          "type": "varchar(255)",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": "(now())"
-        },
-        "updated_at": {
-          "name": "updated_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": "CURRENT_TIMESTAMP(3) on update CURRENT_TIMESTAMP(3)"
-        },
-        "branch_id": {
-          "name": "branch_id",
-          "type": "int",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false,
-          "default": 0
-        },
-        "deleted_at": {
-          "name": "deleted_at",
-          "type": "datetime",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "deleted_by": {
-          "name": "deleted_by",
-          "type": "varchar(255)",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "salaries_staff_id_staff_id_fk": {
-          "name": "salaries_staff_id_staff_id_fk",
-          "tableFrom": "salaries",
-          "tableTo": "staff",
-          "columnsFrom": [
-            "staff_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        },
-        "salaries_created_by_user_id_fk": {
-          "name": "salaries_created_by_user_id_fk",
-          "tableFrom": "salaries",
-          "tableTo": "user",
-          "columnsFrom": [
-            "created_by"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        },
-        "salaries_updated_by_user_id_fk": {
-          "name": "salaries_updated_by_user_id_fk",
-          "tableFrom": "salaries",
-          "tableTo": "user",
-          "columnsFrom": [
-            "updated_by"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        },
-        "salaries_branch_id_branch_id_fk": {
-          "name": "salaries_branch_id_branch_id_fk",
-          "tableFrom": "salaries",
-          "tableTo": "branch",
-          "columnsFrom": [
-            "branch_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        },
-        "salaries_deleted_by_user_id_fk": {
-          "name": "salaries_deleted_by_user_id_fk",
-          "tableFrom": "salaries",
-          "tableTo": "user",
-          "columnsFrom": [
-            "deleted_by"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {
-        "salaries_salary_id": {
-          "name": "salaries_salary_id",
-          "columns": [
-            "salary_id"
-          ]
-        }
-      },
-      "uniqueConstraints": {},
-      "checkConstraint": {}
-    },
-    "sale_items": {
-      "name": "sale_items",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "int",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": true
-        },
-        "sale_id": {
-          "name": "sale_id",
-          "type": "int",
-          "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
-        "service_id": {
-          "name": "service_id",
+        "permission_id": {
+          "name": "permission_id",
           "type": "int",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "product_id": {
-          "name": "product_id",
-          "type": "int",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "quantity": {
-          "name": "quantity",
-          "type": "int",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": 1
-        },
-        "unit_price": {
-          "name": "unit_price",
-          "type": "decimal(10,2)",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
@@ -2417,8 +4241,7 @@
           "type": "int",
           "primaryKey": false,
           "notNull": false,
-          "autoincrement": false,
-          "default": 0
+          "autoincrement": false
         },
         "deleted_at": {
           "name": "deleted_at",
@@ -2437,12 +4260,12 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "sale_items_sale_id_sales_id_fk": {
-          "name": "sale_items_sale_id_sales_id_fk",
-          "tableFrom": "sale_items",
-          "tableTo": "sales",
+        "special_permissions_user_id_user_id_fk": {
+          "name": "special_permissions_user_id_user_id_fk",
+          "tableFrom": "special_permissions",
+          "tableTo": "user",
           "columnsFrom": [
-            "sale_id"
+            "user_id"
           ],
           "columnsTo": [
             "id"
@@ -2450,35 +4273,22 @@
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
-        "sale_items_service_id_services_id_fk": {
-          "name": "sale_items_service_id_services_id_fk",
-          "tableFrom": "sale_items",
-          "tableTo": "services",
+        "special_permissions_permission_id_permissions_id_fk": {
+          "name": "special_permissions_permission_id_permissions_id_fk",
+          "tableFrom": "special_permissions",
+          "tableTo": "permissions",
           "columnsFrom": [
-            "service_id"
+            "permission_id"
           ],
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
+          "onDelete": "cascade",
           "onUpdate": "no action"
         },
-        "sale_items_product_id_products_id_fk": {
-          "name": "sale_items_product_id_products_id_fk",
-          "tableFrom": "sale_items",
-          "tableTo": "products",
-          "columnsFrom": [
-            "product_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        },
-        "sale_items_created_by_user_id_fk": {
-          "name": "sale_items_created_by_user_id_fk",
-          "tableFrom": "sale_items",
+        "special_permissions_created_by_user_id_fk": {
+          "name": "special_permissions_created_by_user_id_fk",
+          "tableFrom": "special_permissions",
           "tableTo": "user",
           "columnsFrom": [
             "created_by"
@@ -2489,9 +4299,9 @@
           "onDelete": "no action",
           "onUpdate": "no action"
         },
-        "sale_items_updated_by_user_id_fk": {
-          "name": "sale_items_updated_by_user_id_fk",
-          "tableFrom": "sale_items",
+        "special_permissions_updated_by_user_id_fk": {
+          "name": "special_permissions_updated_by_user_id_fk",
+          "tableFrom": "special_permissions",
           "tableTo": "user",
           "columnsFrom": [
             "updated_by"
@@ -2502,10 +4312,10 @@
           "onDelete": "no action",
           "onUpdate": "no action"
         },
-        "sale_items_branch_id_branch_id_fk": {
-          "name": "sale_items_branch_id_branch_id_fk",
-          "tableFrom": "sale_items",
-          "tableTo": "branch",
+        "special_permissions_branch_id_branches_id_fk": {
+          "name": "special_permissions_branch_id_branches_id_fk",
+          "tableFrom": "special_permissions",
+          "tableTo": "branches",
           "columnsFrom": [
             "branch_id"
           ],
@@ -2515,9 +4325,9 @@
           "onDelete": "no action",
           "onUpdate": "no action"
         },
-        "sale_items_deleted_by_user_id_fk": {
-          "name": "sale_items_deleted_by_user_id_fk",
-          "tableFrom": "sale_items",
+        "special_permissions_deleted_by_user_id_fk": {
+          "name": "special_permissions_deleted_by_user_id_fk",
+          "tableFrom": "special_permissions",
           "tableTo": "user",
           "columnsFrom": [
             "deleted_by"
@@ -2530,227 +4340,8 @@
         }
       },
       "compositePrimaryKeys": {
-        "sale_items_id": {
-          "name": "sale_items_id",
-          "columns": [
-            "id"
-          ]
-        }
-      },
-      "uniqueConstraints": {},
-      "checkConstraint": {}
-    },
-    "sales": {
-      "name": "sales",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "int",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": true
-        },
-        "customer_id": {
-          "name": "customer_id",
-          "type": "int",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "staff_id": {
-          "name": "staff_id",
-          "type": "int",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "appointment_id": {
-          "name": "appointment_id",
-          "type": "int",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "total_amount": {
-          "name": "total_amount",
-          "type": "decimal(10,2)",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "payment_method": {
-          "name": "payment_method",
-          "type": "varchar(50)",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "transaction_date": {
-          "name": "transaction_date",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": "(now())"
-        },
-        "is_active": {
-          "name": "is_active",
-          "type": "boolean",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": true
-        },
-        "created_by": {
-          "name": "created_by",
-          "type": "varchar(255)",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "updated_by": {
-          "name": "updated_by",
-          "type": "varchar(255)",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": "(now())"
-        },
-        "updated_at": {
-          "name": "updated_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": "CURRENT_TIMESTAMP(3) on update CURRENT_TIMESTAMP(3)"
-        },
-        "branch_id": {
-          "name": "branch_id",
-          "type": "int",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false,
-          "default": 0
-        },
-        "deleted_at": {
-          "name": "deleted_at",
-          "type": "datetime",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "deleted_by": {
-          "name": "deleted_by",
-          "type": "varchar(255)",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "sales_customer_id_customers_id_fk": {
-          "name": "sales_customer_id_customers_id_fk",
-          "tableFrom": "sales",
-          "tableTo": "customers",
-          "columnsFrom": [
-            "customer_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        },
-        "sales_staff_id_staff_id_fk": {
-          "name": "sales_staff_id_staff_id_fk",
-          "tableFrom": "sales",
-          "tableTo": "staff",
-          "columnsFrom": [
-            "staff_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        },
-        "sales_appointment_id_appointments_id_fk": {
-          "name": "sales_appointment_id_appointments_id_fk",
-          "tableFrom": "sales",
-          "tableTo": "appointments",
-          "columnsFrom": [
-            "appointment_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        },
-        "sales_created_by_user_id_fk": {
-          "name": "sales_created_by_user_id_fk",
-          "tableFrom": "sales",
-          "tableTo": "user",
-          "columnsFrom": [
-            "created_by"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        },
-        "sales_updated_by_user_id_fk": {
-          "name": "sales_updated_by_user_id_fk",
-          "tableFrom": "sales",
-          "tableTo": "user",
-          "columnsFrom": [
-            "updated_by"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        },
-        "sales_branch_id_branch_id_fk": {
-          "name": "sales_branch_id_branch_id_fk",
-          "tableFrom": "sales",
-          "tableTo": "branch",
-          "columnsFrom": [
-            "branch_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        },
-        "sales_deleted_by_user_id_fk": {
-          "name": "sales_deleted_by_user_id_fk",
-          "tableFrom": "sales",
-          "tableTo": "user",
-          "columnsFrom": [
-            "deleted_by"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {
-        "sales_id": {
-          "name": "sales_id",
+        "special_permissions_id": {
+          "name": "special_permissions_id",
           "columns": [
             "id"
           ]
@@ -2782,10 +4373,123 @@
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
+        },
+        "is_active": {
+          "name": "is_active",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": true
+        },
+        "created_by": {
+          "name": "created_by",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "updated_by": {
+          "name": "updated_by",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(now())"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "CURRENT_TIMESTAMP(3) on update CURRENT_TIMESTAMP(3)"
+        },
+        "branch_id": {
+          "name": "branch_id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "default": 0
+        },
+        "deleted_at": {
+          "name": "deleted_at",
+          "type": "datetime",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "deleted_by": {
+          "name": "deleted_by",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
         }
       },
       "indexes": {},
-      "foreignKeys": {},
+      "foreignKeys": {
+        "service_categories_created_by_user_id_fk": {
+          "name": "service_categories_created_by_user_id_fk",
+          "tableFrom": "service_categories",
+          "tableTo": "user",
+          "columnsFrom": [
+            "created_by"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "service_categories_updated_by_user_id_fk": {
+          "name": "service_categories_updated_by_user_id_fk",
+          "tableFrom": "service_categories",
+          "tableTo": "user",
+          "columnsFrom": [
+            "updated_by"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "service_categories_branch_id_branches_id_fk": {
+          "name": "service_categories_branch_id_branches_id_fk",
+          "tableFrom": "service_categories",
+          "tableTo": "branches",
+          "columnsFrom": [
+            "branch_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "service_categories_deleted_by_user_id_fk": {
+          "name": "service_categories_deleted_by_user_id_fk",
+          "tableFrom": "service_categories",
+          "tableTo": "user",
+          "columnsFrom": [
+            "deleted_by"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
       "compositePrimaryKeys": {
         "service_categories_id": {
           "name": "service_categories_id",
@@ -2794,7 +4498,14 @@
           ]
         }
       },
-      "uniqueConstraints": {},
+      "uniqueConstraints": {
+        "service_categories_name_unique": {
+          "name": "service_categories_name_unique",
+          "columns": [
+            "name"
+          ]
+        }
+      },
       "checkConstraint": {}
     },
     "services": {
@@ -2910,7 +4621,15 @@
           "autoincrement": false
         }
       },
-      "indexes": {},
+      "indexes": {
+        "service_name_idx": {
+          "name": "service_name_idx",
+          "columns": [
+            "service_name"
+          ],
+          "isUnique": true
+        }
+      },
       "foreignKeys": {
         "services_category_id_service_categories_id_fk": {
           "name": "services_category_id_service_categories_id_fk",
@@ -2951,10 +4670,10 @@
           "onDelete": "no action",
           "onUpdate": "no action"
         },
-        "services_branch_id_branch_id_fk": {
-          "name": "services_branch_id_branch_id_fk",
+        "services_branch_id_branches_id_fk": {
+          "name": "services_branch_id_branches_id_fk",
           "tableFrom": "services",
-          "tableTo": "branch",
+          "tableTo": "branches",
           "columnsFrom": [
             "branch_id"
           ],
@@ -2986,79 +4705,18 @@
           ]
         }
       },
-      "uniqueConstraints": {},
-      "checkConstraint": {}
-    },
-    "session": {
-      "name": "session",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "varchar(255)",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "user_id": {
-          "name": "user_id",
-          "type": "varchar(255)",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "expires_at": {
-          "name": "expires_at",
-          "type": "datetime",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": "(now())"
-        },
-        "updated_at": {
-          "name": "updated_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": "CURRENT_TIMESTAMP(3) on update CURRENT_TIMESTAMP(3)"
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "session_user_id_user_id_fk": {
-          "name": "session_user_id_user_id_fk",
-          "tableFrom": "session",
-          "tableTo": "user",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {
-        "session_id": {
-          "name": "session_id",
+      "uniqueConstraints": {
+        "services_service_name_unique": {
+          "name": "services_service_name_unique",
           "columns": [
-            "id"
+            "service_name"
           ]
         }
       },
-      "uniqueConstraints": {},
       "checkConstraint": {}
     },
-    "special_permissions": {
-      "name": "special_permissions",
+    "bonuses": {
+      "name": "bonuses",
       "columns": {
         "id": {
           "name": "id",
@@ -3067,16 +4725,30 @@
           "notNull": true,
           "autoincrement": true
         },
-        "user_id": {
-          "name": "user_id",
-          "type": "varchar(255)",
+        "staff_id": {
+          "name": "staff_id",
+          "type": "int",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
-        "permission_id": {
-          "name": "permission_id",
-          "type": "int",
+        "description": {
+          "name": "description",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "amount": {
+          "name": "amount",
+          "type": "decimal(10,2)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "bonus_date": {
+          "name": "bonus_date",
+          "type": "date",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
@@ -3124,8 +4796,7 @@
           "type": "int",
           "primaryKey": false,
           "notNull": false,
-          "autoincrement": false,
-          "default": 0
+          "autoincrement": false
         },
         "deleted_at": {
           "name": "deleted_at",
@@ -3144,35 +4815,22 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "special_permissions_user_id_user_id_fk": {
-          "name": "special_permissions_user_id_user_id_fk",
-          "tableFrom": "special_permissions",
-          "tableTo": "user",
+        "bonuses_staff_id_staff_id_fk": {
+          "name": "bonuses_staff_id_staff_id_fk",
+          "tableFrom": "bonuses",
+          "tableTo": "staff",
           "columnsFrom": [
-            "user_id"
+            "staff_id"
           ],
           "columnsTo": [
             "id"
           ],
-          "onDelete": "cascade",
+          "onDelete": "no action",
           "onUpdate": "no action"
         },
-        "special_permissions_permission_id_permissions_id_fk": {
-          "name": "special_permissions_permission_id_permissions_id_fk",
-          "tableFrom": "special_permissions",
-          "tableTo": "permissions",
-          "columnsFrom": [
-            "permission_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        },
-        "special_permissions_created_by_user_id_fk": {
-          "name": "special_permissions_created_by_user_id_fk",
-          "tableFrom": "special_permissions",
+        "bonuses_created_by_user_id_fk": {
+          "name": "bonuses_created_by_user_id_fk",
+          "tableFrom": "bonuses",
           "tableTo": "user",
           "columnsFrom": [
             "created_by"
@@ -3183,9 +4841,9 @@
           "onDelete": "no action",
           "onUpdate": "no action"
         },
-        "special_permissions_updated_by_user_id_fk": {
-          "name": "special_permissions_updated_by_user_id_fk",
-          "tableFrom": "special_permissions",
+        "bonuses_updated_by_user_id_fk": {
+          "name": "bonuses_updated_by_user_id_fk",
+          "tableFrom": "bonuses",
           "tableTo": "user",
           "columnsFrom": [
             "updated_by"
@@ -3196,10 +4854,10 @@
           "onDelete": "no action",
           "onUpdate": "no action"
         },
-        "special_permissions_branch_id_branch_id_fk": {
-          "name": "special_permissions_branch_id_branch_id_fk",
-          "tableFrom": "special_permissions",
-          "tableTo": "branch",
+        "bonuses_branch_id_branches_id_fk": {
+          "name": "bonuses_branch_id_branches_id_fk",
+          "tableFrom": "bonuses",
+          "tableTo": "branches",
           "columnsFrom": [
             "branch_id"
           ],
@@ -3209,9 +4867,9 @@
           "onDelete": "no action",
           "onUpdate": "no action"
         },
-        "special_permissions_deleted_by_user_id_fk": {
-          "name": "special_permissions_deleted_by_user_id_fk",
-          "tableFrom": "special_permissions",
+        "bonuses_deleted_by_user_id_fk": {
+          "name": "bonuses_deleted_by_user_id_fk",
+          "tableFrom": "bonuses",
           "tableTo": "user",
           "columnsFrom": [
             "deleted_by"
@@ -3224,10 +4882,816 @@
         }
       },
       "compositePrimaryKeys": {
-        "special_permissions_id": {
-          "name": "special_permissions_id",
+        "bonuses_id": {
+          "name": "bonuses_id",
           "columns": [
             "id"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "checkConstraint": {}
+    },
+    "commissions_product": {
+      "name": "commissions_product",
+      "columns": {
+        "sale_item_id": {
+          "name": "sale_item_id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "staff_id": {
+          "name": "staff_id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "amount": {
+          "name": "amount",
+          "type": "decimal(10,2)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "commission_date": {
+          "name": "commission_date",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "commissions_product_sale_item_id_transaction_products_id_fk": {
+          "name": "commissions_product_sale_item_id_transaction_products_id_fk",
+          "tableFrom": "commissions_product",
+          "tableTo": "transaction_products",
+          "columnsFrom": [
+            "sale_item_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "commissions_product_staff_id_staff_id_fk": {
+          "name": "commissions_product_staff_id_staff_id_fk",
+          "tableFrom": "commissions_product",
+          "tableTo": "staff",
+          "columnsFrom": [
+            "staff_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraint": {}
+    },
+    "commissions_services": {
+      "name": "commissions_services",
+      "columns": {
+        "sale_item_id": {
+          "name": "sale_item_id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "staff_id": {
+          "name": "staff_id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "amount": {
+          "name": "amount",
+          "type": "decimal(10,2)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "commission_date": {
+          "name": "commission_date",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "is_active": {
+          "name": "is_active",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": true
+        },
+        "created_by": {
+          "name": "created_by",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "updated_by": {
+          "name": "updated_by",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(now())"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "CURRENT_TIMESTAMP(3) on update CURRENT_TIMESTAMP(3)"
+        },
+        "branch_id": {
+          "name": "branch_id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "deleted_at": {
+          "name": "deleted_at",
+          "type": "datetime",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "deleted_by": {
+          "name": "deleted_by",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "commissions_services_sale_item_id_transaction_services_id_fk": {
+          "name": "commissions_services_sale_item_id_transaction_services_id_fk",
+          "tableFrom": "commissions_services",
+          "tableTo": "transaction_services",
+          "columnsFrom": [
+            "sale_item_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "commissions_services_staff_id_staff_id_fk": {
+          "name": "commissions_services_staff_id_staff_id_fk",
+          "tableFrom": "commissions_services",
+          "tableTo": "staff",
+          "columnsFrom": [
+            "staff_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "commissions_services_created_by_user_id_fk": {
+          "name": "commissions_services_created_by_user_id_fk",
+          "tableFrom": "commissions_services",
+          "tableTo": "user",
+          "columnsFrom": [
+            "created_by"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "commissions_services_updated_by_user_id_fk": {
+          "name": "commissions_services_updated_by_user_id_fk",
+          "tableFrom": "commissions_services",
+          "tableTo": "user",
+          "columnsFrom": [
+            "updated_by"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "commissions_services_branch_id_branches_id_fk": {
+          "name": "commissions_services_branch_id_branches_id_fk",
+          "tableFrom": "commissions_services",
+          "tableTo": "branches",
+          "columnsFrom": [
+            "branch_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "commissions_services_deleted_by_user_id_fk": {
+          "name": "commissions_services_deleted_by_user_id_fk",
+          "tableFrom": "commissions_services",
+          "tableTo": "user",
+          "columnsFrom": [
+            "deleted_by"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraint": {}
+    },
+    "deductions": {
+      "name": "deductions",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "staff_id": {
+          "name": "staff_id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "payroll_run_id": {
+          "name": "payroll_run_id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "type": {
+          "name": "type",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "amount": {
+          "name": "amount",
+          "type": "decimal(10,2)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "deduction_date": {
+          "name": "deduction_date",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "is_active": {
+          "name": "is_active",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": true
+        },
+        "created_by": {
+          "name": "created_by",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "updated_by": {
+          "name": "updated_by",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(now())"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "CURRENT_TIMESTAMP(3) on update CURRENT_TIMESTAMP(3)"
+        },
+        "branch_id": {
+          "name": "branch_id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "deleted_at": {
+          "name": "deleted_at",
+          "type": "datetime",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "deleted_by": {
+          "name": "deleted_by",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "deductions_staff_id_staff_id_fk": {
+          "name": "deductions_staff_id_staff_id_fk",
+          "tableFrom": "deductions",
+          "tableTo": "staff",
+          "columnsFrom": [
+            "staff_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "deductions_payroll_run_id_payroll_runs_id_fk": {
+          "name": "deductions_payroll_run_id_payroll_runs_id_fk",
+          "tableFrom": "deductions",
+          "tableTo": "payroll_runs",
+          "columnsFrom": [
+            "payroll_run_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "deductions_created_by_user_id_fk": {
+          "name": "deductions_created_by_user_id_fk",
+          "tableFrom": "deductions",
+          "tableTo": "user",
+          "columnsFrom": [
+            "created_by"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "deductions_updated_by_user_id_fk": {
+          "name": "deductions_updated_by_user_id_fk",
+          "tableFrom": "deductions",
+          "tableTo": "user",
+          "columnsFrom": [
+            "updated_by"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "deductions_branch_id_branches_id_fk": {
+          "name": "deductions_branch_id_branches_id_fk",
+          "tableFrom": "deductions",
+          "tableTo": "branches",
+          "columnsFrom": [
+            "branch_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "deductions_deleted_by_user_id_fk": {
+          "name": "deductions_deleted_by_user_id_fk",
+          "tableFrom": "deductions",
+          "tableTo": "user",
+          "columnsFrom": [
+            "deleted_by"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "deductions_id": {
+          "name": "deductions_id",
+          "columns": [
+            "id"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "checkConstraint": {}
+    },
+    "over_time": {
+      "name": "over_time",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "staff_id": {
+          "name": "staff_id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "reason": {
+          "name": "reason",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "amount_per_hour": {
+          "name": "amount_per_hour",
+          "type": "decimal(10,2)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "hours": {
+          "name": "hours",
+          "type": "decimal(10,2)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "total": {
+          "name": "total",
+          "type": "decimal(10,2)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "date": {
+          "name": "date",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "is_active": {
+          "name": "is_active",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": true
+        },
+        "created_by": {
+          "name": "created_by",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "updated_by": {
+          "name": "updated_by",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(now())"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "CURRENT_TIMESTAMP(3) on update CURRENT_TIMESTAMP(3)"
+        },
+        "branch_id": {
+          "name": "branch_id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "deleted_at": {
+          "name": "deleted_at",
+          "type": "datetime",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "deleted_by": {
+          "name": "deleted_by",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "over_time_staff_id_staff_id_fk": {
+          "name": "over_time_staff_id_staff_id_fk",
+          "tableFrom": "over_time",
+          "tableTo": "staff",
+          "columnsFrom": [
+            "staff_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "over_time_created_by_user_id_fk": {
+          "name": "over_time_created_by_user_id_fk",
+          "tableFrom": "over_time",
+          "tableTo": "user",
+          "columnsFrom": [
+            "created_by"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "over_time_updated_by_user_id_fk": {
+          "name": "over_time_updated_by_user_id_fk",
+          "tableFrom": "over_time",
+          "tableTo": "user",
+          "columnsFrom": [
+            "updated_by"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "over_time_branch_id_branches_id_fk": {
+          "name": "over_time_branch_id_branches_id_fk",
+          "tableFrom": "over_time",
+          "tableTo": "branches",
+          "columnsFrom": [
+            "branch_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "over_time_deleted_by_user_id_fk": {
+          "name": "over_time_deleted_by_user_id_fk",
+          "tableFrom": "over_time",
+          "tableTo": "user",
+          "columnsFrom": [
+            "deleted_by"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "over_time_id": {
+          "name": "over_time_id",
+          "columns": [
+            "id"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "checkConstraint": {}
+    },
+    "salaries": {
+      "name": "salaries",
+      "columns": {
+        "salary_id": {
+          "name": "salary_id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "staff_id": {
+          "name": "staff_id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "amount": {
+          "name": "amount",
+          "type": "decimal(10,2)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "start_date": {
+          "name": "start_date",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "end_date": {
+          "name": "end_date",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "is_active": {
+          "name": "is_active",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": true
+        },
+        "created_by": {
+          "name": "created_by",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "updated_by": {
+          "name": "updated_by",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(now())"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "CURRENT_TIMESTAMP(3) on update CURRENT_TIMESTAMP(3)"
+        },
+        "branch_id": {
+          "name": "branch_id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "deleted_at": {
+          "name": "deleted_at",
+          "type": "datetime",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "deleted_by": {
+          "name": "deleted_by",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "salaries_staff_id_staff_id_fk": {
+          "name": "salaries_staff_id_staff_id_fk",
+          "tableFrom": "salaries",
+          "tableTo": "staff",
+          "columnsFrom": [
+            "staff_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "salaries_created_by_user_id_fk": {
+          "name": "salaries_created_by_user_id_fk",
+          "tableFrom": "salaries",
+          "tableTo": "user",
+          "columnsFrom": [
+            "created_by"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "salaries_updated_by_user_id_fk": {
+          "name": "salaries_updated_by_user_id_fk",
+          "tableFrom": "salaries",
+          "tableTo": "user",
+          "columnsFrom": [
+            "updated_by"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "salaries_branch_id_branches_id_fk": {
+          "name": "salaries_branch_id_branches_id_fk",
+          "tableFrom": "salaries",
+          "tableTo": "branches",
+          "columnsFrom": [
+            "branch_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "salaries_deleted_by_user_id_fk": {
+          "name": "salaries_deleted_by_user_id_fk",
+          "tableFrom": "salaries",
+          "tableTo": "user",
+          "columnsFrom": [
+            "deleted_by"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "salaries_salary_id": {
+          "name": "salaries_salary_id",
+          "columns": [
+            "salary_id"
           ]
         }
       },
@@ -3258,13 +5722,6 @@
           "notNull": true,
           "autoincrement": false
         },
-        "position_id": {
-          "name": "position_id",
-          "type": "int",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
         "email": {
           "name": "email",
           "type": "varchar(255)",
@@ -3277,6 +5734,13 @@
           "type": "varchar(50)",
           "primaryKey": false,
           "notNull": false,
+          "autoincrement": false
+        },
+        "type_id": {
+          "name": "type_id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
           "autoincrement": false
         },
         "hire_date": {
@@ -3358,8 +5822,7 @@
           "type": "int",
           "primaryKey": false,
           "notNull": false,
-          "autoincrement": false,
-          "default": 0
+          "autoincrement": false
         },
         "deleted_at": {
           "name": "deleted_at",
@@ -3376,14 +5839,29 @@
           "autoincrement": false
         }
       },
-      "indexes": {},
+      "indexes": {
+        "first_name_idx": {
+          "name": "first_name_idx",
+          "columns": [
+            "first_name"
+          ],
+          "isUnique": false
+        },
+        "last_name_idx": {
+          "name": "last_name_idx",
+          "columns": [
+            "last_name"
+          ],
+          "isUnique": false
+        }
+      },
       "foreignKeys": {
-        "staff_position_id_positions_id_fk": {
-          "name": "staff_position_id_positions_id_fk",
+        "staff_type_id_staff_types_id_fk": {
+          "name": "staff_type_id_staff_types_id_fk",
           "tableFrom": "staff",
-          "tableTo": "positions",
+          "tableTo": "staff_types",
           "columnsFrom": [
-            "position_id"
+            "type_id"
           ],
           "columnsTo": [
             "id"
@@ -3417,10 +5895,10 @@
           "onDelete": "no action",
           "onUpdate": "no action"
         },
-        "staff_branch_id_branch_id_fk": {
-          "name": "staff_branch_id_branch_id_fk",
+        "staff_branch_id_branches_id_fk": {
+          "name": "staff_branch_id_branches_id_fk",
           "tableFrom": "staff",
-          "tableTo": "branch",
+          "tableTo": "branches",
           "columnsFrom": [
             "branch_id"
           ],
@@ -3460,6 +5938,65 @@
           ]
         }
       },
+      "checkConstraint": {}
+    },
+    "contacts": {
+      "name": "contacts",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "staff_id": {
+          "name": "staff_id",
+          "type": "int",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "contact_type": {
+          "name": "contact_type",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "contact_detail": {
+          "name": "contact_detail",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "contacts_staff_id_staff_id_fk": {
+          "name": "contacts_staff_id_staff_id_fk",
+          "tableFrom": "contacts",
+          "tableTo": "staff",
+          "columnsFrom": [
+            "staff_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "contacts_id": {
+          "name": "contacts_id",
+          "columns": [
+            "id"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
       "checkConstraint": {}
     },
     "staff_schedule": {
@@ -3543,8 +6080,7 @@
           "type": "int",
           "primaryKey": false,
           "notNull": false,
-          "autoincrement": false,
-          "default": 0
+          "autoincrement": false
         },
         "deleted_at": {
           "name": "deleted_at",
@@ -3602,10 +6138,10 @@
           "onDelete": "no action",
           "onUpdate": "no action"
         },
-        "staff_schedule_branch_id_branch_id_fk": {
-          "name": "staff_schedule_branch_id_branch_id_fk",
+        "staff_schedule_branch_id_branches_id_fk": {
+          "name": "staff_schedule_branch_id_branches_id_fk",
           "tableFrom": "staff_schedule",
-          "tableTo": "branch",
+          "tableTo": "branches",
           "columnsFrom": [
             "branch_id"
           ],
@@ -3705,8 +6241,8 @@
       "uniqueConstraints": {},
       "checkConstraint": {}
     },
-    "supplies": {
-      "name": "supplies",
+    "staff_types": {
+      "name": "staff_types",
       "columns": {
         "id": {
           "name": "id",
@@ -3715,8 +6251,8 @@
           "notNull": true,
           "autoincrement": true
         },
-        "item_name": {
-          "name": "item_name",
+        "name": {
+          "name": "name",
           "type": "varchar(255)",
           "primaryKey": false,
           "notNull": true,
@@ -3728,63 +6264,168 @@
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
-        },
-        "quantity": {
-          "name": "quantity",
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {
+        "staff_types_id": {
+          "name": "staff_types_id",
+          "columns": [
+            "id"
+          ]
+        }
+      },
+      "uniqueConstraints": {
+        "staff_types_name_unique": {
+          "name": "staff_types_name_unique",
+          "columns": [
+            "name"
+          ]
+        }
+      },
+      "checkConstraint": {}
+    },
+    "user_staff": {
+      "name": "user_staff",
+      "columns": {
+        "id": {
+          "name": "id",
           "type": "int",
           "primaryKey": false,
           "notNull": true,
-          "autoincrement": false,
-          "default": 0
+          "autoincrement": true
         },
-        "unit_of_measure": {
-          "name": "unit_of_measure",
-          "type": "varchar(20)",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "cost_per_unit": {
-          "name": "cost_per_unit",
-          "type": "decimal(10,2)",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "supplier": {
-          "name": "supplier",
+        "user_id": {
+          "name": "user_id",
           "type": "varchar(255)",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
         },
-        "reorder_level": {
-          "name": "reorder_level",
+        "staff_id": {
+          "name": "staff_id",
           "type": "int",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "user_staff_user_id_user_id_fk": {
+          "name": "user_staff_user_id_user_id_fk",
+          "tableFrom": "user_staff",
+          "tableTo": "user",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
         },
-        "is_active": {
-          "name": "is_active",
-          "type": "boolean",
+        "user_staff_staff_id_staff_id_fk": {
+          "name": "user_staff_staff_id_staff_id_fk",
+          "tableFrom": "user_staff",
+          "tableTo": "staff",
+          "columnsFrom": [
+            "staff_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "user_staff_id": {
+          "name": "user_staff_id",
+          "columns": [
+            "id"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "checkConstraint": {}
+    },
+    "roles": {
+      "name": "roles",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "int",
           "primaryKey": false,
           "notNull": true,
-          "autoincrement": false,
-          "default": true
+          "autoincrement": true
         },
-        "created_by": {
-          "name": "created_by",
-          "type": "varchar(255)",
+        "name": {
+          "name": "name",
+          "type": "varchar(32)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
-        },
-        "updated_by": {
-          "name": "updated_by",
+        }
+      },
+      "indexes": {
+        "name_idx": {
+          "name": "name_idx",
+          "columns": [
+            "name"
+          ],
+          "isUnique": true
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {
+        "roles_id": {
+          "name": "roles_id",
+          "columns": [
+            "id"
+          ]
+        }
+      },
+      "uniqueConstraints": {
+        "roles_name_unique": {
+          "name": "roles_name_unique",
+          "columns": [
+            "name"
+          ]
+        }
+      },
+      "checkConstraint": {}
+    },
+    "session": {
+      "name": "session",
+      "columns": {
+        "id": {
+          "name": "id",
           "type": "varchar(255)",
           "primaryKey": false,
-          "notNull": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "expires_at": {
+          "name": "expires_at",
+          "type": "datetime",
+          "primaryKey": false,
+          "notNull": true,
           "autoincrement": false
         },
         "created_at": {
@@ -3802,202 +6443,27 @@
           "notNull": true,
           "autoincrement": false,
           "default": "CURRENT_TIMESTAMP(3) on update CURRENT_TIMESTAMP(3)"
-        },
-        "branch_id": {
-          "name": "branch_id",
-          "type": "int",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false,
-          "default": 0
-        },
-        "deleted_at": {
-          "name": "deleted_at",
-          "type": "datetime",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "deleted_by": {
-          "name": "deleted_by",
-          "type": "varchar(255)",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
         }
       },
       "indexes": {},
       "foreignKeys": {
-        "supplies_created_by_user_id_fk": {
-          "name": "supplies_created_by_user_id_fk",
-          "tableFrom": "supplies",
+        "session_user_id_user_id_fk": {
+          "name": "session_user_id_user_id_fk",
+          "tableFrom": "session",
           "tableTo": "user",
           "columnsFrom": [
-            "created_by"
+            "user_id"
           ],
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        },
-        "supplies_updated_by_user_id_fk": {
-          "name": "supplies_updated_by_user_id_fk",
-          "tableFrom": "supplies",
-          "tableTo": "user",
-          "columnsFrom": [
-            "updated_by"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        },
-        "supplies_branch_id_branch_id_fk": {
-          "name": "supplies_branch_id_branch_id_fk",
-          "tableFrom": "supplies",
-          "tableTo": "branch",
-          "columnsFrom": [
-            "branch_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        },
-        "supplies_deleted_by_user_id_fk": {
-          "name": "supplies_deleted_by_user_id_fk",
-          "tableFrom": "supplies",
-          "tableTo": "user",
-          "columnsFrom": [
-            "deleted_by"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
+          "onDelete": "cascade",
           "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {
-        "supplies_id": {
-          "name": "supplies_id",
-          "columns": [
-            "id"
-          ]
-        }
-      },
-      "uniqueConstraints": {},
-      "checkConstraint": {}
-    },
-    "supplies_adjustments": {
-      "name": "supplies_adjustments",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "int",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": true
-        },
-        "product_id": {
-          "name": "product_id",
-          "type": "int",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "adjustment": {
-          "name": "adjustment",
-          "type": "int",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "reason": {
-          "name": "reason",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "notes": {
-          "name": "notes",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "sale_id": {
-          "name": "sale_id",
-          "type": "int",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": "(now())"
-        },
-        "created_by": {
-          "name": "created_by",
-          "type": "varchar(255)",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "supplies_adjustments_product_id_supplies_id_fk": {
-          "name": "supplies_adjustments_product_id_supplies_id_fk",
-          "tableFrom": "supplies_adjustments",
-          "tableTo": "supplies",
-          "columnsFrom": [
-            "product_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        },
-        "supplies_adjustments_sale_id_sales_id_fk": {
-          "name": "supplies_adjustments_sale_id_sales_id_fk",
-          "tableFrom": "supplies_adjustments",
-          "tableTo": "sales",
-          "columnsFrom": [
-            "sale_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        },
-        "supplies_adjustments_created_by_user_id_fk": {
-          "name": "supplies_adjustments_created_by_user_id_fk",
-          "tableFrom": "supplies_adjustments",
-          "tableTo": "user",
-          "columnsFrom": [
-            "created_by"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {
-        "supplies_adjustments_id": {
-          "name": "supplies_adjustments_id",
+        "session_id": {
+          "name": "session_id",
           "columns": [
             "id"
           ]
@@ -4023,6 +6489,14 @@
           "notNull": true,
           "autoincrement": false
         },
+        "name": {
+          "name": "name",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'User'"
+        },
         "email": {
           "name": "email",
           "type": "varchar(100)",
@@ -4044,13 +6518,6 @@
           "notNull": true,
           "autoincrement": false,
           "default": true
-        },
-        "staff_id": {
-          "name": "staff_id",
-          "type": "int",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
         },
         "role_id": {
           "name": "role_id",
@@ -4080,25 +6547,33 @@
           "type": "int",
           "primaryKey": false,
           "notNull": false,
-          "autoincrement": false,
-          "default": 0
+          "autoincrement": false
         }
       },
-      "indexes": {},
-      "foreignKeys": {
-        "user_staff_id_staff_id_fk": {
-          "name": "user_staff_id_staff_id_fk",
-          "tableFrom": "user",
-          "tableTo": "staff",
-          "columnsFrom": [
-            "staff_id"
+      "indexes": {
+        "name_idx": {
+          "name": "name_idx",
+          "columns": [
+            "name"
           ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "set null",
-          "onUpdate": "no action"
+          "isUnique": false
         },
+        "username_idx": {
+          "name": "username_idx",
+          "columns": [
+            "username"
+          ],
+          "isUnique": true
+        },
+        "email_idx": {
+          "name": "email_idx",
+          "columns": [
+            "email"
+          ],
+          "isUnique": true
+        }
+      },
+      "foreignKeys": {
         "user_role_id_roles_id_fk": {
           "name": "user_role_id_roles_id_fk",
           "tableFrom": "user",
@@ -4112,10 +6587,10 @@
           "onDelete": "restrict",
           "onUpdate": "no action"
         },
-        "user_branch_id_branch_id_fk": {
-          "name": "user_branch_id_branch_id_fk",
+        "user_branch_id_branches_id_fk": {
+          "name": "user_branch_id_branches_id_fk",
           "tableFrom": "user",
-          "tableTo": "branch",
+          "tableTo": "branches",
           "columnsFrom": [
             "branch_id"
           ],

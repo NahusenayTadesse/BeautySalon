@@ -11,7 +11,8 @@ import {
 	decimal,
 
 	date,
-	time
+	time,
+	index
 } from 'drizzle-orm/mysql-core';
 import { secureFields } from './secureFields';
 import { user } from './user';
@@ -32,7 +33,6 @@ export const staff = mysqlTable('staff', {
 	id: int('id').primaryKey().autoincrement(),
 	firstName: varchar('first_name', { length: 255 }).notNull(),
 	lastName: varchar('last_name', { length: 255 }).notNull(),
-	userId: int('user_id').references(() => user.id),
 	email: varchar('email', { length: 255 }).unique().notNull(),
 	phone: varchar('phone', { length: 50 }),
 	type: int('type_id').notNull()
@@ -44,7 +44,16 @@ export const staff = mysqlTable('staff', {
     employmentStatus: mysqlEnum('employment_status', ['active', 'on_leave', 'terminated']).default('active'),
 	...secureFields
 
-});
+}, (table) => [
+  index("first_name_idx").on(table.firstName),
+  index("last_name_idx").on(table.lastName),
+]);
+
+export const userStaff = mysqlTable('user_staff', {
+	  id: int('id').autoincrement().primaryKey(),
+	  userId: varchar('user_id', {length: 255}).references(()=> user.id),
+	  staffId: int('staff_id').references(()=> staff.id) 
+})
 
 export const staffContacts = mysqlTable('contacts', {
 
@@ -72,7 +81,7 @@ export const salaries = mysqlTable(
 export const bonuses = mysqlTable(
 	'bonuses',
 	{
-		id: int('bonus_id').primaryKey().autoincrement(),
+		id: int('id').primaryKey().autoincrement(),
 		staffId: int('staff_id')
 			.notNull()
 			.references(() => staff.id),
@@ -81,6 +90,19 @@ export const bonuses = mysqlTable(
 		bonusDate: date('bonus_date').notNull(),
 		...secureFields
 	});
+ 
+export const overTime = mysqlTable('over_time', {
+	 id: int('id').primaryKey().autoincrement(),
+	 staffId: int('staff_id')
+			.notNull()
+			.references(() => staff.id),
+	 reason: varchar('reason', { length: 255 }),
+	 amountPerHour: decimal('amount_per_hour', { precision: 10, scale: 2 }).notNull(),
+	 hours: decimal('hours', { precision: 10, scale: 2 }).notNull(), 
+	 total: decimal('total', { precision: 10, scale: 2 }).notNull(), 
+	 date: date('date').notNull(),
+		...secureFields
+})
 
 export const commissionService = mysqlTable('commissions_services', {
     saleItemId: int('sale_item_id')
@@ -91,6 +113,7 @@ export const commissionService = mysqlTable('commissions_services', {
         .references(() => staff.id),
     amount: decimal('amount', { precision: 10, scale: 2 }).notNull(),
     commissionDate: date('commission_date').notNull(),
+	...secureFields
 });
 
 export const commissionProduct = mysqlTable('commissions_product', {

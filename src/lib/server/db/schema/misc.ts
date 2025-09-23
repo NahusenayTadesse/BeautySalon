@@ -34,11 +34,16 @@ export const auditLog = mysqlTable('audit_log', {
 
 export const reports = mysqlTable('audit_log', {
     id: int('id').autoincrement().primaryKey(),
-    reportDate: date('report_date').notNull(), 
+    reportDate: date('report_date').notNull().unique(), 
     bookedAppointments: int('booked_appointments').default(0),
     cancelledAppointments: int('cancelled_appointments').default(0),
     productsSold: int('products_sold').notNull().default(0),
-    dailyExpenses: decimal('daily_expenses', { precision: 10, scale: 2 }).default(''),
-    dailyIncome: decimal('daily_income', { precision: 10, scale: 2 }).default(''),
-    
+    servicesRendered: int('services_rendered').notNull(),
+    dailyExpenses: decimal('daily_expenses', { precision: 10, scale: 2 }),
+    dailyIncome: decimal('daily_income', { precision: 10, scale: 2 }),
+    transactions: int('transactions').notNull(),
+    staffPaid: int('staff_paid'),
+    totalStaffPaid: decimal('total_staff_paid', {precision: 10, scale: 2}),
+    staffHired: int('staff_hired'),
+    staffFired: int('staff_fired'),
 })

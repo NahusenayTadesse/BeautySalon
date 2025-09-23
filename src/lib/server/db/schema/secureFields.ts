@@ -22,8 +22,7 @@ export const secureFields = {
     createdAt: timestamp('created_at').defaultNow().notNull(),
     updatedAt: timestamp('updated_at').default(sql`CURRENT_TIMESTAMP(3) on update CURRENT_TIMESTAMP(3)`).notNull(),
     branchId: int('branch_id')
-        .references(() => branches.id)
-        .default(0),
+        .references(() => branches.id),
     deletedAt: datetime('deleted_at'),
     deletedBy: varchar('deleted_by', { length: 255 })
         .references(() => user.id),

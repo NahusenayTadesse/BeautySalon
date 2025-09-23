@@ -1,5 +1,5 @@
 // customers-appointments.ts - Handles customers, appointments, and statuses (suggested new category for operations/client management)
-import { relations, sql } from 'drizzle-orm';
+import { relations } from 'drizzle-orm';
 import {
 	mysqlTable,
 	mysqlEnum,
@@ -8,7 +8,7 @@ import {
 	int,
 	date,
 	time,
-    check,
+  
     decimal,
     index,
     uniqueIndex
@@ -40,7 +40,8 @@ export const customerContacts = mysqlTable('customerContacts', {
 			.notNull()
 			.references(() => customers.id),
 		contactType: varchar('contact_type', {length: 50}).notNull(),
-		contactDetail: varchar('contact_detail', {length: 255}).notNull(),	 
+		contactDetail: varchar('contact_detail', {length: 255}).notNull(),
+		...secureFields	 
 });
 
 export const appointmentStatuses = mysqlTable('appointment_statuses', {
@@ -66,14 +67,7 @@ export const appointments = mysqlTable(
         transactionId: int('transaction_id').references(()=> transactions.id),
 		notes: text('notes'),
 		...secureFields
-	},
- (table) => [
-        check(
-            'datetime_check',
-            sql`STR_TO_DATE(CONCAT(${table.appointmentDate}, ' ', ${table.appointmentTime}), '%Y-%m-%d %H:%i:%s') >= NOW()`
-        )
-    ]
-);
+	});
 export const appointmentServices = mysqlTable('appointment_services', {
 
    	id: int('id').autoincrement().primaryKey(),
