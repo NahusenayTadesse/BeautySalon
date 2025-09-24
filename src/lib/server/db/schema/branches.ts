@@ -12,7 +12,6 @@ import {
 } from 'drizzle-orm/mysql-core';
 export const branches = mysqlTable('branches', {
     id: int('id').autoincrement().primaryKey(),
-    company_id: int('company_id').notNull(), // FK -> companies.id
     parent_branch_id: int('parent_branch_id'), // nullable, FK -> branches.id
     name: varchar('name', { length: 64 }).notNull(),
     address_line1: varchar('address_line1', { length: 128 }),

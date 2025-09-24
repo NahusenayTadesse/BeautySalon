@@ -9,3 +9,27 @@ export const selectItem = `hover:bg-gray-100 hover:shadow-md hover:scale-101 dur
              animate-slide-in`
   export const errormsg = `${toastmsg} !bg-red-600`;
   export const searchableFields = ['name', 'description', 'permissions', 'value', 'firstName', 'lastName']
+  import { encodeBase32LowerCase } from '@oslojs/encoding';
+  
+
+ export function generateUserId() {
+      // ID with 120 bits of entropy, or about the same as UUID v4.
+      const bytes = crypto.getRandomValues(new Uint8Array(15));
+      const id = encodeBase32LowerCase(bytes);
+      return id;
+  }
+  
+export function extractUsername(email: string) {
+    if (typeof email !== "string") {
+      throw new Error("Input must be a string");
+    }
+  
+    // Find the part before the '@'
+    const atIndex = email.indexOf("@");
+    
+    if (atIndex === -1) {
+      throw new Error("Invalid email address: missing '@'");
+    }
+  
+    return email.substring(0, atIndex);
+  }

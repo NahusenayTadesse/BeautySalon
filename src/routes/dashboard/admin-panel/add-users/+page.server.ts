@@ -8,7 +8,7 @@ import { roles, user } from '$lib/server/db/schema.js';
 import type {  Actions } from "./$types";
 import type { PageServerLoad } from './$types.js';
 import { hash } from '@node-rs/argon2';
-import { encodeBase32LowerCase } from '@oslojs/encoding';
+// import { encodeBase32LowerCase } from '@oslojs/encoding';
 
 
 export const load: PageServerLoad = async () => {
@@ -28,6 +28,7 @@ export const load: PageServerLoad = async () => {
 
 
 import { setFlash} from 'sveltekit-flash-message/server';
+import { extractUsername, generateUserId } from '$lib/global.svelte';
 
 export const actions: Actions = {
   addUser: async ({ request, cookies }) => {
@@ -86,24 +87,24 @@ const {
   }
 };
 
-function generateUserId() {
-    // ID with 120 bits of entropy, or about the same as UUID v4.
-    const bytes = crypto.getRandomValues(new Uint8Array(15));
-    const id = encodeBase32LowerCase(bytes);
-    return id;
-}
+// function generateUserId() {
+//     // ID with 120 bits of entropy, or about the same as UUID v4.
+//     const bytes = crypto.getRandomValues(new Uint8Array(15));
+//     const id = encodeBase32LowerCase(bytes);
+//     return id;
+// }
 
-function extractUsername(email: string) {
-  if (typeof email !== "string") {
-    throw new Error("Input must be a string");
-  }
+// function extractUsername(email: string) {
+//   if (typeof email !== "string") {
+//     throw new Error("Input must be a string");
+//   }
 
-  // Find the part before the '@'
-  const atIndex = email.indexOf("@");
+//   // Find the part before the '@'
+//   const atIndex = email.indexOf("@");
   
-  if (atIndex === -1) {
-    throw new Error("Invalid email address: missing '@'");
-  }
+//   if (atIndex === -1) {
+//     throw new Error("Invalid email address: missing '@'");
+//   }
 
-  return email.substring(0, atIndex);
-}
+//   return email.substring(0, atIndex);
+// }
