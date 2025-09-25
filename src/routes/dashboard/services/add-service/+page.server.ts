@@ -4,7 +4,7 @@ import { fail } from '@sveltejs/kit';
 
 import { serviceSchema } from '$lib/ZodSchema';
 import { db } from '$lib/server/db';
-import {  services } from '$lib/server/db/schema.js';
+import {  services } from '$lib/server/db/schema/';
 import type {  Actions } from "./$types";
 import type { PageServerLoad } from './$types.js';
 

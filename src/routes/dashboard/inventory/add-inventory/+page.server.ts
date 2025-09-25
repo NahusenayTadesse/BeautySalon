@@ -4,7 +4,7 @@ import { fail } from '@sveltejs/kit';
 
 import { inventoryItemSchema } from '$lib/ZodSchema';
 import { db } from '$lib/server/db';
-import { products as inventory } from '$lib/server/db/schema.js';
+import { products as inventory } from '$lib/server/db/schema/';
 import type {  Actions } from "./$types";
 import type { PageServerLoad } from './$types.js';
 import { setFlash } from 'sveltekit-flash-message/server';

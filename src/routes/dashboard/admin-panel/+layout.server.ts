@@ -4,7 +4,7 @@ import { zod4 } from 'sveltekit-superforms/adapters';
 
 import { createRoleSchema as schema } from '$lib/ZodSchema';
 import { db } from '$lib/server/db';
-import { permissions} from '$lib/server/db/schema.js';
+import { permissions} from '$lib/server/db/schema/';
 import type { PageServerLoad } from './$types.js';
 
 

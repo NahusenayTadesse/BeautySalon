@@ -6,7 +6,7 @@ import { fail } from '@sveltejs/kit';
 
 import { createRoleSchema as schema } from '$lib/ZodSchema';
 import { db } from '$lib/server/db';
-import {  permissions, rolePermissions, roles } from '$lib/server/db/schema.js';
+import {  permissions, rolePermissions, roles } from '$lib/server/db/schema/';
 import type { PageServerLoad, Actions } from './$types.js';
 
 

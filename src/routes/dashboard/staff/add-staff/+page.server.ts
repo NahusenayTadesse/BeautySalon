@@ -4,7 +4,7 @@ import { fail } from '@sveltejs/kit';
 
 import { staffSchema } from '$lib/ZodSchema';
 import { db } from '$lib/server/db';
-import { positions, staff } from '$lib/server/db/schema.js';
+import { positions, staff } from '$lib/server/db/schema/';
 import type {  Actions } from "./$types";
 import type { PageServerLoad } from './$types.js';
 

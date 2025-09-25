@@ -6,7 +6,7 @@ import { fail } from '@sveltejs/kit';
 
 import { serviceCategorySchema as schema, serviceSchema } from '$lib/ZodSchema';
 import { db } from '$lib/server/db';
-import {  serviceCategories, services } from '$lib/server/db/schema.js';
+import {  serviceCategories, services } from '$lib/server/db/schema/';
 import type { PageServerLoad, Actions } from './$types.js';
 
 
@@ -26,7 +26,7 @@ export const load: PageServerLoad = async () => {
     const allServices = await db
       .select({
         value: services.id,
-        name: services.name,
+        name: services.serviceName,
         description: services.description
       })
       .from(services);

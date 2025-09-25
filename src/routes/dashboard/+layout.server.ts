@@ -1,8 +1,8 @@
 import { eq } from 'drizzle-orm'
-import {  error, redirect } from "@sveltejs/kit";
+import {  redirect } from "@sveltejs/kit";
 import type { LayoutServerLoad } from "./$types";
 import { db } from '$lib/server/db';
-import {  user,  rolePermissions, specialPermissions, roles, permissions } from '$lib/server/db/schema'
+import {  user,  rolePermissions, specialPermissions, roles, permissions  } from '$lib/server/db/schema/'
 
 export const load: LayoutServerLoad = async ({locals}) => {
 	
@@ -11,7 +11,8 @@ export const load: LayoutServerLoad = async ({locals}) => {
 		}
     
    try {
-    const [rolePerms, specialPerms, dbUser] = await Promise.all([
+  
+    const [rolePerms, specialPerms, dbUser, branch] = await Promise.all([
       db
         .select({ name: permissions.name })
         .from(user)
@@ -35,7 +36,12 @@ export const load: LayoutServerLoad = async ({locals}) => {
         .from(user)
         .innerJoin(roles, eq(user.roleId, roles.id))
         .where(eq(user.id, locals.user.id))
-        .then(r => r[0])
+        .then(r => r[0]),
+      db
+         .select({
+            id: user.branchId
+         }).from(user)
+           .where(eq(user.id, locals.user.id)).then(r => r[0])
     ]);
 
     return {

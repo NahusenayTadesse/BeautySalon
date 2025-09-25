@@ -4,7 +4,7 @@ import { fail } from '@sveltejs/kit';
 
 import { addUserSchema as schema } from '$lib/ZodSchema';
 import { db } from '$lib/server/db';
-import { roles, user } from '$lib/server/db/schema.js';
+import { roles, user } from '$lib/server/db/schema/';
 import type {  Actions } from "./$types";
 import type { PageServerLoad } from './$types.js';
 import { hash } from '@node-rs/argon2';
