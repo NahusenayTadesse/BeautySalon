@@ -5,7 +5,6 @@ import {
 	varchar,
 	
 	timestamp,
-	text,
 	int,
     json,
     date,
@@ -13,18 +12,20 @@ import {
 	
 } from 'drizzle-orm/mysql-core';
 import { user } from './user';
+import { secureFields } from './secureFields';
 
 export const positions = mysqlTable('positions', {
 	id: int('id').primaryKey().autoincrement(),
 	name: varchar('name', { length: 50 }).notNull(),
-	description: text('description')
+    description: varchar('description', {length: 255}),
+    ...secureFields
 });
 
 export const auditLog = mysqlTable('audit_log', {
     id: int('id').autoincrement().primaryKey(),
-    userId: varchar('user_id', { length: 255 }).references(() => user.id),
-    action: varchar('action', { length: 100 }).notNull(),
-    tableName: varchar('table_name', { length: 100 }).notNull(),
+    userId: varchar('user_id', { length: 255 }).references(() => user.id, {onDelete: 'set null'}),
+    action: varchar('action', { length: 32 }).notNull(),
+    tableName: varchar('table_name', { length: 32 }).notNull(),
     recordId: varchar('record_id', { length: 255 }).notNull(),
     oldValues: json('old_values'),
     newValues: json('new_values'),

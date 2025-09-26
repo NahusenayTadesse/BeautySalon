@@ -31,7 +31,8 @@ export const load: LayoutServerLoad = async ({locals}) => {
         .select({
           id: user.id,
           roleName: roles.name,
-          name: user.name
+          name: user.name,
+          branch: user.branchId
         })
         .from(user)
         .innerJoin(roles, eq(user.roleId, roles.id))
@@ -41,12 +42,13 @@ export const load: LayoutServerLoad = async ({locals}) => {
          .select({
             id: user.branchId
          }).from(user)
-           .where(eq(user.id, locals.user.id)).then(r => r[0])
+           .where(eq(user.id, locals.user.id))
     ]);
 
     return {
       permList: specialPerms.length ? specialPerms : rolePerms,
-      role: dbUser
+      role: dbUser,
+      branch
     };
   } catch (err) {
     /* Re-throw redirects, handle only real errors */

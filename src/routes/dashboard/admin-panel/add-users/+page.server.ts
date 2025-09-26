@@ -31,7 +31,7 @@ import { setFlash} from 'sveltekit-flash-message/server';
 import { extractUsername, generateUserId } from '$lib/global.svelte';
 
 export const actions: Actions = {
-  addUser: async ({ request, cookies }) => {
+  addUser: async ({ request, cookies, locals }) => {
     const form = await superValidate(request, zod4(schema));
 
     if (!form.valid) {
@@ -66,7 +66,13 @@ const {
 
     
     try{
-     await db.insert(user).values({ id, username, name, email, roleId: role, passwordHash, branchId: 1});
+     await db.insert(user).values({
+       id, username,
+        name, email, 
+        roleId: role, 
+        passwordHash, 
+        createdBy: locals.user?.id,
+        branchId: locals.user?.branch});
 
            setFlash({ type: 'success', message: "User Successfully Created" }, cookies);
 

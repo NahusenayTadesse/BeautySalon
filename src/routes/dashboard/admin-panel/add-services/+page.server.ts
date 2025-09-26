@@ -26,7 +26,7 @@ export const load: PageServerLoad = async () => {
     const allServices = await db
       .select({
         value: services.id,
-        name: services.serviceName,
+        name: services.name,
         description: services.description
       })
       .from(services);
@@ -100,7 +100,7 @@ addService: async ({ request, cookies }) => {
 
 
 
-  addCategory: async ({ request, cookies }) => {
+  addCategory: async ({ request, cookies, locals }) => {
     const form = await superValidate(request, zod4(schema));
 
     if (!form.valid) {
@@ -125,7 +125,7 @@ const {
 
     await db
         .insert(serviceCategories)
-        .values({ name, description });
+        .values({ name, description, createdBy: locals.user?.id, branchId: locals.user?.branch });
 
      
         setFlash({ type: 'success', message: `Service Category created successfully!` }, cookies);

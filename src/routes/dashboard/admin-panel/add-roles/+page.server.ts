@@ -6,12 +6,13 @@ import { fail } from '@sveltejs/kit';
 
 import { createRoleSchema as schema } from '$lib/ZodSchema';
 import { db } from '$lib/server/db';
-import {  permissions, rolePermissions, roles } from '$lib/server/db/schema/';
+import { eq } from 'drizzle-orm';
+import {  branches, permissions, rolePermissions, roles, user } from '$lib/server/db/schema/';
 import type { PageServerLoad, Actions } from './$types.js';
 
 
 
-export const load: PageServerLoad = async () => {
+export const load: PageServerLoad = async ({locals}) => {
   const form = await superValidate(zod4(schema));
 
   const allPermissions = await db.select({
@@ -25,6 +26,11 @@ export const load: PageServerLoad = async () => {
       name: roles.name,
       description: roles.description
   }).from(roles);
+
+  const branch = await db.select({
+     id: branches.id,
+     name: branches.name
+  }).from(branches);
 
   return {
     form,

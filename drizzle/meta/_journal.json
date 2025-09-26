@@ -5,15 +5,8 @@
     {
       "idx": 0,
       "version": "5",
-      "when": 1758663289489,
-      "tag": "0000_shiny_magus",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "5",
-      "when": 1758696842075,
-      "tag": "0001_clever_marvel_boy",
+      "when": 1758925183110,
+      "tag": "0000_fancy_mystique",
       "breakpoints": true
     }
   ]

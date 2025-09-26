@@ -1,34 +1,47 @@
 import { superValidate } from 'sveltekit-superforms';
 import { zod4 } from 'sveltekit-superforms/adapters';
 import { fail } from '@sveltejs/kit';
+import { eq, and } from "drizzle-orm"
 
 import { inventoryItemSchema } from '$lib/ZodSchema';
 import { db } from '$lib/server/db';
-import { products as inventory, productCategories } from '$lib/server/db/schema/';
+import { products, customers } from '$lib/server/db/schema/';
 import type {  Actions } from "./$types";
 import type { PageServerLoad } from './$types.js';
 import { setFlash } from 'sveltekit-flash-message/server';
 
 
-export const load: PageServerLoad = async () => {
-
-      const allCategories = await db
-        .select({
-          value: productCategories.id,
-          name: productCategories.name,
-          description: productCategories.description
-        })
-        .from(productCategories);
+export const load: PageServerLoad = async ({locals}) => {
   const form = await superValidate(zod4(inventoryItemSchema));
+  const customersList = await db.select({
+  id: customers.id,
+  firstName: customers.firstName,
+  lastName: customers.lastName,
+  phone: customers.phone
+})
+.from(customers)
+.where(
+  and(
+    eq(customers.isActive, true),
+    eq(customers.branchId, locals?.user?.branch)
+  )
+);
+
+const productsList = await db.select({
+
+    value: products.id,
+    name: products.name,
+})
 
   return {
-    form,
-    allCategories
+    form, 
+    customersList,
+    productsList
   };
 };
 
 export const actions: Actions = {
-  addProduct: async ({ request, cookies, locals }) => {
+  addProduct: async ({ request, cookies }) => {
     const form = await superValidate(request, zod4(inventoryItemSchema));
 
     if (!form.valid) {
@@ -38,11 +51,9 @@ export const actions: Actions = {
     }
 
 
-        const { productName, description, quantity, price, supplier } = form.data;
 
     
     try{
-     await db.insert(inventory).values({name: productName, description, quantity, price, supplier, branchId: locals?.user?.branch});
 
  
       // Stay on the same page and set a flash message

@@ -4,20 +4,15 @@ import {
 	mysqlTable,
 	mysqlEnum,
 	varchar,
-	text,
 	int,
 	date,
 	time,
-  
     decimal,
-    index,
-    uniqueIndex
+    index
 } from 'drizzle-orm/mysql-core';
 import { secureFields } from './secureFields';
 import { services } from './services';
 import { user } from './user';
-import { transactions } from './finance';
-
 
 
 export const customers = mysqlTable('customers', {
@@ -26,19 +21,18 @@ export const customers = mysqlTable('customers', {
     lastName: varchar('last_name', { length: 255 }),
     phone: varchar('phone', { length: 50 }).notNull().unique(),
 	gender: mysqlEnum('gender', ["male", "female"]).default('female'),
-	address: text('address'), 
+	address: varchar('address', {length: 255}), 
 	...secureFields
 }, (table) => [
   index("first_name_idx").on(table.firstName),
   index("last_name_idx").on(table.lastName),
-  uniqueIndex("phone_idx").on(table.phone),
 ]);
 
-export const customerContacts = mysqlTable('customerContacts', {
+export const customerContacts = mysqlTable('customer_contacts', {
 		id: int('id').primaryKey().autoincrement(),
         customerId: int('customer_id')
 			.notNull()
-			.references(() => customers.id),
+			.references(() => customers.id, {onDelete: 'cascade'}),
 		contactType: varchar('contact_type', {length: 50}).notNull(),
 		contactDetail: varchar('contact_detail', {length: 255}).notNull(),
 		...secureFields	 
@@ -47,7 +41,8 @@ export const customerContacts = mysqlTable('customerContacts', {
 export const appointmentStatuses = mysqlTable('appointment_statuses', {
 	id: int('id').autoincrement().primaryKey(),
 	name: varchar('name', { length: 50 }).notNull().unique(), // e.g., 'booked', 'pending'
-	description: text('description')
+    description: varchar('description', {length: 255}),
+	...secureFields
 });
 
 export const appointments = mysqlTable(
@@ -56,16 +51,14 @@ export const appointments = mysqlTable(
 		id: int('id').primaryKey().autoincrement(),
 		customerId: int('customer_id')
 			.notNull()
-			.references(() => customers.id),
+			.references(() => customers.id, {onDelete: 'cascade'}),
 		
 		appointmentDate: date('appointment_date').notNull(),
         appointmentTime: time('appointment_time').notNull(),
 		statusId: int('status_id')
-			.notNull()
-			.references(() => appointmentStatuses.id),
+			.references(() => appointmentStatuses.id, {onDelete: 'set null'}),
         bookingFee: decimal('booking_fee', { precision: 10, scale: 2 }),
-        transactionId: int('transaction_id').references(()=> transactions.id),
-		notes: text('notes'),
+        notes: varchar('', {length: 255}),
 		...secureFields
 	});
 export const appointmentServices = mysqlTable('appointment_services', {
@@ -73,10 +66,10 @@ export const appointmentServices = mysqlTable('appointment_services', {
    	id: int('id').autoincrement().primaryKey(),
     appointmentId: int('appointment_id')
 			.notNull()
-			.references(() => appointments.id),
+			.references(() => appointments.id, {onDelete: 'cascade'}),
     serviceId: int('service_id')
 			.notNull()
-			.references(() => services.id),
+			.references(() => services.id, {onDelete: 'cascade'})
 });
 
 
@@ -85,16 +78,21 @@ export const customersRelations = relations(customers, ({ many }) => ({
 	appointments: many(appointments)
 }));
 
+export const servicesRelations = relations(services, ({ many }) => ({
+  appointmentServices: many(appointmentServices), // join table
+}));
+
 export const appointmentServicesRelations = relations(appointmentServices, ({ one }) => ({
   appointment: one(appointments, {
     fields: [appointmentServices.appointmentId],
-    references: [appointments.id]
+    references: [appointments.id],
   }),
   service: one(services, {
     fields: [appointmentServices.serviceId],
-    references: [services.id]
-  })
+    references: [services.id],
+  }),
 }));
+
 export const appointmentsRelations = relations(appointments, ({ one, many }) => ({
 	customer: one(customers, {
 		fields: [appointments.customerId],

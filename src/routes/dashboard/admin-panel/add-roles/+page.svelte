@@ -63,6 +63,7 @@ let search = true
 <div class="grid grid-cols-2 gap-8">
 <div>
 <ChildrenTable mainlist = {data.allRoles}  {search} link="positions"/>
+<ChildrenTable mainlist = {data.branch}  {search} link="positions"/>
 </div>
 
 

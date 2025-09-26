@@ -1,15 +1,13 @@
-import { uniqueIndex, int, mysqlTable, text, varchar } from "drizzle-orm/mysql-core";
+import {  int, mysqlTable, varchar } from "drizzle-orm/mysql-core";
 import { roles, user } from "./user";
 import { secureFields } from "./secureFields";
 import { relations } from "drizzle-orm";
 
 export const permissions = mysqlTable('permissions', {
     id: int('id').autoincrement().primaryKey(),
-    name: varchar('name', { length: 100 }).notNull().unique(),
-    description: text('description')
-}, (table) => [
-     uniqueIndex("name_idx").on(table.name)
-]);
+    name: varchar('name', { length: 50 }).notNull().unique(),
+    description: varchar('description', {length: 255}),
+});
 
 // 2. A join table to link roles to their permissions
 export const rolePermissions = mysqlTable('role_permissions', {

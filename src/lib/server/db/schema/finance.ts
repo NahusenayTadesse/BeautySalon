@@ -4,7 +4,6 @@ import {
 	mysqlTable,
 	mysqlEnum,
 	varchar,
-	text,
 	int,
 	decimal,
 	date,
@@ -22,15 +21,24 @@ import { supplies } from '../schema';
 export const paymentMethods = mysqlTable('payment_methods', {
   id: int('id').primaryKey().autoincrement(),
   name: varchar('name', { length: 100 }).notNull().unique(), 
-  description: text('description')
+    description: varchar('description', {length: 255}),
+    ...secureFields
 });
 
 
 export const transactions = mysqlTable('transactions', {
   id: int('id').primaryKey().autoincrement(),
   amount: decimal('amount', { precision: 10, scale: 2 }).notNull(),
-  paymentStatus: mysqlEnum('payment_status', ['pending', 'paid', 'refunded']).default('pending'),
-  paymentMethodId: int('payment_method_id').references(() => paymentMethods.id),  
+  paymentStatus: mysqlEnum('payment_status', [ 'pending',
+  'pending',
+  'paid',
+  'unpaid',
+  'refunded',
+  'partially_paid',
+  'partially_refunded',
+  'overpaid',
+  'disputed']).default('pending'),
+  paymentMethodId: int('payment_method_id').references(() => paymentMethods.id, {onDelete: 'set null'}),  
   recieptLink: varchar('reciept_link', {length: 255}),
     ...secureFields
 });
@@ -50,7 +58,7 @@ export const transactionServices = mysqlTable('transaction_services', {
   staffId: int('staff_id').references(() => staff.id).notNull(),
   transactionId: int('transaction_id')
     .notNull()
-    .references(() => transactions.id),
+    .references(() => transactions.id, {onDelete: 'cascade'}),
   serviceId: int('service_id')
     .notNull()
     .references(() => services.id),
@@ -69,11 +77,10 @@ export const transactionProducts = mysqlTable('transaction_products', {
   id: int('id').primaryKey().autoincrement(),
   transactionId: int('transaction_id')
     .notNull()
-    .references(() => transactions.id),
-  staffId: int('staff_id').references(() => staff.id),
+    .references(() => transactions.id, {onDelete: 'cascade'}),
+  staffId: int('staff_id').references(() => staff.id, {onDelete: 'set null'}),
   tip: decimal('tip', { precision: 10, scale: 2 }).notNull().default('0'),
-  productId: int('product_id')
-    .notNull().references(()=>products.id),
+  productId: int('product_id').references(()=>products.id, {onDelete: 'set null'}),
   quantity: decimal('quantity', { precision: 10, scale: 2 }).notNull().default('1'),
   unitPrice: decimal('unit_price', { precision: 10, scale: 2 }).notNull(), 
   discount: int('discount').references(()=> discounts.id),
@@ -86,7 +93,7 @@ export const discounts = mysqlTable('discounts', {
     id: int('id').primaryKey().autoincrement(),
     amount: decimal('amount', {precision: 10, scale: 2}),
     name: varchar('name', {length: 50}).notNull().unique(),
-    description: text('description'),
+    description: varchar('description', {length: 255}),
     ...secureFields
 })
 
@@ -94,9 +101,8 @@ export const transactionSupplies = mysqlTable('transaction_supplies', {
   id: int('id').primaryKey().autoincrement(),
   transactionId: int('transaction_id')
     .notNull()
-    .references(() => transactions.id),
-  supplyId: int('supply_id')
-    .notNull().references(()=>supplies.id), 
+    .references(() => transactions.id, {onDelete: 'cascade'}),
+  supplyId: int('supply_id').references(()=>supplies.id, {onDelete: 'set null'}), 
   quantity: decimal('quantity', { precision: 10, scale: 2 }).notNull().default("1"),
   unitPrice: decimal('unit_price', { precision: 10, scale: 2 }).notNull(), 
   ...secureFields
@@ -106,9 +112,9 @@ export const transactionBookingFee = mysqlTable('transaction_booking_fees', {
   id: int('id').primaryKey().autoincrement(),
   transactionId: int('transaction_id')
     .notNull()
-    .references(() => transactions.id),
+    .references(() => transactions.id, {onDelete: 'cascade'}),
   appointmentId: int('appointment_id')
-    .notNull().references(()=>appointments.id), 
+    .notNull().references(()=>appointments.id, {onDelete: 'cascade'}), 
   fee: decimal('fee', { precision: 10, scale: 2 }).notNull(), 
    ...secureFields
 });
@@ -120,18 +126,20 @@ export const expenses = mysqlTable('expenses', {
 	id: int('id').autoincrement().primaryKey(),
 	expenseDate: date('expense_date').notNull(),
 	type: int('type').notNull().references(()=> expensesType.id),
-	description: text('description'),
+  description: varchar('description', {length: 255}),
 	total: decimal('total', { precision: 10, scale: 2 }).notNull(),
   transactionId: int('transaction_id')
     .notNull()
-    .references(() => transactions.id),
+.references(() => transactions.id, {onDelete: 'cascade'}),
   ...secureFields
 });
 
 export const expensesType = mysqlTable('expenses_type', {
      	id: int('id').autoincrement().primaryKey(),
       name: varchar('name', {length: 255}).notNull().unique(),
-      description: text('description'),
+    description: varchar('description', {length: 255}),
+
+    ...secureFields
 })
 
 
@@ -170,7 +178,8 @@ export const payrollRuns = mysqlTable('payroll_runs', {
   unique().on(t.month, t.year)]);
 
 export const payrollEntries = mysqlTable('payroll_entries', {
-    payrollRunId: int('id').references(() => payrollRuns.id),
+    id: int('id').autoincrement().primaryKey(),
+    payrollRunId: int('payroll_run_id').references(() => payrollRuns.id, {onDelete: 'restrict'}),
     staffId: int('staff_id').references(() => staff.id),
     month: mysqlEnum("month", [
     "January",

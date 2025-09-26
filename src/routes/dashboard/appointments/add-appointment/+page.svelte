@@ -76,6 +76,7 @@ import { Input } from "$lib/components/ui/input/index.js";
 	</div>
     
 {/snippet}
+
 <Card.Root class="w-lg flex flex-col gap-4">
   <Card.Header>
     <Card.Title class="text-2xl">Add An Inventory Item</Card.Title>
@@ -84,25 +85,25 @@ import { Input } from "$lib/components/ui/input/index.js";
   <Card.Content>
 
 <form use:enhance action="?/addProduct" id="main" class="flex flex-col gap-4" method="POST" >
-  {@render fe('Product Name', 'productName', 'text', "Enter Product Name", true)}
-    {@render selects('category', data.allCategories)}
+  {@render fe('Customer First Name', 'firstName', 'text', "Enter Customer First Name", true)}
+  {@render fe('Customer last Name', 'lastName', 'text', "Enter Customer Last Name", true)}
+  {@render fe('Customer Phone Number', 'phone', 'tel', "Enter Customer Phone Number", true)}
+  {@render fe('Appointment Date', 'appointmentDate', 'date', "Enter Appointment Date", true)}
+  {@render fe('Appointment Time', 'appointmentTime', 'time', "Enter Appointment Time", true)}
 
     
 
     <div class="flex w-full flex-col gap-2 justify-start">
-		<Label for="notes" >Product Description (optional)</Label>
+		<Label for="notes" >Special Request (optional)</Label>
 
-        <Textarea name="description" 
-         placeholder="Enter product description"			
-			bind:value={$form.description}
-			aria-invalid={$errors.description ? 'true' : undefined}
+        <Textarea name="notes" 
+         placeholder="Enter special requests from customer"			
+			bind:value={$form.notes}
+			aria-invalid={$errors.notes ? 'true' : undefined}
          />
 
-		{#if $errors.description}<span class="text-red-500">{$errors.description}</span>{/if}
+		{#if $errors.notes}<span class="text-red-500">{$errors.notes}</span>{/if}
 	</div>
-  {@render fe('Quantity', 'quantity', 'number', "Enter the number of items the product currently has", true, "0")}
-  {@render fe('Price', 'price', 'number', "Enter the price of item", true, "0")}
-  {@render fe('Supplier', 'supplier', 'text', "Enter the supplier of the product", true)}
 
 
     

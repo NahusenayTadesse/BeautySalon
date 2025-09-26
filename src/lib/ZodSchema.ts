@@ -25,6 +25,8 @@ export type AddUserSchema = typeof addUserSchema;
 
 export const inventoryItemSchema = z.object({
 	productName: z.string().min(1, { message: 'Product Name is required.' }),
+  category: z.number('Category cannot be empty. Please select a Category'),
+
 	description: z
 		.string()
 		.max(500, { message: "Product description can't be more than 500 characters." })

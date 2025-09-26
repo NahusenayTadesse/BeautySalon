@@ -6,7 +6,6 @@ import {
 	varchar,
 	datetime,
 	timestamp,
-	text,
 	int,
 	decimal,
 
@@ -16,32 +15,43 @@ import {
 } from 'drizzle-orm/mysql-core';
 import { secureFields } from './secureFields';
 import { user } from './user';
-import { payrollRuns, transactionProducts, transactionServices } from './finance';
+import { paymentMethods, payrollRuns, transactionProducts, transactionServices } from './finance';
 import { services } from './services';
-import { appointments } from './customer-appointment';
 
 
 
 export const staffTypes = mysqlTable('staff_types', {
  	id: int('id').autoincrement().primaryKey(),
-    name: varchar('name', { length: 255 }).notNull().unique(),
-    description: text('description')
+    name: varchar('name', { length: 32 }).notNull().unique(),
+    description: varchar('description', {length: 255}),
+	...secureFields
 
 })
 
 export const staff = mysqlTable('staff', {
 	id: int('id').primaryKey().autoincrement(),
-	firstName: varchar('first_name', { length: 255 }).notNull(),
-	lastName: varchar('last_name', { length: 255 }).notNull(),
+	firstName: varchar('first_name', { length: 50 }).notNull(),
+	lastName: varchar('last_name', { length: 50 }).notNull(),
 	email: varchar('email', { length: 255 }).unique().notNull(),
-	phone: varchar('phone', { length: 50 }),
+	phone: varchar('phone', { length: 20 }),
 	type: int('type_id').notNull()
 		.references(() =>  staffTypes.id),
 	hireDate: timestamp('hire_date').notNull(),
 	govtId: varchar('govt_id', {length: 255}),
 	contract: varchar('contract', {length: 255}),
 	terminationDate: datetime('termination_date'),
-    employmentStatus: mysqlEnum('employment_status', ['active', 'on_leave', 'terminated']).default('active'),
+    employmentStatus: mysqlEnum('employment_status', ['full_time',
+  'on_leave',
+  'terminated',
+  'probation',
+  'contract',
+  'intern',
+  'part_time',
+  'sabbatical',
+  'suspended',
+  'resigned',
+  'retired',
+  'deceased']).default('full_time'),
 	...secureFields
 
 }, (table) => [
@@ -51,27 +61,39 @@ export const staff = mysqlTable('staff', {
 
 export const userStaff = mysqlTable('user_staff', {
 	  id: int('id').autoincrement().primaryKey(),
-	  userId: varchar('user_id', {length: 255}).references(()=> user.id),
-	  staffId: int('staff_id').references(()=> staff.id) 
+	  userId: varchar('user_id', {length: 255}).references(()=> user.id, {onDelete: 'cascade'}),
+	  staffId: int('staff_id').references(()=> staff.id, {onDelete: 'cascade'}) 
 })
 
-export const staffContacts = mysqlTable('contacts', {
+export const staffContacts = mysqlTable('staff_contacts', {
 
 		id: int('id').primaryKey().autoincrement(),
         staffId: int('staff_id')
 			.notNull()
-			.references(() => staff.id),
+			.references(() => staff.id, {onDelete: 'cascade'}),
 		contactType: varchar('contact_type', {length: 50}).notNull(),
-		contactDetail: varchar('contact_detail', {length: 255}).notNull(),	 
+		contactDetail: varchar('contact_detail', {length: 255}).notNull(),	
+		...secureFields 
+});
+
+export const staffAccounts = mysqlTable('staff_accounts', {
+
+		id: int('id').primaryKey().autoincrement(),
+        staffId: int('staff_id')
+			.notNull()
+			.references(() => staff.id, {onDelete: 'cascade'}),
+		paymentMethodId: int('payment_Method_id').references(()=> paymentMethods.id, {onDelete: 'set null'}),
+		accountDetail: varchar('account_detail', {length: 255}).notNull(),	
+		...secureFields 
 });
 
 export const salaries = mysqlTable(
 	'salaries',
 	{
-		id: int('salary_id').primaryKey().autoincrement(),
+		id: int('id').primaryKey().autoincrement(),
 		staffId: int('staff_id')
 			.notNull()
-			.references(() => staff.id),
+			.references(() => staff.id, {onDelete: 'cascade'}),
 		amount: decimal('amount', { precision: 10, scale: 2 }).notNull(),
 		startDate: date('start_date').notNull(),
 		endDate: date('end_date'),
@@ -82,9 +104,7 @@ export const bonuses = mysqlTable(
 	'bonuses',
 	{
 		id: int('id').primaryKey().autoincrement(),
-		staffId: int('staff_id')
-			.notNull()
-			.references(() => staff.id),
+		staffId: int('staff_id').references(() => staff.id, {onDelete: 'set null'}),
 		description: varchar('description', { length: 255 }),
 		amount: decimal('amount', { precision: 10, scale: 2 }).notNull(),
 		bonusDate: date('bonus_date').notNull(),
@@ -93,9 +113,7 @@ export const bonuses = mysqlTable(
  
 export const overTime = mysqlTable('over_time', {
 	 id: int('id').primaryKey().autoincrement(),
-	 staffId: int('staff_id')
-			.notNull()
-			.references(() => staff.id),
+	 staffId: int('staff_id').references(() => staff.id, {onDelete: 'set null'}),
 	 reason: varchar('reason', { length: 255 }),
 	 amountPerHour: decimal('amount_per_hour', { precision: 10, scale: 2 }).notNull(),
 	 hours: decimal('hours', { precision: 10, scale: 2 }).notNull(), 
@@ -105,26 +123,25 @@ export const overTime = mysqlTable('over_time', {
 })
 
 export const commissionService = mysqlTable('commissions_services', {
-    saleItemId: int('sale_item_id')
-        .notNull()
-        .references(() => transactionServices.id),
-    staffId: int('staff_id')
-        .notNull()
-        .references(() => staff.id),
+   
+		 id: int('id').primaryKey().autoincrement(),
+
+	saleItemId: int('sale_item_id').references(() => transactionServices.id, {onDelete: 'set null'}),
+    staffId: int('staff_id').references(() => staff.id, {onDelete: 'set null'}),
     amount: decimal('amount', { precision: 10, scale: 2 }).notNull(),
     commissionDate: date('commission_date').notNull(),
 	...secureFields
 });
 
 export const commissionProduct = mysqlTable('commissions_product', {
+	id: int('id').primaryKey().autoincrement(),
     saleItemId: int('sale_item_id')
         .notNull()
-        .references(() => transactionProducts.id),
-    staffId: int('staff_id')
-        .notNull()
-        .references(() => staff.id),
+        .references(() => transactionProducts.id, {onDelete: 'cascade'}),
+    staffId: int('staff_id').references(() => staff.id, {onDelete: 'set null'}),
     amount: decimal('amount', { precision: 10, scale: 2 }).notNull(),
     commissionDate: date('commission_date').notNull(),
+	...secureFields
 });
 
 export const staffServices = mysqlTable('staff_services', {
@@ -134,14 +151,13 @@ export const staffServices = mysqlTable('staff_services', {
 		.references(() => staff.id, { onDelete: 'cascade' }),
 	serviceId: int('service_id')
 		.notNull()
-		.references(() => services.id, { onDelete: 'cascade' })
+		.references(() => services.id, { onDelete: 'cascade' }),
+	...secureFields
 });
 
 export const deductions = mysqlTable('deductions', {
 	id: int('id').autoincrement().primaryKey(),
-	staffId: int('staff_id')
-		.notNull()
-		.references(() => staff.id),
+	staffId: int('staff_id').references(() => staff.id, {onDelete: 'set null'}),
 	payrollRunId: int('payroll_run_id').references(() => payrollRuns.id), // Link to a specific payroll run
 	type: varchar('type', { length: 100 }).notNull(), // e.g., 'Income Tax', 'Pension', 'Health Insurance'
 	amount: decimal('amount', { precision: 10, scale: 2 }).notNull(),
@@ -153,16 +169,14 @@ export const staffSchedule = mysqlTable('staff_schedule', {
 	id: int('id').autoincrement().primaryKey(),
 	staffId: int('staff_id')
 		.notNull()
-		.references(() => staff.id),
+		.references(() => staff.id, {onDelete: 'cascade'}),
 	shiftDate: date('shift_date').notNull(),
 	startTime: time('start_time').notNull(),
 	endTime: time('end_time').notNull(),
 	...secureFields
 });
 
-export const staffRelations = relations(staff, ({ many }) => ({
-	appointments: many(appointments)
-}));
+
 
 export const staffServicesRelations = relations(staffServices, ({ one }) => ({
 	staff: one(staff, { fields: [staffServices.staffId], references: [staff.id] }),

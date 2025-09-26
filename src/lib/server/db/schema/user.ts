@@ -6,9 +6,7 @@ import {
 	int,
 	boolean,
     datetime,
-    text,
     index,
-    uniqueIndex
 } from 'drizzle-orm/mysql-core';
 import { branches } from './branches';
 import { sql } from 'drizzle-orm';
@@ -27,9 +25,7 @@ export const user = mysqlTable('user', {
     branchId: int('branch_id')
         .references(() => branches.id),
 }, (table) => [
-  index("name_idx").on(table.name),
-  uniqueIndex("username_idx").on(table.username),
-  uniqueIndex("email_idx").on(table.email),
+  index("name_idx").on(table.name)
 ]);
 
 export const session = mysqlTable('session', {
@@ -45,10 +41,8 @@ export const session = mysqlTable('session', {
 export const roles = mysqlTable('roles', {
     id: int('id').autoincrement().primaryKey(),
     name: varchar('name', { length: 32 }).notNull().unique(),
-    description: text('description'),
-}, 
- (table) => [
-    uniqueIndex("name_idx").on(table.name)
- ]
-);
+    description: varchar('description', {length: 255}),
+    isActive: boolean('is_active').default(true).notNull(),
+
+});
 
