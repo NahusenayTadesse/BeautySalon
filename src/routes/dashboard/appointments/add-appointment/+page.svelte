@@ -5,13 +5,19 @@
 	import { Textarea } from '$lib/components/ui/textarea/index.js';
 	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';
 	import * as Card from '$lib/components/ui/card/index.js';
-	import { ArrowLeft, Plus, X } from '@lucide/svelte';
+	import { ArrowLeft, CalendarDays, CalendarIcon, Plus, X } from '@lucide/svelte';
 	import { Button } from '$lib/components/ui/button/index.js';
 	import { zod4Client } from 'sveltekit-superforms/adapters';
 	import { appointmentSchema, existingCustomerAppointment } from '$lib/ZodSchema';
 	import { superForm } from 'sveltekit-superforms/client';
 	import SelectComp from '$lib/formComponents/SelectComp.svelte';
 	import {  fly } from 'svelte/transition';
+	import { buttonVariants } from "$lib/components/ui/button/index.js";
+  import * as Popover from "$lib/components/ui/popover/index.js";
+
+      import { CalendarDate, getLocalTimeZone, today } from "@internationalized/date";
+  import { Calendar } from "$lib/components/ui/calendar/index.js";
+	import { cn } from '$lib/utils.js';
 
 	let { data } = $props();
 
@@ -64,16 +70,19 @@ let addNew = $state(false);
 
 let selectedCustomer = $state(null as {value: number, name: string} | null);
 
-// 	function searchArray() {
-//   const result = customerList.find(item => item.name === customer);
-//   return result !== undefined ? result : null;
-// }  
+let open = $state(false);
+   
+   let todayDate = today(getLocalTimeZone());
+
+ let date = $state(new CalendarDate(todayDate.year, todayDate.month, todayDate.day));
+ let date2 = $state(new CalendarDate(todayDate.year, todayDate.month, todayDate.day));
 
 
- 
-//    const searchValue = $derived(
-//   customerList.find((f) => f.name === customer)
-//  );
+
+$effect(()=> {
+	$existingForm.appointmentDate = date.toString();
+	$form.appointmentDate = date2.toString();
+})
 
 </script>
 
@@ -144,24 +153,25 @@ let selectedCustomer = $state(null as {value: number, name: string} | null);
 		{/if}
 	</div>
 {/snippet}
-{#snippet selects2(name, items)}
+<!-- {#snippet selects2(name, items)}
 	<div class="flex w-full flex-col justify-start gap-2">
 		<Label for={name} class="capitalize">{name.replace(/([a-z])([A-Z])/g, '$1 $2')}:</Label>
 
 		<SelectComp {name} bind:value={$existingForm[name]} {items} />
 		{#if $existingErrors[name]}<span class="text-red-500">{$existingErrors[name]}</span>{/if}
 	</div>
-{/snippet}
+{/snippet} -->
 
 
 
 
-
+<div class="mb-8">
 {#if addNew}
 	<Button class="mb-4" onclick={() => (addNew = false)}> <ArrowLeft /> Back to Existing Customers</Button>
 {:else}
 	<Button class="mb-4" onclick={() => (addNew = true, /^\d+$/.test(customer) ? $form.phone = customer : $form.firstName = customer)}>  <Plus /> Add New Customer</Button>
 {/if}
+</div>
 
 
 
@@ -191,7 +201,7 @@ let selectedCustomer = $state(null as {value: number, name: string} | null);
 		    {#each customerList as customer}
 			<li transition:fly={{x:-200, duration: 600}} class="">
 				<Button class="w-1/2" variant="outline" 
-				onclick={() => selectedCustomer = customer}
+				onclick={() => {selectedCustomer = customer; $existingForm.customerId = customer.value; }}
 				 >{customer.name}</Button>
 				</li>
 			{/each}
@@ -199,7 +209,7 @@ let selectedCustomer = $state(null as {value: number, name: string} | null);
 		{/if}
 
 		<Card.Root class="flex w-xl justify-self-center flex-col gap-4">
-	<Card.Header>
+	<Card.Header class="mb-4">
 		<Card.Title class="text-2xl">Add An Appointment</Card.Title>
 		<Card.Description>Add New Appointments to track the how many have</Card.Description>
 	</Card.Header>
@@ -224,19 +234,63 @@ let selectedCustomer = $state(null as {value: number, name: string} | null);
 			     <X onclick={() => selectedCustomer = null} />
 
 			  </div>
-				<input type="hidden" name="customerId" value={selectedCustomer?.value} />
 			{/if}
+		<input type="hidden" required aria-invalid={$existingErrors.customerId ? 'true' : undefined} name="customerId" bind:value={$existingForm.customerId} />
+
+			{#if $existingErrors.customerId}
+			<span class="text-red-500"> {$existingErrors.customerId}</span>
+		    {/if}
 
 
-			{@render fe2(
+			<!-- {@render fe2(
 				'Appointment Date',
 				'appointmentDate',
 				'date',
 				'Enter Appointment Date',
 				true,
 				getTodayDate()
-			)}
+			)} -->
+
+			<input type="hidden"  bind:value={$existingForm.appointmentDate} name="appointmentDate" />
+
+<Popover.Root>
+  <Popover.Trigger
+    class={cn(
+      buttonVariants({
+        variant: "outline",
+        class: "justify-start "
+      }),
+      !date && "text-muted-foreground"
+    )}
+  >
+    <CalendarIcon /> {$existingForm.appointmentDate ? date.toString() : 'Select Appointment Date'}
+   </Popover.Trigger>
+    
+  <Popover.Content class="p-0 flex flex-wrap gap-2 border-t px-2 !pt-4">
+	
+	{#each [{ label: "Today", value: 0 }, { label: "Tomorrow", value: 1 }, { label: "In a week", value: 7 }] as preset (preset.value)}
+      <Button
+        variant="outline"
+        size="sm"
+        class="flex-1"
+        onclick={() => {
+          date = todayDate?.add({ days: preset.value });
+        }}
+      >
+        {preset.label}
+      </Button>
+    {/each}
+    <Calendar type="single" minValue={todayDate}  bind:value={date} />
+  </Popover.Content>
+</Popover.Root>
+	{#if $existingErrors.appointmentDate}
+			<span class="text-red-500">{$existingErrors.appointmentDate}</span>
+		{/if}
 			{@render fe2('Appointment Time', 'appointmentTime', 'time', 'Enter Appointment Time', true)}
+
+
+ 
+
 
 			<div class="flex w-full flex-col justify-start gap-2">
 				<Label for="notes">Special Request (optional)</Label>
@@ -364,14 +418,50 @@ let selectedCustomer = $state(null as {value: number, name: string} | null);
 			<!-- {@render fe('Customer Gender', 'gender', 'text', 'Select Customer Gender', true)} -->
 			{@render selects('gender', gender)}
 			 
-			{@render fe(
+			<!-- {@render fe(
 				'Appointment Date',
 				'appointmentDate',
 				'date',
 				'Enter Appointment Date',
 				true,
 				getTodayDate()
-			)}
+			)} -->
+
+			<input type="hidden"  bind:value={$form.appointmentDate} name="appointmentDate" />
+
+<Popover.Root>
+  <Popover.Trigger
+    class={cn(
+      buttonVariants({
+        variant: "outline",
+        class: "justify-start "
+      }),
+      !date && "text-muted-foreground"
+    )}
+  >
+    <CalendarIcon /> {$form.appointmentDate ? date2.toString() : 'Select Appointment Date'}
+   </Popover.Trigger>
+    
+  <Popover.Content class="p-0 flex flex-wrap gap-2 border-t px-2 !pt-4">
+	
+	{#each [{ label: "Today", value: 0 }, { label: "Tomorrow", value: 1 }, { label: "In a week", value: 7 }] as preset (preset.value)}
+      <Button
+        variant="outline"
+        size="sm"
+        class="flex-1"
+        onclick={() => {
+          date2 = todayDate?.add({ days: preset.value });
+        }}
+      >
+        {preset.label}
+      </Button>
+    {/each}
+    <Calendar type="single" minValue={todayDate}  bind:value={date2} />
+  </Popover.Content>
+</Popover.Root>
+	{#if $errors.appointmentDate}
+			<span class="text-red-500">{$errors.appointmentDate}</span>
+		{/if}
 			{@render fe('Appointment Time', 'appointmentTime', 'time', 'Enter Appointment Time', true)}
 
 			<div class="flex w-full flex-col justify-start gap-2">

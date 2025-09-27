@@ -4,7 +4,7 @@ import type { PageServerLoad } from "./$types";
 
 export const load: PageServerLoad = async() => {
 
-     const date = new Date();
+    const date = new Date();
 
-     redirect(307, `/dashboard/appointments/${date.toISOString().split('T')[0]}`);
+     redirect(307, `/dashboard/appointments/${date.toLocaleDateString("en-CA")}`);
 }

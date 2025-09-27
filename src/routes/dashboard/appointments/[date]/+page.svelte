@@ -29,16 +29,15 @@ import { Input } from '$lib/components/ui/input/index.js';
     { name: 'Booked At', key: 'bookedAt' }
   ]; 
 
-  let selectedDate = $state(today(getLocalTimeZone()));
   let todayDate = today(getLocalTimeZone());
-  let value = $state<CalendarDate | undefined>(new CalendarDate(2025, 6, 12));
+  let value = $state<CalendarDate | undefined>(todayDate);
   
 
    
   let urlDate = $state(page.url.pathname.split('/').pop() || today(getLocalTimeZone()).toString());
     const [year, month, day] = urlDate.split("-").map(Number);
 
-  let placeholder = $derived(new CalendarDate(year, month - 1, day));
+  let placeholder = $derived(todayDate);
   let open = $state(false);
    
 </script>

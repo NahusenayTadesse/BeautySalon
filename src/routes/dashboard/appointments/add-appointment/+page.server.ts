@@ -49,8 +49,9 @@ const productsList = await db.select({
 
 export const actions: Actions = {
   addAppointment: async ({ request, cookies, locals }) => {
-    console.log('connected to add appointment action')
     const form = await superValidate(request, zod4(schema));
+
+
 
     if (!form.valid) {
       // Stay on the same page and set a flash message
@@ -59,6 +60,8 @@ export const actions: Actions = {
     }
 
    const {firstName, lastName, phone, gender, appointmentDate, appointmentTime, notes} = form.data;
+
+
 
     
     try{
@@ -102,14 +105,22 @@ export const actions: Actions = {
   },
 
   addExistingCustomerAppointment: async ({ request, cookies, locals }) => {
-    console.log('connected to add appointment action for existing customer')
     const form = await superValidate(request, zod4(existingCustomerAppointment));
+  
     if (!form.valid) {
       // Stay on the same page and set a flash message
       setFlash({ type: 'error', message: "Please check your form data." }, cookies);
       return fail(400, { form });
     }
     const {customerId, appointmentDate, appointmentTime, notes} = form.data;
+
+    if (!customerId) {
+      setError(form, 'customerId', 'Customer is required.');
+        setFlash({ type: 'error', message: "Customer Name is required." }, cookies);
+        return fail(400, { form });
+    }
+      
+    
 
     try{
 
