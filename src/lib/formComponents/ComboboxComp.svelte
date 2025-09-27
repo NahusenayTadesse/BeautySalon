@@ -9,7 +9,7 @@
 	import { selectItem } from "$lib/global.svelte";
  
 
-  let { items, name,value=$bindable(), btnName = "Select from Existing Parents" } = $props();
+  let { items, name, value=$bindable() } = $props();
  let open = $state(false);
  let triggerRef = $state<HTMLButtonElement>(null!);
  

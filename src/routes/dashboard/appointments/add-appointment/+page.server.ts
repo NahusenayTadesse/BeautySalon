@@ -1,23 +1,23 @@
-import { superValidate } from 'sveltekit-superforms';
+import { setError, superValidate } from 'sveltekit-superforms';
 import { zod4 } from 'sveltekit-superforms/adapters';
 import { fail } from '@sveltejs/kit';
-import { eq, and } from "drizzle-orm"
+import { eq, and, sql } from "drizzle-orm"
 
-import { inventoryItemSchema } from '$lib/ZodSchema';
+import { appointmentSchema as schema, existingCustomerAppointment } from '$lib/ZodSchema';
 import { db } from '$lib/server/db';
-import { products, customers } from '$lib/server/db/schema/';
+import { products, customers, appointments } from '$lib/server/db/schema/';
 import type {  Actions } from "./$types";
 import type { PageServerLoad } from './$types.js';
 import { setFlash } from 'sveltekit-flash-message/server';
 
 
 export const load: PageServerLoad = async ({locals}) => {
-  const form = await superValidate(zod4(inventoryItemSchema));
+  const form = await superValidate(zod4(schema));
+  const existingForm = await superValidate(zod4(existingCustomerAppointment));
   const customersList = await db.select({
-  id: customers.id,
-  firstName: customers.firstName,
-  lastName: customers.lastName,
-  phone: customers.phone
+  value: customers.id,
+  // name: customers.firstName
+    name: sql<string>`concat(${customers.firstName}, ' ', ${customers.lastName}, ' - ', ${customers.phone})`,
 })
 .from(customers)
 .where(
@@ -31,18 +31,26 @@ const productsList = await db.select({
 
     value: products.id,
     name: products.name,
-})
+}).from(products).where(
+  and(
+    eq(products.isActive, true),
+    eq(products.branchId, locals?.user?.branch)
+  )
+);
 
   return {
     form, 
+    existingForm,
     customersList,
-    productsList
+    productsList,
+    
   };
 };
 
 export const actions: Actions = {
-  addProduct: async ({ request, cookies }) => {
-    const form = await superValidate(request, zod4(inventoryItemSchema));
+  addAppointment: async ({ request, cookies, locals }) => {
+    console.log('connected to add appointment action')
+    const form = await superValidate(request, zod4(schema));
 
     if (!form.valid) {
       // Stay on the same page and set a flash message
@@ -50,18 +58,82 @@ export const actions: Actions = {
       return fail(400, { form });
     }
 
-
+   const {firstName, lastName, phone, gender, appointmentDate, appointmentTime, notes} = form.data;
 
     
     try{
 
+      const [customer] = await db.insert(customers).values({
+        firstName,
+        lastName,
+        phone,
+        gender,
+        branchId: locals?.user?.branch,
+        createdBy: locals?.user?.id
+      }).$returningId();
+
+       await db.insert(appointments).values({
+        customerId: customer.id,
+        appointmentDate,
+        appointmentTime,
+        notes,
+        createdBy: locals?.user?.id,
+        branchId: locals?.user?.branch
+      });
+
+            setFlash({ type: 'success', message: "New Appointment Successfully Added" }, cookies);
+            return {
+      form
+    }
+
+
+    } catch(err){
+         console.error("Error" + err)
+         setFlash({ type: 'error', message: err.code === 'ER_DUP_ENTRY' ? 'Phone number is already taken. Please choose another one.': err.message }, cookies);
+                
+             if(err.code === 'ER_DUP_ENTRY')
+                    return setError(form, 'phone', 'Phone Number already exists.');
+                   
+         
+                 return fail(400, {
+                 form
+               });
+    }
+  },
+
+  addExistingCustomerAppointment: async ({ request, cookies, locals }) => {
+    console.log('connected to add appointment action for existing customer')
+    const form = await superValidate(request, zod4(existingCustomerAppointment));
+    if (!form.valid) {
+      // Stay on the same page and set a flash message
+      setFlash({ type: 'error', message: "Please check your form data." }, cookies);
+      return fail(400, { form });
+    }
+    const {customerId, appointmentDate, appointmentTime, notes} = form.data;
+
+    try{
+
+       await db.insert(appointments).values({
+        customerId,
+        appointmentDate,
+        appointmentTime,
+        notes,
+        createdBy: locals?.user?.id,
+        branchId: locals?.user?.branch
+      });
  
       // Stay on the same page and set a flash message
-      setFlash({ type: 'success', message: "New Inventory Successuflly Added" }, cookies);
-    return {
-      form
-    } } catch(err){
-         console.error("Error" + err)
+      setFlash({ type: 'success', message: "New Appointment Successfully Added" }, cookies);
+      return {
+        form
+      };
+    } catch(err){
+      console.error("Error" + err)
+      setFlash({ type: 'error', message: "Error: Something Went Wrong Try Again" }, cookies);
+
+      return fail(400, {
+        form
+      });
     }
   }
 };

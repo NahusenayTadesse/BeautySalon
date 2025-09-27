@@ -131,3 +131,71 @@ export const serviceCategorySchema = z.object({
 
 
 export type ServiceCategorySchema = z.infer<typeof serviceCategorySchema>;
+
+const today = new Date();
+today.setHours(0, 0, 0, 0);
+
+export const appointmentSchema = z.object({
+  firstName: z
+    .string()
+    .min(1, "First name is required")
+    .max(50, "First name is too long"),
+  lastName: z
+    .string()
+    .max(50, "Last name is too long")
+    .optional()
+    .or(z.literal("")), 
+  phone: z
+    .string()
+    .min(7, "Phone number is too short")
+    .max(15, "Phone number is too long")
+    .regex(/^[0-9+\-()\s]+$/, "Invalid phone number"),
+  gender: z.string().refine((val) => ["male", "female"].includes(val), {
+    message: "Please select a gender"
+  }),
+  appointmentDate: z
+    .string()
+    .refine(
+      (val) => {
+        const d = new Date(val);
+        return !isNaN(d.getTime()) && d >= today;
+      },
+      { message: "Date must be today or in the future" }
+    ),
+  appointmentTime: z
+    .string()
+    .regex(/^([01]\d|2[0-3]):([0-5]\d)$/, "Invalid time format (HH:MM)"),
+  notes: z
+    .string()
+    .max(500, "Notes must be less than 500 characters")
+    .optional()
+    .or(z.literal("")), // allow empty string
+});
+
+// TypeScript type inference
+export type AppointmentForm = z.infer<typeof appointmentSchema>;
+
+
+export const existingCustomerAppointment = z.object({
+  customerId: z.number('Customer is required'),
+  appointmentDate: z
+    .string()
+    .refine(
+      (val) => {
+        const d = new Date(val);
+        return !isNaN(d.getTime()) && d >= today;
+      },
+      { message: "Date must be today or in the future" }
+    ),
+  appointmentTime: z
+    .string()
+    .regex(/^([01]\d|2[0-3]):([0-5]\d)$/, "Invalid time format (HH:MM)"),
+  notes: z
+    .string()
+    .max(500, "Notes must be less than 500 characters")
+    .optional()
+    .or(z.literal("")), // allow empty string
+});
+
+// TypeScript type inference
+export type ExistingCustomerAppointmentForm = z.infer<typeof existingCustomerAppointment>;

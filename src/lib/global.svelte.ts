@@ -8,7 +8,8 @@ export const selectItem = `hover:bg-gray-100 hover:shadow-md hover:scale-101 dur
              px-5 py-3 rounded-xl shadow-lg
              animate-slide-in`
   export const errormsg = `${toastmsg} !bg-red-600`;
-  export const searchableFields = ['name', 'description', 'permissions', 'value', 'firstName', 'lastName']
+  export const searchableFields = ['name', 'description', 'permissions', 'value', 'firstName', 
+    'lastName', 'phone', 'date', 'time','bookedBy', 'notes', 'bookedAt'];
   import { encodeBase32LowerCase } from '@oslojs/encoding';
   
 
