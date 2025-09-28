@@ -80,10 +80,10 @@ import { Input } from '$lib/components/ui/input/index.js';
 
   
   </div>
-  <div class="w-full mt-8">
+  <div class="lg:w-full w-4/5 mt-8">
  {#if data.appointmentsList.length === 0}
    <p class="text-center">No appointments for this date.</p>
  {:else}
- <ChildrenTable {tableHeaders} mainlist={data.appointmentsList} search={true} link="appointments"  />
+ <ChildrenTable {tableHeaders} mainlist={data.appointmentsList} search={true} link="appointments/single"  />
   {/if}
  </div> 

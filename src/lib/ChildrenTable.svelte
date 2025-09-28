@@ -45,7 +45,7 @@ function filterEmployees(persons, query) {
 </script>
 
 {#if  search}
-  <Input type="search"  bind:value={searchQuery} placeholder="Search..." />
+  <Input type="search"  bind:value={searchQuery} class="max-w-sm mb-4" placeholder="Search..." />
 
 {/if}
 
@@ -61,7 +61,7 @@ function filterEmployees(persons, query) {
         : []}
         <ScrollArea class="w-full rounded-md border" orientation='horizontal'>
 
- <table id='table' class="w-1/2 divide-y divide-gray-200 dark:divide-gray-200"  bind:this = {table}>
+ <table id='table' class="divide-y divide-gray-200 dark:divide-gray-200"  bind:this = {table}>
     <thead class="bg-gray-100 dark:bg-black">
       <tr>
         {#each tableHeaders as head, index }
@@ -112,10 +112,9 @@ function filterEmployees(persons, query) {
           <td class="px-6 py-4 whitespace-nowrap text-sm  {value ? 'bg-green-400' : 'bg-red-400'} text-white">{value ? 'Active' : 'InActive'}</td>
           {:else if key === 'id'}
           <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-200 capitalize">{index + 1}</td>
-          {:else if key === 'firstName' || key === 'lastName' || key === 'userName'}
+          {:else if key === 'firstName' || key === 'lastName' || key === 'userName' || key === 'name' || key === 'categoryName' || key === 'positionName' || key === 'serviceName' || key === 'productName' || key === 'brandName' || key === 'supplierName' || key === 'customerName' || key === 'appointmentName' || key === 'staffName' }
 
-          
-          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-200 capitalize 
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-200 capitalize
           hover:scale-110 transition-discrete duration-300 ease-in-out" >
           <a href='/dashboard/{link}/{person.id}'>{value}</a></td>
            {:else if key === 'studentFirstName' || key === 'studentLastName' || key==='userName'}

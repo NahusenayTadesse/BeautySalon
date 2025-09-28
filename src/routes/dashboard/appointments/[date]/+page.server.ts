@@ -1,7 +1,7 @@
 
 
 import { db } from "$lib/server/db";
-import { appointments, customers, staff, user  } from "$lib/server/db/schema";
+import { appointments, customers, user  } from "$lib/server/db/schema";
 import { eq, asc, and, sql } from "drizzle-orm";
 import type { PageServerLoad } from "./$types";
 
@@ -14,7 +14,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 
         const appointmentsList = await db.select(
            { id: appointments.id,
-             customerName: sql<string>`TRIM(CONCAT(${customers.firstName}, ' ', COALESCE(${customers.lastName}, '')))`,
+            customerName: sql<string>`TRIM(CONCAT(${customers.firstName}, ' ', COALESCE(${customers.lastName}, '')))`,
             phone: customers.phone,
             bookedBy: user.name,  
             date: sql<string>`DATE_FORMAT(${appointments.appointmentDate}, '%Y-%m-%d')`,

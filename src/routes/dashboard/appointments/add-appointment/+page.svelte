@@ -418,14 +418,14 @@ $effect(()=> {
 			<!-- {@render fe('Customer Gender', 'gender', 'text', 'Select Customer Gender', true)} -->
 			{@render selects('gender', gender)}
 			 
-			<!-- {@render fe(
+			{@render fe(
 				'Appointment Date',
 				'appointmentDate',
 				'date',
 				'Enter Appointment Date',
 				true,
 				getTodayDate()
-			)} -->
+			)}
 
 			<input type="hidden"  bind:value={$form.appointmentDate} name="appointmentDate" />
 
