@@ -15,7 +15,26 @@
 
 	let { children } = $props();
 
-   let iconify = $state("h-6 w-6 animate-ping")
+   let iconify = $state("h-6 w-6 animate-ping");
+
+import { onMount } from 'svelte';
+
+ 
+
+  onMount(() => {
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/service-worker.js')
+        .then(() => console.log('Service Worker registered'))
+        .catch((err) => console.error('SW registration failed:', err));
+    }
+
+	 
+  });
+
+
+
+  
+
 
 </script>
 <svelte:head>
@@ -60,6 +79,8 @@
 		</p>
 	</div>
 {/if}
+
+
 
 {@render children()}
 
