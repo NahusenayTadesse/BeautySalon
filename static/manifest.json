@@ -1,7 +1,7 @@
     {
     "name": "NSS Salon Manager",
     "short_name": "NSS Salon",
-    "start_url": "/",
+    "start_url": "/dashboard",
     "display": "standalone",
     "background_color": "#ffffff",
     "theme_color": "#ff0000",

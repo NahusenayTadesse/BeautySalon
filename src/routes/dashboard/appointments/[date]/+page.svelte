@@ -1,12 +1,12 @@
 <script lang='ts'>
+    import { columns } from "./columns";
   
 
   let { data } = $props();
-import { Input } from '$lib/components/ui/input/index.js';
   import { buttonVariants } from "$lib/components/ui/button/index.js";
   import * as Popover from "$lib/components/ui/popover/index.js";
+  import DataTable from '$lib/components/Table/data-table.svelte';
 
-	import { Label } from '$lib/components/ui/label/index.js';
       import { getLocalTimeZone, today } from "@internationalized/date";
   import { Calendar } from "$lib/components/ui/calendar/index.js";
   import { CalendarDate } from "@internationalized/date";
@@ -14,34 +14,25 @@ import { Input } from '$lib/components/ui/input/index.js';
 	import * as Card from '$lib/components/ui/card/index.js';
 
 	import { goto } from '$app/navigation';
-  import ChildrenTable from '$lib/ChildrenTable.svelte';
     import Button from "$lib/components/ui/button/button.svelte";
-	import { CalendarDays } from '@lucide/svelte';
-
-  let tableHeaders = [
-    { name: 'Id', key: 'id' },
-    { name: 'Name', key: 'customerName' },
-    { name: 'Phone', key: 'phone' },
-    { name: 'Booked By', key: 'bookedBy' },
-    { name: 'Date', key: 'date' },
-    { name: 'Time', key: 'time' },
-    { name: 'Notes', key: 'notes' },
-    { name: 'Booked At', key: 'bookedAt' }
-  ]; 
+	import { CalendarDays, Frown } from '@lucide/svelte';
 
   let todayDate = today(getLocalTimeZone());
   let value = $state<CalendarDate | undefined>(todayDate);
-  
-
-   
   let urlDate = $state(page.url.pathname.split('/').pop() || today(getLocalTimeZone()).toString());
     const [year, month, day] = urlDate.split("-").map(Number);
 
   let placeholder = $derived(todayDate);
   let open = $state(false);
+
    
 </script>
+
+<svelte:head>
+        <title> Appointments on {placeholder}</title>
+</svelte:head>
  <div>
+  
 <Popover.Root bind:open>
   <Popover.Trigger  class={buttonVariants({ variant: "outline" })}>
     <CalendarDays /> Select Another Date</Popover.Trigger
@@ -80,10 +71,22 @@ import { Input } from '$lib/components/ui/input/index.js';
 
   
   </div>
-  <div class="lg:w-full w-4/5 mt-8">
+  <!-- <div class="lg:w-full w-4/5 mt-8">
  {#if data.appointmentsList.length === 0}
    <p class="text-center">No appointments for this date.</p>
  {:else}
  <ChildrenTable {tableHeaders} mainlist={data.appointmentsList} search={true} link="appointments/single"  />
   {/if}
- </div> 
+ </div> -->
+  {#if data.appointmentsList.length === 0}
+   <div class="w-5xl h-96 flex justify-center items-center">
+   <p class="text-center flex flex-row gap-4 mt-4 text-4xl justify-self-cente"><Frown class="animate-bounce w-16  h-12" />
+     No appointments for this date, try another date. </p>
+     </div>
+ {:else}
+     <h2 class="text-center text-2xl">You have {data.appointmentsList?.length} appointments</h2>
+
+ <div class="lg:w-full w-[350px] lg:p-0 p-2 mt-8 mb-4 pt-4">
+   <DataTable data={data.appointmentsList} {columns} />
+ </div>
+ {/if}

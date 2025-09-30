@@ -1,12 +1,12 @@
 <script lang="ts">
-	import {  Users, UserRoundCog, ChartArea, Hexagon, Home, Calendar, Package, SquareChartGantt, IdCardLanyard } from '@lucide/svelte';
+	import {  Users, UserRoundCog, ChartArea, Hexagon,Calendar, Package, SquareChartGantt, IdCardLanyard, LayoutDashboard } from '@lucide/svelte';
 	import * as Sidebar from '$lib/components/ui/sidebar/index.js';
 	import type { ComponentProps } from 'svelte';
 	import { page } from '$app/state';
 	import DarkMode from './DarkMode.svelte';
 	import { bgGradient } from '$lib/global.svelte';
 	const navigation = [
-		{ name: 'Dashboard', href: '/dashboard', icon: Home },
+		{ name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
 		{ name: 'Customers', href: '/dashboard/customers', icon: Users },
 		{ name: 'Appointments', href: '/dashboard/appointments', icon: Calendar },
 		{ name: 'Inventory', href: '/dashboard/inventory', icon: Package },

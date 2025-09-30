@@ -4,6 +4,10 @@ import path from 'node:path';
 import { Readable } from 'node:stream';
 import { pipeline } from 'node:stream/promises';
 import { env } from '$env/dynamic/private';
+import { superValidate } from 'sveltekit-superforms';
+import { zod4 } from 'sveltekit-superforms/adapters';
+import { appointmentSchema as schema } from '$lib/ZodSchema';
+
 
 const FILES_DIR: string = env.FILES_DIR ?? '.tempFiles';
 
@@ -23,7 +27,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 
 
      const {id} = params;
-
+       const form = await superValidate(zod4(schema));
         const appointmentsList = await db.select(
            { 
             customerName: sql<string>`TRIM(CONCAT(${customers.firstName}, ' ', COALESCE(${customers.lastName}, '')))`,
@@ -44,10 +48,11 @@ export const load: PageServerLoad = async ({ params, locals }) => {
             )
         ).then(rows => rows[0]);
 
-
+   
 
         return {
-            appointmentsList
+            appointmentsList,
+            form
         }
 }
 
