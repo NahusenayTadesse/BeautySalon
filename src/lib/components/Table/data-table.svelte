@@ -98,8 +98,8 @@
 
  
 </script>
- <div class="lg:w-full w-full bg-white rounded-lg dark:bg-gray-950">
-<div class="rounded-md min-w-full border">
+ <div class="lg:w-full w-full bg-white rounded-lg dark:bg-gray-950 p-2">
+<div class="rounded-md min-w-full border-0">
 
       <div class="flex flex-row gap-4 items-center py-4">
     <Input
@@ -134,7 +134,7 @@
       </DropdownMenu.Content>
     </DropdownMenu.Root>
   </div>
-    <div class="border">
+    <div class="border rounded-md">
 
  <Table.Root>
   <Table.Header>

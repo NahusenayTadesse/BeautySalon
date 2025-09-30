@@ -3,6 +3,7 @@
 
     import Copy from "$lib/Copy.svelte";
     import {LoaderCircle} from "@lucide/svelte"
+	import Statuses from "./Table/statuses.svelte";
     // import JSPDF from "$lib/JSPDF.svelte"
 
     let { singleTable  } = $props();
@@ -33,7 +34,10 @@
             <td class="py-3 px-4 capitalize">
                 {#if value.name === 'Phone'} 
                 <Copy data={value.value} /> 
+                {:else if value.name === 'Status'}
+               <Statuses status={value.value} />
                 {:else} 
+                 
                  {value.value}
                 {/if}</td>
           </tr>

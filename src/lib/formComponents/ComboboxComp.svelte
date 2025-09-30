@@ -38,7 +38,7 @@
     role="combobox"
     aria-expanded={open}
    >
-    {selectedValue || "Select " + name + "..."}
+    {selectedValue || "Select " + name.replace(/([a-z0-9])([A-Z])/g, "$1 $2") + "..."}
     <ChevronsUpDownIcon class="opacity-50" />
    </Button>
   {/snippet}
@@ -47,9 +47,10 @@
 
  <Popover.Content class="w-full p-0">
   <Command.Root>
-   <Command.Input placeholder="Search {name}..." />
+   <Command.Input placeholder="Search {name.replace(/([a-z0-9])([A-Z])/g, "$1 $2")
+  .replace(/\b\w/g, char => char.toUpperCase())}..." />
    <Command.List>
-    <Command.Empty>No {name} found.</Command.Empty>
+    <Command.Empty>No {name.replace(/([a-z])([A-Z])/g, "$1 $2")} found.</Command.Empty>
     <Command.Group >
      {#each items as  item}
       <Command.Item

@@ -84,7 +84,7 @@
      No appointments for this date, try another date. </p>
      </div>
  {:else}
-     <h2 class="text-center text-2xl">You have {data.appointmentsList?.length} appointments</h2>
+     <h2 class="text-2xl my-4">No of appointments {data.appointmentsList?.length} </h2>
 
  <div class="lg:w-full w-[350px] lg:p-0 p-2 mt-8 mb-4 pt-4">
    <DataTable data={data.appointmentsList} {columns} />

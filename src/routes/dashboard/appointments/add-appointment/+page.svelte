@@ -5,7 +5,7 @@
 	import { Textarea } from '$lib/components/ui/textarea/index.js';
 	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';
 	import * as Card from '$lib/components/ui/card/index.js';
-	import { ArrowLeft, CalendarDays, CalendarIcon, Plus, X } from '@lucide/svelte';
+	import { ArrowLeft,  CalendarIcon, Plus, X } from '@lucide/svelte';
 	import { Button } from '$lib/components/ui/button/index.js';
 	import { zod4Client } from 'sveltekit-superforms/adapters';
 	import { appointmentSchema, existingCustomerAppointment } from '$lib/ZodSchema';

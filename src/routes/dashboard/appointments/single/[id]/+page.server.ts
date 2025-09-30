@@ -1,12 +1,13 @@
 
 import fs from 'node:fs';
 import path from 'node:path';
+import { generateUserId } from '$lib/global.svelte';
 import { Readable } from 'node:stream';
 import { pipeline } from 'node:stream/promises';
 import { env } from '$env/dynamic/private';
 import { superValidate } from 'sveltekit-superforms';
 import { zod4 } from 'sveltekit-superforms/adapters';
-import { appointmentSchema as schema } from '$lib/ZodSchema';
+import { bookingFeeSchema as schema } from '$lib/zodschemas/appointmentSchema';
 
 
 const FILES_DIR: string = env.FILES_DIR ?? '.tempFiles';
@@ -16,7 +17,7 @@ if (!fs.existsSync(FILES_DIR)) {
 }
 
 import { db } from "$lib/server/db";
-import { appointments, customers, user  } from "$lib/server/db/schema";
+import { appointments, appointmentStatuses, customers, paymentMethods, user  } from "$lib/server/db/schema";
 import { eq, and, sql } from "drizzle-orm";
 import type { Actions, PageServerLoad } from "./$types";
 import { fail } from 'sveltekit-superforms';
@@ -30,17 +31,20 @@ export const load: PageServerLoad = async ({ params, locals }) => {
        const form = await superValidate(zod4(schema));
         const appointmentsList = await db.select(
            { 
+            id: appointments.id,
             customerName: sql<string>`TRIM(CONCAT(${customers.firstName}, ' ', COALESCE(${customers.lastName}, '')))`,
             phone: customers.phone,
             date: sql<string>`DATE_FORMAT(${appointments.appointmentDate}, '%Y-%m-%d')`,
             time: sql<string>`DATE_FORMAT(${appointments.appointmentTime}, '%H:%i')`,
             bookedBy: user.name,  
+            status: appointmentStatuses.name,
             notes: appointments.notes,
             bookedAt: sql<string>`DATE_FORMAT(${appointments.createdAt}, '%Y-%m-%d')`
         }
         ).from(appointments)
         .leftJoin(customers, eq(appointments.customerId, customers.id))
         .leftJoin(user, eq(appointments.createdBy, user.id))
+        .leftJoin(appointmentStatuses, eq(appointments.statusId, appointmentStatuses.id))
         .where(
             and(
                 eq(appointments.branchId, locals?.user?.branch),
@@ -48,11 +52,22 @@ export const load: PageServerLoad = async ({ params, locals }) => {
             )
         ).then(rows => rows[0]);
 
+       
+         const allMethods = await db
+                .select({
+                  value: paymentMethods.id,
+                  name: paymentMethods.name,
+                  description: paymentMethods.description
+                })
+                .from(paymentMethods).where(eq(paymentMethods.isActive, true));
+
    
 
         return {
             appointmentsList,
-            form
+            form,
+            allMethods
+            
         }
 }
 
@@ -65,8 +80,9 @@ export const actions: Actions = {
 
     const image = formData.get('image') as File;
 
-    const file_path: string = path.normalize(path.join(FILES_DIR, image.name));
-    		// const file_path = fs.statSync(path.normalize(path.join(FILES_DIR, image.name)));
+const file_path: string = path.normalize(
+  path.join(FILES_DIR, `${generateUserId()}${path.extname(image.name)}`)
+);    		// const file_path = fs.statSync(path.normalize(path.join(FILES_DIR, image.name)));
 
 
     // if (fs.existsSync(file_path)) {

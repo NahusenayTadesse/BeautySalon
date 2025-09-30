@@ -22,7 +22,7 @@
  </DropdownMenu.Trigger>
  <DropdownMenu.Content>
   <DropdownMenu.Group>
-   <DropdownMenu.Label>Actions</DropdownMenu.Label>
+   <DropdownMenu.Label>Settings</DropdownMenu.Label>
   
   </DropdownMenu.Group>
   <DropdownMenu.Separator />

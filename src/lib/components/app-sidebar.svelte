@@ -6,7 +6,6 @@
 	import DarkMode from './DarkMode.svelte';
 	import { bgGradient } from '$lib/global.svelte';
 	const navigation = [
-		{ name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
 		{ name: 'Customers', href: '/dashboard/customers', icon: Users },
 		{ name: 'Appointments', href: '/dashboard/appointments', icon: Calendar },
 		{ name: 'Inventory', href: '/dashboard/inventory', icon: Package },
@@ -35,6 +34,22 @@
 	</Sidebar.Header>
 	<Sidebar.Content class={bgGradient}>
 		<ul class="mt-8 flex w-full flex-col items-start justify-center gap-2 p-2">
+			<li class="w-full">
+					<a
+						href="/dashboard"
+						class="text-md flex items-center gap-3 rounded-lg px-3 py-3
+          font-medium transition-colors duration-300 hover:bg-sidebar-accent
+          hover:text-sidebar-accent-foreground
+          {page.url.pathname === '/dashboard' ? 
+		    
+							'bg-sidebar-primary text-sidebar-primary-foreground'
+							: 'text-sidebar-foreground'}"
+					>
+						<LayoutDashboard class="h-4 w-4" />
+						Dashboard
+						  
+					</a>
+				</li>
 			{#each navigation as item}
 				<li class="w-full">
 					<a
@@ -42,12 +57,14 @@
 						class="text-md flex items-center gap-3 rounded-lg px-3 py-3
           font-medium transition-colors duration-300 hover:bg-sidebar-accent
           hover:text-sidebar-accent-foreground
-          {page.url.pathname === item.href
-							? 'bg-sidebar-primary text-sidebar-primary-foreground'
+          {page.url.pathname === item.href || page.url.pathname.startsWith(item.href + '/') ? 
+		    
+							'bg-sidebar-primary text-sidebar-primary-foreground'
 							: 'text-sidebar-foreground'}"
 					>
 						<item.icon class="h-4 w-4" />
 						{item.name}
+						  
 					</a>
 				</li>
 			{/each}
