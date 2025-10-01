@@ -59,6 +59,31 @@ export const load: PageServerLoad = async ({ params, locals }) => {
         )
         .then(rows => rows[0]);
 
+
+        const reciepts = await db.select({
+            id: customers.id,
+            customerName: sql<string>`TRIM(CONCAT(${customers.firstName}, ' ', COALESCE(${customers.lastName}, '')))`,
+            appointmentDate: sql<string>`DATE_FORMAT(${appointments.appointmentDate}, '%Y-%m-%d')`,
+            amount: transactions.amount,
+            booker: user.id,
+            recievedBy: user.name,
+            paidAt: sql<string>`DATE_FORMAT(${transactions.createdAt}, '%Y-%m-%d')`,
+            recieptLink: transactions.recieptLink
+        }).from(transactionBookingFee)
+         .innerJoin(appointments, eq(transactionBookingFee.appointmentId,appointments.id))
+         .leftJoin(customers, eq(appointments.customerId, customers.id))
+         .leftJoin(transactions, eq(transactionBookingFee.transactionId, transactions.id))
+         .leftJoin(user, eq(transactions.createdBy, user.id))
+
+        .where(
+          and(
+            eq(appointments.branchId, locals?.user?.branch),
+            eq(appointments.id, id)
+          )
+        )
+
+
+
        
          const allMethods = await db
                 .select({
@@ -73,7 +98,8 @@ export const load: PageServerLoad = async ({ params, locals }) => {
         return {
             appointmentsList,
             form,
-            allMethods
+            allMethods,
+            reciepts
         }
 }
 

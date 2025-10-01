@@ -3,6 +3,7 @@
 	import { Label } from '$lib/components/ui/label/index.js';
 	import { zod4Client } from 'sveltekit-superforms/adapters';
     import { bookingFeeSchema } from '$lib/zodschemas/appointmentSchema';
+	import { columns } from './columns';
   
 
   let { data } = $props();
@@ -16,6 +17,7 @@
 	import { Plus } from '@lucide/svelte';
 	import SelectComp from '$lib/formComponents/SelectComp.svelte';
 	import type { Snapshot } from '@sveltejs/kit';
+	import DataTable from '$lib/components/Table/data-table.svelte';
 
   let singleTable = $derived([
     { name: 'Name', value: data.appointmentsList.customerName },
@@ -65,7 +67,16 @@
       <h1 class="text-center">Appointment Details</h1>
     </div>
  <div class="p-4 w-full"><SingleTable {singleTable}/></div>
+     
     </div>
+	{data.reciepts?.length}
+	 {#if data.reciepts?.length}
+	<div class="flex flex-col mt-4">
+		<DataTable data={data.reciepts} {columns} />
+          
+	 </div>
+	 {/if}
+	
 
 
 
@@ -114,7 +125,6 @@
 	</div>
 {/snippet} 
 
-<a href="/dashboard/files/{data.appointmentsList.recieptLink}" download="{data.appointmentsList.bookedBy} {data.appointmentsList.date} appointment Booking Fee Reciept">Download</a>
 
 
 

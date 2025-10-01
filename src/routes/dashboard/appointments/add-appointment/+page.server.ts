@@ -128,6 +128,7 @@ export const actions: Actions = {
         customerId,
         appointmentDate,
         appointmentTime,
+        statusId: 4,
         notes,
         createdBy: locals?.user?.id,
         branchId: locals?.user?.branch
