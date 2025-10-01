@@ -67,6 +67,7 @@ import DataTableSort from '$lib/components/Table/data-table-sort.svelte';
 
        { accessorKey: 'extraSettings', header: 'Extra Settings', cell: ({ row }) => {
       // You can pass whatever you need from `row.original` to the component
-      return renderComponent(DataTableActions, { id: row.original.extraSettings, phone: row.original.phone});
+      return renderComponent(DataTableActions, { id: row.original.extraSettings, phone: row.original.phone, 
+        recieptLink: row.original.recieptLink, customerName: row.original.customerName, date: row.original.date});
     } }
   ];

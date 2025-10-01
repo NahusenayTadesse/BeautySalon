@@ -1,7 +1,7 @@
 
 
 import { db } from "$lib/server/db";
-import { appointments, appointmentStatuses, customers, user  } from "$lib/server/db/schema";
+import { appointments, appointmentStatuses, customers, transactionBookingFee, transactions, user  } from "$lib/server/db/schema";
 import { eq, asc, and, sql } from "drizzle-orm";
 import type { PageServerLoad } from "./$types";
 
@@ -21,11 +21,14 @@ export const load: PageServerLoad = async ({ params, locals }) => {
             date: sql<string>`DATE_FORMAT(${appointments.appointmentDate}, '%Y-%m-%d')`,
             time: sql<string>`DATE_FORMAT(${appointments.appointmentTime}, '%H:%i')`,
             notes: appointments.notes,
-            bookedAt: sql<string>`DATE_FORMAT(${appointments.createdAt}, '%Y-%m-%d')`
+            bookedAt: sql<string>`DATE_FORMAT(${appointments.createdAt}, '%Y-%m-%d')`,
+            recieptLink: transactions.recieptLink
         }
         ).from(appointments)
         .leftJoin(customers, eq(appointments.customerId, customers.id))
         .leftJoin(user, eq(appointments.createdBy, user.id))
+        .leftJoin(transactionBookingFee, eq(appointments.id, transactionBookingFee.appointmentId))
+        .leftJoin(transactions, eq(transactionBookingFee.transactionId, transactions.id))
         .leftJoin(appointmentStatuses, eq(appointments.statusId, appointmentStatuses.id))
         .where(
             and(

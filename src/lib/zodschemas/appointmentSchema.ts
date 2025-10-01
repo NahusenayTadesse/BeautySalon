@@ -14,22 +14,17 @@ const ACCEPTED_FILE_TYPES = [
 
 export const bookingFeeSchema = z.object({
   // 'Booking Fee Amount' - fe snippet with type='number' and required=true
-  amount: z.coerce.number({
-    required_error: 'Booking Fee Amount is required',
-    invalid_type_error: 'Booking Fee Amount must be a number'
-  })
+  amount: z.number("Booking Fee Amount is required")
     .nonnegative('Amount cannot be negative')
     .min(0, 'Amount must be 0 or greater'),
 
   // Hidden input for appointment ID
-  appointmentId: z.string().optional(),
+  appointmentId: z.number().optional(),
 
   // 'paymentMethod' - combo snippet. Assumes the value is a string ID or name.
-  paymentMethod: z.string({
-    required_error: 'Payment Method is required',
-    invalid_type_error: 'Invalid Payment Method selected'
-  })
-    .min(1, 'Payment Method is required'),
+  paymentMethod:  z.number("Payment Method is required"),
+
+  paymentStatus: z.enum(['paid', 'partially_paid'], {message: "Payment Status is required"}),
 
   // 'Upload Reciept or Screenshot of Booking Fee' - fe snippet with type='file' and required=true
   image: z

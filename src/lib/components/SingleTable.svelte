@@ -15,7 +15,7 @@
 </div> -->
 
 {#await singleTable}
-           <h1 class="flex flex-row m-2">     Loading Employee Data <LoaderCircle class="animate-spin" /></h1>
+           <h1 class="flex flex-row m-2">     Loading  <LoaderCircle class="animate-spin" /></h1>
 
         
       {:then table} 

@@ -3,7 +3,8 @@
  import { Button } from "$lib/components/ui/button/index.js";
  import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
  
- let { id, phone }: { id: string, phone: string } = $props();
+ let { id, phone, recieptLink, customerName, date }:
+  { id: string, phone: string, recieptLink: string, customerName: string, date: string } = $props();
 </script>
  
 <DropdownMenu.Root>
@@ -31,5 +32,7 @@
       </DropdownMenu.Item>
   <DropdownMenu.Item><a href="/dashboard/appointments/single/{id}">View Appointment Details</a></DropdownMenu.Item>
   <DropdownMenu.Item><a href="/dashboard/customers/{id}">View Customer Details</a></DropdownMenu.Item>
+  {#if recieptLink}   <DropdownMenu.Item><a href="/dashboard/files/{recieptLink}" download="{customerName} Booking Reciept for {date} Appointment" >Dowload Reciept</a></DropdownMenu.Item>
+{/if}
  </DropdownMenu.Content>
 </DropdownMenu.Root>

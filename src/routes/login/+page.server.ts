@@ -1,5 +1,5 @@
 import {  verify } from '@node-rs/argon2';
-import { encodeBase32LowerCase } from '@oslojs/encoding';
+// import { encodeBase32LowerCase } from '@oslojs/encoding';
 import { fail } from '@sveltejs/kit';
 import { eq } from 'drizzle-orm';
 import * as auth from '$lib/server/auth';
@@ -96,37 +96,37 @@ export const actions: Actions = {
 	// }
 };
 
-function generateUserId() {
-	// ID with 120 bits of entropy, or about the same as UUID v4.
-	const bytes = crypto.getRandomValues(new Uint8Array(15));
-	const id = encodeBase32LowerCase(bytes);
-	return id;
-}
+// function generateUserId() {
+// 	// ID with 120 bits of entropy, or about the same as UUID v4.
+// 	const bytes = crypto.getRandomValues(new Uint8Array(15));
+// 	const id = encodeBase32LowerCase(bytes);
+// 	return id;
+// }
 
-function validateUsername(username: unknown): username is string {
-	return (
-		typeof username === 'string' &&
-		username.length >= 3 &&
-		username.length <= 31 &&
-		/^[a-z0-9_-]+$/.test(username)
-	);
-}
+// function validateUsername(username: unknown): username is string {
+// 	return (
+// 		typeof username === 'string' &&
+// 		username.length >= 3 &&
+// 		username.length <= 31 &&
+// 		/^[a-z0-9_-]+$/.test(username)
+// 	);
+// }
 
-function validatePassword(password: unknown): password is string {
-	return typeof password === 'string' && password.length >= 6 && password.length <= 255;
-}
+// function validatePassword(password: unknown): password is string {
+// 	return typeof password === 'string' && password.length >= 6 && password.length <= 255;
+// }
 
-function extractUsername(email: string) {
-  if (typeof email !== "string") {
-    throw new Error("Input must be a string");
-  }
+// function extractUsername(email: string) {
+//   if (typeof email !== "string") {
+//     throw new Error("Input must be a string");
+//   }
 
-  // Find the part before the '@'
-  const atIndex = email.indexOf("@");
+//   // Find the part before the '@'
+//   const atIndex = email.indexOf("@");
   
-  if (atIndex === -1) {
-    throw new Error("Invalid email address: missing '@'");
-  }
+//   if (atIndex === -1) {
+//     throw new Error("Invalid email address: missing '@'");
+//   }
 
-  return email.substring(0, atIndex);
-}
+//   return email.substring(0, atIndex);
+// }

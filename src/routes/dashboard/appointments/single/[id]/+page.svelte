@@ -10,10 +10,14 @@
    import SingleTable from '$lib/components/SingleTable.svelte';
 	import { Button } from '$lib/components/ui/button/index.js';
 	import * as Card from '$lib/components/ui/card/index.js';
-	import { superForm } from 'sveltekit-superforms/client';
+	import { fileProxy, superForm } from 'sveltekit-superforms/client';
 	import ComboboxComp from '$lib/formComponents/ComboboxComp.svelte';
+	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';
+	import { Plus } from '@lucide/svelte';
+	import SelectComp from '$lib/formComponents/SelectComp.svelte';
+	import type { Snapshot } from '@sveltejs/kit';
 
-  let singleTable = [
+  let singleTable = $derived([
     { name: 'Name', value: data.appointmentsList.customerName },
     { name: 'Phone', value: data.appointmentsList.phone },
     { name: 'Booked By', value: data.appointmentsList.bookedBy },
@@ -21,8 +25,10 @@
     { name: 'Date', value: data.appointmentsList.date },
     { name: 'Time', value: data.appointmentsList.time },
     { name: 'Notes', value: data.appointmentsList.notes },
-    { name: 'Booked At', value: data.appointmentsList.bookedAt }
-  ]; 
+    { name: 'Booked At', value: data.appointmentsList.bookedAt },
+    { name: 'Reciept Link', value: data.appointmentsList.recieptLink }
+
+  ]); 
 
 
 	const { form, errors, enhance, delayed,  capture, restore } = superForm(data.form, {
@@ -34,6 +40,17 @@
 		validators: zod4Client(bookingFeeSchema)
 
 	});
+
+
+	export const snapshot: Snapshot = { capture, restore};
+	  const file = fileProxy(form, 'image');
+
+
+	  const paymentStatus = [
+		 { value: 'paid', name: 'Full Payment'},
+		 { value: 'partially_paid', name: 'Partial Payment'}, 
+	  ]
+
 
    
 </script>
@@ -79,6 +96,15 @@
 		{/if}
 	</div>
 {/snippet}
+{#snippet selects(name, items)}
+	<div class="flex w-full flex-col justify-start gap-2">
+		<Label for={name} class="capitalize">{name.replace(/([a-z])([A-Z])/g, '$1 $2')}:</Label>
+
+		<SelectComp {name} bind:value={$form[name]} {items} />
+		{#if $errors[name]}<span class="text-red-500">{$errors[name]}</span>{/if}
+	</div>
+{/snippet}
+
 {#snippet combo(name, items)}
 	<div class="flex w-full flex-col justify-start gap-2">
 		<Label for={name} class="capitalize">{name.replace(/([a-z])([A-Z])/g, "$1 $2")}:</Label>
@@ -87,6 +113,8 @@
 		{#if $errors[name]}<span class="text-red-500">{$errors[name]}</span>{/if}
 	</div>
 {/snippet} 
+
+<a href="/dashboard/files/{data.appointmentsList.recieptLink}" download="{data.appointmentsList.bookedBy} {data.appointmentsList.date} appointment Booking Fee Reciept">Download</a>
 
 
 
@@ -97,17 +125,36 @@
 	</Card.Header>
 	<Card.Content>
 
-    <form use:enhance method="post" enctype="multipart/form-data" 
+    <form use:enhance method="post"  enctype="multipart/form-data" 
     class="p-4 border rounded-md w-full flex flex-col gap-4" action="?/confirmAppointment">
 	 
 
     {@render fe('Booking Fee Amount', 'amount', 'number', 'Enter The Amount Booking Fee in Birr', true, "0")}
 	 <input type="hidden" name="appointmentId" value={data.appointmentsList.id} >
 	{@render combo("paymentMethod", data.allMethods)}
-    {@render fe('Upload Reciept or Screenshot of Booking Fee', 'image', 'file', 'Enter Name', true)}
-    <Button type="submit">Submit</Button>
+	{@render selects('paymentStatus', paymentStatus)}
+	 <div class="flex w-full flex-col justify-start gap-2">
+	 <Label for='image' class="capitalize">Upload Reciept or Screenshot of Booking Fee</Label>
+	 <Input type="file" name="image"
+	 accept="image/*,application/pdf" bind:files={$file} multiple={false} />
+	 {#if $errors.image} <span>{$errors.image}</span> {/if}
+	 </div>	
+    <!-- {@render fe('Upload Reciept or Screenshot of Booking Fee', 'image', 'file', 'Enter Name', true)} -->
 
+	 
+	<Button type="submit" class="mt-4" >  
+				{#if $delayed}
+					<LoadingBtn name="Confirming Appointment" />
+				{:else}
+					<Plus class="h-4 w-4" />
+					Confirm Appointment
+				{/if}
+			</Button>
+
+  
     </form>
+
+
 
 
   </Card.Content>
