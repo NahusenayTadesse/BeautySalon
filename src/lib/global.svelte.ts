@@ -10,7 +10,9 @@ export const selectItem = `hover:bg-gray-100 hover:shadow-md hover:scale-101 dur
   export const errormsg = `${toastmsg} !bg-red-600`;
   export const searchableFields = ['name', 'description', 'permissions', 'value', 'firstName', 
     'lastName', 'phone', 'date', 'time','bookedBy', 'notes', 'bookedAt', 'customerName', 'date', 'time'];
-  
+      
+  export const dropdownClass = `flex capitalize flex-row gap-2 ${selectItem}`
+
   
   
   

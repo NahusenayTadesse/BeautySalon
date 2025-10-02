@@ -38,7 +38,8 @@
     role="combobox"
     aria-expanded={open}
    >
-    {selectedValue || "Select " + name.replace(/([a-z0-9])([A-Z])/g, "$1 $2") + "..."}
+    
+    { selectedValue ? selectedValue : "Select " + name.replace(/([a-z0-9])([A-Z])/g, "$1 $2") + "..."}
     <ChevronsUpDownIcon class="opacity-50" />
    </Button>
   {/snippet}

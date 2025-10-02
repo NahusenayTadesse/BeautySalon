@@ -17,7 +17,12 @@ import DataTableSort from '$lib/components/Table/data-table-sort.svelte';
     },
      {
       accessorKey: 'amount',
-      header: 'Amount',
+       header: ({ column }) =>
+      renderComponent(DataTableSort, {
+        name: 'Amount',
+        onclick: column.getToggleSortingHandler(), 
+      }), 
+      
       sortable: true
       
     },
@@ -42,7 +47,7 @@ import DataTableSort from '$lib/components/Table/data-table-sort.svelte';
          sortable: true, 
         cell: ({ row }) => {
       // You can pass whatever you need from `row.original` to the component
-      return renderComponent(DataTableLinks, { id: row.original.extraSettings, name: "View Reciept", link: `/dashboard/files/${row.original.recieptLink}`});
+      return renderComponent(DataTableLinks, { id: row.original.extraSettings, name: "View Reciept", link: `/dashboard/files/${row.original.recieptLink}`, target: "_blank"});
     }},
 
    

@@ -1,12 +1,14 @@
 
-<script>
+<script lang="ts">
 
     import Copy from "$lib/Copy.svelte";
     import {LoaderCircle} from "@lucide/svelte"
 	import Statuses from "./Table/statuses.svelte";
     // import JSPDF from "$lib/JSPDF.svelte"
 
-    let { singleTable  } = $props();
+     type SingleTable= { name: string; value: string}
+
+    let { singleTable } = $props();
 </script>
 <!-- 
  <div class="fixed right-2 top-24">

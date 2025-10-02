@@ -13,10 +13,12 @@ export const load: PageServerLoad = async ({ params, locals }) => {
      const { date} = params;
 
         const appointmentsList = await db.select(
-           {extraSettings: appointments.id,
+           {
+            extraSettings: appointments.id,
             customerName: sql<string>`TRIM(CONCAT(${customers.firstName}, ' ', COALESCE(${customers.lastName}, '')))`,
             phone: customers.phone,
             status: appointmentStatuses.name,
+            bookedById: user.id,
             bookedBy: user.name, 
             date: sql<string>`DATE_FORMAT(${appointments.appointmentDate}, '%Y-%m-%d')`,
             time: sql<string>`DATE_FORMAT(${appointments.appointmentTime}, '%H:%i')`,

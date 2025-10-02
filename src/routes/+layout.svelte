@@ -40,7 +40,7 @@ import { onMount } from 'svelte';
 <svelte:head>
 		<link rel="icon" href="/logo.png" />
 </svelte:head>
-<ModeWatcher /> -->
+<ModeWatcher /> 
 
 {#if $flash}
  

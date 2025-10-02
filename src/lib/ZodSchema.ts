@@ -194,8 +194,36 @@ export const existingCustomerAppointment = z.object({
     .string()
     .max(500, "Notes must be less than 500 characters")
     .optional()
-    .or(z.literal("")), // allow empty string
+    .or(z.literal(""))
 });
 
 // TypeScript type inference
 export type ExistingCustomerAppointmentForm = z.infer<typeof existingCustomerAppointment>;
+
+
+
+
+export const editAppointment = z.object({
+  customerId: z.number('Customer is required'),
+  appointmentDate: z
+    .string()
+    .refine(
+      (val) => {
+        const d = new Date(val);
+        return !isNaN(d.getTime()) && d >= today;
+      },
+      { message: "Date must be today or in the future" }
+    ),
+  appointmentTime: z
+    .string()
+    .regex(/^([01]\d|2[0-3]):([0-5]\d)$/, "Invalid time format (HH:MM)"),
+  notes: z
+    .string()
+    .max(500, "Notes must be less than 500 characters")
+    .optional()
+    .or(z.literal("")),
+  appointmentId: z.number()
+});
+
+// TypeScript type inference
+export type EditAppointment = z.infer<typeof editAppointment>;

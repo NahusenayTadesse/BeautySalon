@@ -7,7 +7,7 @@
   $props();
 </script>
  
-<Button {variant} {...restProps}>
+<Button {variant} class="!text-center" {...restProps}>
    {name}
- <ArrowUpDownIcon class="ml-2" />
+ <ArrowUpDownIcon class="" />
 </Button>

@@ -3,12 +3,11 @@
  import { Button } from "$lib/components/ui/button/index.js";
  import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
 	import { Download, ExternalLink, Eye } from "@lucide/svelte";
-	import { selectItem } from "$lib/global.svelte";
+	import { dropdownClass } from "$lib/global.svelte";
  
  let { id,  recieptLink, customerName, date, booker }:
   { id: string, booker: string, recieptLink: string, customerName: string, date: string } = $props();
  
-  const dropdownClass = `flex flex-row gap-2 ${selectItem}`
 </script>
  
 <DropdownMenu.Root>

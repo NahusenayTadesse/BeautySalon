@@ -32,10 +32,7 @@ type Permission = { id: string; name: string; description: string }   // whateve
 		}
 	);
 
-	 function getItemNameById(items: any, id: any) {
-  const item = items.find(i=> i.id === id);
-  return item ? item.name : null; // returns null if not found
-}
+
 
 
 
