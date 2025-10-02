@@ -32,7 +32,5 @@
       </DropdownMenu.Item>
   <DropdownMenu.Item><a href="/dashboard/appointments/single/{id}">View Appointment Details</a></DropdownMenu.Item>
   <DropdownMenu.Item><a href="/dashboard/customers/{id}">View Customer Details</a></DropdownMenu.Item>
-  {#if recieptLink}   <DropdownMenu.Item><a href="/dashboard/files/{recieptLink}" download="{customerName} Booking Reciept for {date} Appointment" >Dowload Reciept</a></DropdownMenu.Item>
-{/if}
  </DropdownMenu.Content>
 </DropdownMenu.Root>

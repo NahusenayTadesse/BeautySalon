@@ -80,7 +80,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
             eq(appointments.branchId, locals?.user?.branch),
             eq(appointments.id, id)
           )
-        )
+        ).orderBy(transactions.createdAt)
 
 
 

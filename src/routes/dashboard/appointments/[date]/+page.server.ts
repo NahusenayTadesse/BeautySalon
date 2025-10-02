@@ -22,7 +22,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
             time: sql<string>`DATE_FORMAT(${appointments.appointmentTime}, '%H:%i')`,
             notes: appointments.notes,
             bookedAt: sql<string>`DATE_FORMAT(${appointments.createdAt}, '%Y-%m-%d')`,
-            recieptLink: transactions.recieptLink
+            paidAmount: sql<number>`COALESCE(SUM(${transactions.amount}), 0)`
         }
         ).from(appointments)
         .leftJoin(customers, eq(appointments.customerId, customers.id))
@@ -36,6 +36,18 @@ export const load: PageServerLoad = async ({ params, locals }) => {
                 eq(appointments.appointmentDate, date)
             )
         )
+        .groupBy(
+    appointments.id,
+    customers.firstName,
+    customers.lastName,
+    customers.phone,
+    appointmentStatuses.name,
+    user.name,
+    appointments.appointmentDate,
+    appointments.appointmentTime,
+    appointments.notes,
+    appointments.createdAt
+)
         .orderBy(asc(appointments.appointmentTime));
 
 

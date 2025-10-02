@@ -7,7 +7,7 @@
         import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
 
     
-       let { data, columns  }: DataTableProps<TData, TValue> = $props();
+       let { data, columns, search = true }: DataTableProps<TData, TValue> = $props();
 
 
   import { Input } from "$lib/components/ui/input/index.js";
@@ -100,8 +100,9 @@
 </script>
  <div class="lg:w-full w-full bg-white rounded-lg dark:bg-gray-950 p-2">
 <div class="rounded-md min-w-full border-0">
-
+      {#if search}
       <div class="flex flex-row gap-4 items-center py-4">
+         
     <Input
       type="text"      
       placeholder="Search Table..."
@@ -134,6 +135,7 @@
       </DropdownMenu.Content>
     </DropdownMenu.Root>
   </div>
+  {/if}
     <div class="border rounded-md">
 
  <Table.Root>
@@ -141,9 +143,10 @@
    {#each table.getHeaderGroups() as headerGroup (headerGroup.id)}
     <Table.Row>
      {#each headerGroup.headers as header (header.id)}
-      <Table.Head colspan={header.colSpan}>
+      <Table.Head colspan={header.colSpan} >
        {#if !header.isPlaceholder}
         <FlexRender
+         
          content={header.column.columnDef.header}
          context={header.getContext()}
         />
@@ -170,7 +173,6 @@
     <Table.Row>
      <Table.Cell colspan={columns.length} class="text-center font-2xl">
         <div class="flex flex-row items-center justify-center gap-2"><Frown class="animate-bounce" /> Nothing found here.</div>
-      
      </Table.Cell>
     </Table.Row>
    {/each}

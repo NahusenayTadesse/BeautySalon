@@ -52,7 +52,7 @@
 		 { value: 'paid', name: 'Full Payment'},
 		 { value: 'partially_paid', name: 'Partial Payment'}, 
 	  ]
-
+ let search = false;
 
    
 </script>
@@ -69,10 +69,10 @@
  <div class="p-4 w-full"><SingleTable {singleTable}/></div>
      
     </div>
-	{data.reciepts?.length}
+	<h2 class="text-start pl-6">Booking Fee Amount</h2>
 	 {#if data.reciepts?.length}
 	<div class="flex flex-col mt-4">
-		<DataTable data={data.reciepts} {columns} />
+		<DataTable data={data.reciepts} {columns} {search}  />
           
 	 </div>
 	 {/if}
