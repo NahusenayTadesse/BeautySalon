@@ -13,7 +13,7 @@
 	import SelectComp from '$lib/formComponents/SelectComp.svelte';
 	import {  fly } from 'svelte/transition';
 	import { buttonVariants } from "$lib/components/ui/button/index.js";
-  import * as Popover from "$lib/components/ui/popover/index.js";
+    import * as Popover from "$lib/components/ui/popover/index.js";
 
       import { CalendarDate, getLocalTimeZone, today } from "@internationalized/date";
   import { Calendar } from "$lib/components/ui/calendar/index.js";
@@ -418,14 +418,14 @@ $effect(()=> {
 			<!-- {@render fe('Customer Gender', 'gender', 'text', 'Select Customer Gender', true)} -->
 			{@render selects('gender', gender)}
 			 
-			{@render fe(
+			<!-- {@render fe(
 				'Appointment Date',
 				'appointmentDate',
 				'date',
 				'Enter Appointment Date',
 				true,
 				getTodayDate()
-			)}
+			)} -->
 
 			<input type="hidden"  bind:value={$form.appointmentDate} name="appointmentDate" />
 
@@ -466,7 +466,7 @@ $effect(()=> {
 
 			<div class="flex w-full flex-col justify-start gap-2">
 				<Label for="notes">Special Request (optional)</Label>
-
+                                
 				<Textarea
 					name="notes"
 					placeholder="Enter special requests from customer"

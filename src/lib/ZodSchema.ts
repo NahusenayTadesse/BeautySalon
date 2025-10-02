@@ -217,6 +217,7 @@ export const editAppointment = z.object({
   appointmentTime: z
     .string()
     .regex(/^([01]\d|2[0-3]):([0-5]\d)$/, "Invalid time format (HH:MM)"),
+
   notes: z
     .string()
     .max(500, "Notes must be less than 500 characters")

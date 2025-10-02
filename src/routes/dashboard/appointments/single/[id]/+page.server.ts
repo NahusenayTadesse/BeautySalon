@@ -56,7 +56,8 @@ export const load: PageServerLoad = async ({ params, locals }) => {
             status: appointmentStatuses.name,
             notes: appointments.notes,
             bookedAt: sql<string>`DATE_FORMAT(${appointments.createdAt}, '%Y-%m-%d')`,
-            paidAmount: sql<number>`COALESCE(SUM(${transactions.amount}), 0)`
+            paidAmount: sql<number>`COALESCE(SUM(${transactions.amount}), 0)`,
+
 
           }
         )

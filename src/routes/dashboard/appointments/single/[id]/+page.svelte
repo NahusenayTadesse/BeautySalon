@@ -120,7 +120,7 @@
 			<span class="text-red-500">{$editErrors.appointmentDate}</span>
 		{/if}
 
-			 {@render fe2('Appointment Time', 'appointmentTime', 'time', '', true)} 
+			{@render fe2('Appointment Time', 'appointmentTime', 'time', '', true)} 
 			{@render fe2('Notes', 'notes', 'text', '')} 
 			 <input hidden name="appointmentId" value= {data.appointmentsList.id} />
 			 	<Button form="edit" type="submit" class="mt-4" >  
