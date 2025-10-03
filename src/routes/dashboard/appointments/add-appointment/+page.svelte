@@ -14,12 +14,14 @@
 	import {  fly } from 'svelte/transition';
 	import { buttonVariants } from "$lib/components/ui/button/index.js";
     import * as Popover from "$lib/components/ui/popover/index.js";
+	import { gender } from "$lib/global.svelte"
 
       import { CalendarDate, getLocalTimeZone, today } from "@internationalized/date";
   import { Calendar } from "$lib/components/ui/calendar/index.js";
 	import { cn } from '$lib/utils.js';
 
 	let { data } = $props();
+	
 
 	const { form, errors, enhance, delayed,  capture, restore } = superForm(data.form, {
 		taintedMessage: () => {
@@ -43,10 +45,6 @@
 
 	export const snapshot: Snapshot = { capture, restore, existingCapture, existingRestore };
 
-	let gender = [
-		{ value: 'male', name: 'Male' },
-		{ value: 'female', name: 'Female' }
-	];
 
 	function getTodayDate() {
 		const today = new Date();

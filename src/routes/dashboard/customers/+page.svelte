@@ -11,13 +11,14 @@
 	import { Frown } from "@lucide/svelte";
 
   
-
+   
    
 </script>
 
 <svelte:head>
         <title> Customers List</title>
 </svelte:head>
+  
 
  {#await data}
   

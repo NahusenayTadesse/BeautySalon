@@ -13,7 +13,11 @@ export const selectItem = `hover:bg-gray-100 hover:shadow-md hover:scale-101 dur
       
   export const dropdownClass = `flex capitalize flex-row gap-2 ${selectItem}`
 
-  
+ 	export const gender = [
+		{ value: 'male', name: 'Male' },
+		{ value: 'female', name: 'Female' }
+	];
+ 
   
   
     import { encodeBase32LowerCase } from '@oslojs/encoding';

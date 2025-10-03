@@ -27,7 +27,7 @@ import DataTableSort from '$lib/components/Table/data-table-sort.svelte';
          sortable: true, 
         cell: ({ row }) => {
       // You can pass whatever you need from `row.original` to the component
-      return renderComponent(DataTableLinks, { id: row.original.id, name: row.original.customerName, link: '/dashboard/customers/'});
+      return renderComponent(DataTableLinks, { id: row.original.id, name: row.original.customerName, link: '/dashboard/customers'});
     }},
     { accessorKey: 'phone', header: 'Phone', sortable: true,
         cell: ({ row }) => renderComponent(Copy, { data: row.original.phone })
@@ -43,7 +43,7 @@ import DataTableSort from '$lib/components/Table/data-table-sort.svelte';
       
       sortable: true,  cell: ({ row }) => {
       // You can pass whatever you need from `row.original` to the component
-      return renderComponent(DataTableLinks, { id: row.original.createdById, name: row.original.createdBy, link: '/dashboard/users/'});
+      return renderComponent(DataTableLinks, { id: row.original.createdById, name: row.original.createdBy, link: '/dashboard/users'});
     }},
    
     { accessorKey: 'createdAt', header: ({ column }) =>
@@ -55,12 +55,21 @@ import DataTableSort from '$lib/components/Table/data-table-sort.svelte';
       renderComponent(DataTableSort, {
         name: 'Days Since Added',
         onclick: column.getToggleSortingHandler(), 
-      }),  sortable: true },
+      }),  sortable: true,
+    cell: info => {
+    const n = info.getValue();          // number of days
+    return `${n} ${n === 1 ? 'day' : 'days'}`;
+  }, },
        { accessorKey: 'appointmentCount', header: ({ column }) =>
       renderComponent(DataTableSort, {
         name: 'Appointments Counts',
         onclick: column.getToggleSortingHandler(), 
-      }),  sortable: true },
+      }),  sortable: true,
+    
+    cell: info => {
+    const n = info.getValue();          // number of days
+    return `${n} ${n === 1 ? 'appointment' : 'appointments'}`;
+  },},
 
        { accessorKey: 'actions', header: 'Actions', cell: ({ row }) => {
       // You can pass whatever you need from `row.original` to the component

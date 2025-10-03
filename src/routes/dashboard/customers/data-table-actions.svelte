@@ -2,7 +2,7 @@
  import EllipsisIcon from "@lucide/svelte/icons/ellipsis";
  import { Button } from "$lib/components/ui/button/index.js";
  import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
- 	import { Copy, ExternalLink, Eye } from "@lucide/svelte";
+ 	import { Copy, ExternalLink} from "@lucide/svelte";
 	import { dropdownClass } from "$lib/global.svelte";
 
  let { id, phone,  customerName, createdById, createdBy }:
@@ -34,7 +34,6 @@
    <DropdownMenu.Item class={dropdownClass} onclick={() => navigator.clipboard.writeText(phone)} title= 'Copy {phone}'>
       <Copy />  Copy Phone Number
       </DropdownMenu.Item>
-  <DropdownMenu.Item><a href="/dashboard/appointments/single/{id}" class={dropdownClass} ><Eye />View Appointment Details</a></DropdownMenu.Item>
   <DropdownMenu.Item><a href="/dashboard/customers/{id}" target="_blank" class={dropdownClass}><ExternalLink /> View {customerName}'s Details</a></DropdownMenu.Item>
   <DropdownMenu.Item><a href="/dashboard/user/{createdById}" target="_blank" class={dropdownClass}><ExternalLink /> View {createdBy}'s Details</a></DropdownMenu.Item>
  </DropdownMenu.Content>
