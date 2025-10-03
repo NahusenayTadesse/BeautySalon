@@ -1,0 +1,46 @@
+  
+  <script lang='ts'>
+    import { columns } from "./columns";
+  
+
+  let { data } = $props();
+
+  import DataTable from '$lib/components/Table/data-table.svelte';
+
+	import Loading from "$lib/components/Loading.svelte";
+	import { Frown } from "@lucide/svelte";
+
+  
+   
+   
+</script>
+
+<svelte:head>
+        <title> Products List</title>
+</svelte:head>
+  
+
+ {#await data}
+  
+  <Loading  name="Customers"/>
+ {:then customerList} 
+
+  {#if data.productList.length === 0}
+   <div class="w-5xl h-96 flex justify-center items-center">
+   <p class="text-center flex flex-row gap-4 mt-4 text-4xl justify-self-cente"><Frown class="animate-bounce w-16  h-12" />
+     No cusotmers added Yet for this date </p>
+     </div>
+ {:else}
+     <h2 class="text-2xl my-4">No of Products {data.productList?.length} </h2>
+
+ <div class="lg:w-full w-[350px] lg:p-0 p-2 mt-8 mb-4 pt-4">
+
+   <DataTable data={data.productList} {columns} />
+ </div>
+ {/if}
+  {:catch}
+
+    <div class="w-screen h-screen flex flex-col justify-center items-center"> 
+         <h1 class="text-red-500">Unexpected Error: Reload</h1>
+    </div>
+  {/await}

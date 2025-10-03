@@ -1,23 +1,45 @@
 <script lang="ts">
-	import {  Users, UserRoundCog, ChartArea, Hexagon,Calendar, Package, SquareChartGantt, IdCardLanyard, LayoutDashboard } from '@lucide/svelte';
+	import {  Users, UserRoundCog, ChartArea, Hexagon,Calendar, Package, SquareChartGantt, IdCardLanyard, LayoutDashboard, ShoppingBasket, Container } from '@lucide/svelte';
 	import * as Sidebar from '$lib/components/ui/sidebar/index.js';
 	import type { ComponentProps } from 'svelte';
 	import { page } from '$app/state';
 	import DarkMode from './DarkMode.svelte';
-	import { bgGradient } from '$lib/global.svelte';
-	const navigation = [
-		{ name: 'Customers', href: '/dashboard/customers', icon: Users },
-		{ name: 'Appointments', href: '/dashboard/appointments', icon: Calendar },
-		{ name: 'Inventory', href: '/dashboard/inventory', icon: Package },
-		{ name: 'Services', href: '/dashboard/services', icon: SquareChartGantt },
-		{ name: 'Reports', href: '/dashboard/reports', icon: ChartArea },
-		{ name: 'Staff', href: '/dashboard/staff', icon: IdCardLanyard },
-		{ name: 'Admin Panel', href: '/dashboard/admin-panel', icon: UserRoundCog }
-	];
+	import { bgGradient, selectItem } from '$lib/global.svelte';
+	import { slide } from 'svelte/transition';
+	const navigation = 	[
+  { title: 'Dashboard', url: '/dashboard', icon: LayoutDashboard },
+  { title: 'Customers', url: '/dashboard/customers', icon: Users },
+  { title: 'Appointments', url: '/dashboard/appointments', icon: Calendar },
+  { title: 'Products', url: '/dashboard/products', icon: ShoppingBasket },
+  { title: 'Services', url: '/dashboard/services', icon: SquareChartGantt },
+  { title: 'Supplies', url: '/dashboard/supplies', icon: Container },
+  { title: 'Reports', url: '/dashboard/reports', icon: ChartArea },
+  { title: 'Staff', url: '/dashboard/staff', icon: IdCardLanyard },
+  { title: 'Admin Panel', url: '/dashboard/admin-panel', icon: UserRoundCog}
+]
+
 	let { ...restProps }: ComponentProps<typeof Sidebar.Root> = $props();
+    
+
+	const on = 'bg-sidebar-primary text-sidebar-primary-foreground'
+	const off = 'text-sidebar-foreground'
+	function blacken(url: string) {
+    const currentPath = page.url.pathname;
+    
+    // Special case for root dashboard
+    if (url === '/dashboard') {
+        return currentPath === '/dashboard' ? on : off;
+    }
+    
+    // For other items, check if current path starts with their URL but is not just /dashboard
+    return currentPath.startsWith(url) && currentPath !== '/dashboard' ? on : off;
+}
+
+	
+	let open = $state(false)
 </script>
 
-<Sidebar.Root collapsible="offcanvas" {...restProps}>
+<!-- <Sidebar.Root collapsible="icon" {...restProps} >
 	<Sidebar.Header class={bgGradient}>
 		<Sidebar.Menu class={bgGradient}>
 			<Sidebar.MenuItem>
@@ -52,25 +74,64 @@
 				</li>
 			{#each navigation as item}
 				<li class="w-full">
+					{#snippet child({ props })}
+
 					<a
-						href={item.href}
+						href={item.url}
 						class="text-md flex items-center gap-3 rounded-lg px-3 py-3
           font-medium transition-colors duration-300 hover:bg-sidebar-accent
           hover:text-sidebar-accent-foreground
-          {page.url.pathname === item.href || page.url.pathname.startsWith(item.href + '/') ? 
+          {page.url.pathname === item.url || page.url.pathname.startsWith(item.url + '/') ? 
 		    
 							'bg-sidebar-primary text-sidebar-primary-foreground'
 							: 'text-sidebar-foreground'}"
-					>
-						<item.icon class="h-4 w-4" />
-						{item.name}
+					
+					  {...props}
+					 >
+						<item.icon class="h-4 w-4"  />
+						{item.title}
 						  
 					</a>
+					{/snippet}
 				</li>
 			{/each}
 		</ul>
 	</Sidebar.Content>
 	<Sidebar.Footer class="bg-white dark:bg-black">
+		<DarkMode />
+	</Sidebar.Footer>
+</Sidebar.Root> -->
+
+
+<Sidebar.Root collapsible='icon' {...restProps}>
+  <Sidebar.Content class={bgGradient}>
+    <Sidebar.Group>
+      <Sidebar.GroupLabel > <div class="flex flex-row gap-4 py-8 items-center justify-center"> 
+		<img src="/logo.png" class="w-8 h-8" alt="Logo" >
+		 <h1 class="text-xl text-gray-900 dark:text-white"> NSS Marketing </h1> </div></Sidebar.GroupLabel>
+      <Sidebar.GroupContent class="mt-8">
+        <Sidebar.Menu class="w-full gap-3">
+          {#each navigation as item (item.title)}
+            <Sidebar.MenuItem>
+              <Sidebar.MenuButton class="text-lg flex items-center gap-3 rounded-lg px-3 py-6
+          font-normal transition-colors duration-300 hover:bg-sidebar-accent
+          hover:text-sidebar-accent-foreground {selectItem}
+          {blacken(item.url)}">
+                {#snippet child({ props })}
+                  <a href={item.url}
+				  {...props} transition:slide|global>
+                    <item.icon class="!w-5 !h-5" />
+                    <span>{item.title}</span>
+			  </a>
+                {/snippet}
+              </Sidebar.MenuButton>
+            </Sidebar.MenuItem>
+          {/each}
+        </Sidebar.Menu>
+      </Sidebar.GroupContent>
+    </Sidebar.Group>
+  </Sidebar.Content>
+  	<Sidebar.Footer class="bg-white dark:bg-black">
 		<DarkMode />
 	</Sidebar.Footer>
 </Sidebar.Root>

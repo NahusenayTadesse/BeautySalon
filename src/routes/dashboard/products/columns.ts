@@ -3,7 +3,6 @@
 import DataTableLinks from '$lib/components/Table/data-table-links.svelte';
 import Copy from '$lib/Copy.svelte';
     import DataTableActions from './data-table-actions.svelte';
-    import Statuses from '$lib/components/Table/statuses.svelte';
 import DataTableSort from '$lib/components/Table/data-table-sort.svelte';
 
 
@@ -16,9 +15,10 @@ import DataTableSort from '$lib/components/Table/data-table-sort.svelte';
       accessorKey: 'index',
       header: '#',
       cell: info => info.row.index+1,
+      sortable: false
     },
    
-    { accessorKey: 'customerName',
+    { accessorKey: 'name',
       header: ({ column }) =>
       renderComponent(DataTableSort, {
         name: 'Name',
@@ -27,54 +27,76 @@ import DataTableSort from '$lib/components/Table/data-table-sort.svelte';
          sortable: true, 
         cell: ({ row }) => {
       // You can pass whatever you need from `row.original` to the component
-      return renderComponent(DataTableLinks, { id: row.original.extraSettings, name: row.original.customerName, link: '/dashboard/appointments/single'});
+      return renderComponent(DataTableLinks, { id: row.original.id, name: row.original.name, link: '/dashboard/products'});
     }},
-    { accessorKey: 'phone', header: 'Phone', sortable: true,
-        cell: ({ row }) => renderComponent(Copy, { data: row.original.phone })
-     },
-    {accessorKey: 'status', 
-     header: ({ column }) =>
-      renderComponent(DataTableSort, {
-        name: 'Status',
-        onclick: column.getToggleSortingHandler(), 
-      }), 
-     sortable: true,
-        cell: ({ row }) => renderComponent(Statuses, { status: row.original.status })
-    },
 
-    { accessorKey: 'bookedBy',
+    {
+      accessorKey: 'description',
+      header: 'Description'
+    },
+    
+    
+
+    { accessorKey: 'price',
       header: ({ column }) =>
       renderComponent(DataTableSort, {
-        name: 'Booked By',
+        name: 'Price',
         onclick: column.getToggleSortingHandler(), 
       }), 
       
-      sortable: true, },
-    { accessorKey: 'date', header: 'Date', sortable: true },
-    { accessorKey: 'time',
+      sortable: true,  
+      cell: info => `${info.getValue()} ETB`,   // always “day”
+
+    },
+    
+    { accessorKey: 'commission',
       header: ({ column }) =>
       renderComponent(DataTableSort, {
-        name: 'Time',
+        name: 'Commission',
         onclick: column.getToggleSortingHandler(), 
-      }),  
-      sortable: true },
-    { accessorKey: 'notes', header: 'Notes', sortable: true },
-    { accessorKey: 'bookedAt', header: ({ column }) =>
+      }), 
+      
+      sortable: true,  
+      cell: info => `${info.getValue()} ETB`,  
+
+    },
+
+        { accessorKey: 'quantity',
+      header: ({ column }) =>
       renderComponent(DataTableSort, {
-        name: 'Booked At',
+        name: 'Quantity',
+        onclick: column.getToggleSortingHandler(), 
+      }), 
+      
+      sortable: true,  
+      cell: info => `${info.getValue()} Pieces`,   // always “day”
+    },
+   
+    { accessorKey: 'category', header: ({ column }) =>
+      renderComponent(DataTableSort, {
+        name: 'Category',
         onclick: column.getToggleSortingHandler(), 
       }),  sortable: true },
-       { accessorKey: 'paidAmount', header: ({ column }) =>
+
+
+      { accessorKey: 'saleCount', header: ({ column }) =>
       renderComponent(DataTableSort, {
-        name: 'Fee Paid',
+        name: 'Sales',
         onclick: column.getToggleSortingHandler(), 
       }),  sortable: true,
-      cell: info => `${info.getValue()} ETB`,   // always “day”
- },
+    cell: info => {
+    const n = info.getValue();          // number of days
+    return `${n === null ? '': n} ${n === null ? 'Nothing Sold Yet' : 'Sold'}`;
+  }, },
+      
+    {
+      accessorKey: 'supplier',
+      header: 'supplier'
+    },
+    
 
        { accessorKey: 'actions', header: 'Actions', cell: ({ row }) => {
       // You can pass whatever you need from `row.original` to the component
-      return renderComponent(DataTableActions, { id: row.original.extraSettings, phone: row.original.phone, 
-        bookedBy: row.original.bookedBy, bookedById: row.original.bookedById,  customerName: row.original.customerName, date: row.original.date});
+      return renderComponent(DataTableActions, { id: row.original.id, name: row.original.name });
     } }
   ];

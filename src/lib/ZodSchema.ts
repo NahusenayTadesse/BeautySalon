@@ -35,11 +35,42 @@ export const inventoryItemSchema = z.object({
 		.number()
 		.int({ message: 'Quantity can only be full numbers, no decimals.' })
 		.positive({ message: 'Quantity must be a positive number.' }),
-	price: z.coerce.number().positive({ message: 'Price must be a positive number.' }),
-	supplier: z.string().min(1, { message: 'Supplier is required.' })
+	price: z.coerce.number({message: 'Price is required'}).positive({ message: 'Price must be a positive number.' }),
+	commission: z.coerce.number({message: "Commission is required, enter 0 if it is not decided yet" }).positive({ message: 'Price must be a positive number.' }),
+	supplier: z.string().min(1, { message: 'Supplier is required.' }),
+  reorderLevel: z.coerce
+		.number()
+		.int({ message: 'Reorder Level can only be full numbers, no decimals.' })
+		.positive({ message: 'Reorder Level must be a positive number.' }),
+  
+	costPerUnit: z.coerce.number({message: 'Cost is required'}).positive({ message: 'Cost must be a positive number.' }),
 });
 
 export type InventoryItemSchema = typeof inventoryItemSchema;
+
+export const supplyItemSchema = z.object({
+	supplyName: z.string().min(1, { message: 'Product Name is required.' }),
+
+	description: z
+		.string()
+		.max(500, { message: "Product description can't be more than 500 characters." })
+		.optional(),
+	quantity: z.coerce
+		.number()
+		.int({ message: 'Quantity can only be full numbers, no decimals.' })
+		.positive({ message: 'Quantity must be a positive number.' }),
+  unitOfMeasure: z.coerce
+		.string(),
+  reorderLevel: z.coerce
+		.number()
+		.int({ message: 'Reorder Level can only be full numbers, no decimals.' })
+		.positive({ message: 'Reorder Level must be a positive number.' }),
+  
+	costPerUnit: z.coerce.number({message: 'Cost is required'}).positive({ message: 'Cost must be a positive number.' }),
+	supplier: z.string().min(1, { message: 'Supplier is required.' })
+});
+
+export type SupplyItemSchema = typeof supplyItemSchema;
 
 export const serviceSchema = z.object({
 	serviceName: z.string().min(1, { message: 'Service Name is required.' }),
@@ -51,6 +82,8 @@ export const serviceSchema = z.object({
 		.positive({ message: 'Duration Minutes must be a positive integer.' }),
 	price: z.coerce.number().positive({ message: 'Price must be a positive number.' })
 });
+
+
 
 export type ServiceSchema = typeof serviceSchema;
 

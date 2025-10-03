@@ -71,6 +71,7 @@ import DataTableSort from '$lib/components/Table/data-table-sort.svelte';
       }),  sortable: true,
       cell: info => `${info.getValue()} ETB`,   // always “day”
  },
+    
 
        { accessorKey: 'actions', header: 'Actions', cell: ({ row }) => {
       // You can pass whatever you need from `row.original` to the component
