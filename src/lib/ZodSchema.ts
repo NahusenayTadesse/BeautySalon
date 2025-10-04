@@ -35,18 +35,46 @@ export const inventoryItemSchema = z.object({
 		.number()
 		.int({ message: 'Quantity can only be full numbers, no decimals.' })
 		.positive({ message: 'Quantity must be a positive number.' }),
-	price: z.coerce.number({message: 'Price is required'}).positive({ message: 'Price must be a positive number.' }),
-	commission: z.coerce.number({message: "Commission is required, enter 0 if it is not decided yet" }).positive({ message: 'Price must be a positive number.' }),
+	price: z.number({message: 'Price is required'}).positive({ message: 'Price must be a positive number.' }),
+	commission: z.number({message: "Commission is required, enter 0 if it is not decided yet" }).positive({ message: 'Price must be a positive number.' }),
 	supplier: z.string().min(1, { message: 'Supplier is required.' }),
   reorderLevel: z.coerce
 		.number()
 		.int({ message: 'Reorder Level can only be full numbers, no decimals.' })
 		.positive({ message: 'Reorder Level must be a positive number.' }),
   
-	costPerUnit: z.coerce.number({message: 'Cost is required'}).positive({ message: 'Cost must be a positive number.' }),
+	costPerUnit: z.number({message: 'Cost is required'}).positive({ message: 'Cost must be a positive number.' }),
 });
 
 export type InventoryItemSchema = typeof inventoryItemSchema;
+
+
+
+export const editProduct = z.object({
+  productId: z.number(),
+	productName: z.string().min(1, { message: 'Product Name is required.' }),
+  category: z.number('Category cannot be empty. Please select a Category'),
+
+	description: z
+		.string()
+		.max(500, { message: "Product description can't be more than 500 characters." })
+		.optional(),
+	quantity: z.coerce
+		.number()
+		.int({ message: 'Quantity can only be full numbers, no decimals.' })
+		.positive({ message: 'Quantity must be a positive number.' }),
+	price: z.number({message: 'Price is required'}).positive({ message: 'Price must be a positive number.' }),
+	commission: z.number({message: "Commission is required, enter 0 if it is not decided yet" }).nonnegative({ message: 'Price must be a positive number.' }),
+	supplier: z.string().min(1, { message: 'Supplier is required.' }),
+  reorderLevel: z.coerce
+		.number()
+		.int({ message: 'Reorder Level can only be full numbers, no decimals.' })
+		.positive({ message: 'Reorder Level must be a positive number.' }),
+  
+	costPerUnit: z.number({message: 'Cost Per Unit is required'}).positive({ message: 'Cost Per Unit must be a positive number.' }),
+});
+
+export type EditProduct= typeof editProduct;
 
 export const supplyItemSchema = z.object({
 	supplyName: z.string().min(1, { message: 'Product Name is required.' }),
@@ -71,6 +99,33 @@ export const supplyItemSchema = z.object({
 });
 
 export type SupplyItemSchema = typeof supplyItemSchema;
+
+
+export const editSupply = z.object({
+    supplyId: z.number(),
+
+	supplyName: z.string().min(1, { message: 'Product Name is required.' }),
+
+	description: z
+		.string()
+		.max(500, { message: "Product description can't be more than 500 characters." })
+		.optional(),
+	quantity: z.coerce
+		.number()
+		.int({ message: 'Quantity can only be full numbers, no decimals.' })
+		.positive({ message: 'Quantity must be a positive number.' }),
+  unitOfMeasure: z.coerce
+		.string(),
+  reorderLevel: z.coerce
+		.number()
+		.int({ message: 'Reorder Level can only be full numbers, no decimals.' })
+		.positive({ message: 'Reorder Level must be a positive number.' }),
+  
+	costPerUnit: z.coerce.number({message: 'Cost is required'}).positive({ message: 'Cost must be a positive number.' }),
+	supplier: z.string().min(1, { message: 'Supplier is required.' })
+});
+
+export type EditSupply = typeof editSupply;
 
 export const serviceSchema = z.object({
 	serviceName: z.string().min(1, { message: 'Service Name is required.' }),

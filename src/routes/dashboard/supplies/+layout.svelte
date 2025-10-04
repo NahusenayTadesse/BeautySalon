@@ -9,8 +9,8 @@
 </script>
 
 <div class="flex flex-row gap-2 justify-start items-center mb-8">
-    <Button href="/dashboard/products/add-products" 
-    variant = {page.url.pathname === '/dashboard/products/add-products' ? 'default': 'outline' }  ><Plus /> Add Supplies</Button>
+    <Button href="/dashboard/supplies/add-supplies" 
+    variant = {page.url.pathname === '/dashboard/supplies/add-supplies' ? 'default': 'outline' }  ><Plus /> Add Supplies</Button>
     <!-- <DialogComp title="Add New Customer" {content} /> -->
 </div>
 

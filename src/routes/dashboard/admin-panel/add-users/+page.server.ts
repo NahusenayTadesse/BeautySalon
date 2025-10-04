@@ -67,7 +67,7 @@ const {
     
     try{
      await db.insert(user).values({
-       id, username,
+        id, username,
         name, email, 
         roleId: role, 
         passwordHash, 

@@ -108,7 +108,7 @@
     <Sidebar.Group>
       <Sidebar.GroupLabel > <div class="flex flex-row gap-4 py-8 items-center justify-center"> 
 		<img src="/logo.png" class="w-8 h-8" alt="Logo" >
-		 <h1 class="text-xl text-gray-900 dark:text-white"> NSS Marketing </h1> </div></Sidebar.GroupLabel>
+		 <h4 class="text-gray-900 dark:text-white"> NSS Marketing </h4> </div></Sidebar.GroupLabel>
       <Sidebar.GroupContent class="mt-8">
         <Sidebar.Menu class="w-full gap-3">
           {#each navigation as item (item.title)}

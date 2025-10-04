@@ -32,10 +32,10 @@
     
     <Frown class="animate-bounce w-16  h-12" />
      No supplies added Yet</p>
-     <Button href="/dashboard/supplies/add-products"><Plus /> Add New Supplies</Button>
+     <Button href="/dashboard/supplies/add-supplies"><Plus /> Add New Supplies</Button>
      </div>
  {:else}
-     <h2 class="text-2xl my-4">No of {data.supplyList?.length} </h2>
+     <h2 class="text-2xl my-4">No of Supplies: {data.supplyList?.length} </h2>
 
  <div class="lg:w-full w-[350px] lg:p-0 p-2 mt-8 mb-4 pt-4">
 

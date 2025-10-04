@@ -26,7 +26,7 @@ import DataTableSort from '$lib/components/Table/data-table-sort.svelte';
          sortable: true, 
         cell: ({ row }) => {
       // You can pass whatever you need from `row.original` to the component
-      return renderComponent(DataTableLinks, { id: row.original.id, name: row.original.name, link: '/dashboard/products'});
+      return renderComponent(DataTableLinks, { id: row.original.id, name: row.original.name, link: '/dashboard/supplies'});
     }},
 
     {
