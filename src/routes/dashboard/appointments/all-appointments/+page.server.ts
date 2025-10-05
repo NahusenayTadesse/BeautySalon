@@ -48,7 +48,7 @@ export const load: PageServerLoad = async ({  locals }) => {
     appointments.notes,
     appointments.createdAt
 )
-        .orderBy(asc(appointments.appointmentTime)).limit(500);
+        .orderBy(asc(appointments.appointmentTime))
 
 
         return {

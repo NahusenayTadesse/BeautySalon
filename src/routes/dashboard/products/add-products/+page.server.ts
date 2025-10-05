@@ -38,11 +38,12 @@ export const actions: Actions = {
     }
 
 
-        const { productName, description, commission, quantity, price, supplier, reorderLevel, costPerUnit } = form.data;
+        const { productName, category,  description, commission, quantity, price, supplier, reorderLevel, costPerUnit } = form.data;
 
     
     try{
-     await db.insert(inventory).values({name: productName, commissionAmount: commission, description, 
+     await db.insert(inventory).values({name: productName, commissionAmount: commission, categoryId: category, 
+        description,
         quantity, price, supplier, reorderLevel, cost: costPerUnit,
         branchId: locals?.user?.branch,
         createdBy: locals?.user?.id

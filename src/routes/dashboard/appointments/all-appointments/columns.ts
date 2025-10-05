@@ -50,7 +50,13 @@ import DataTableSort from '$lib/components/Table/data-table-sort.svelte';
       }), 
       
       sortable: true, },
-    { accessorKey: 'date', header: 'Date', sortable: true },
+    { accessorKey: 'date',  header: ({ column }) =>
+      renderComponent(DataTableSort, {
+        name: 'Date',
+        onclick: column.getToggleSortingHandler(), 
+      }),  
+      sortable: true },
+    
     { accessorKey: 'time',
       header: ({ column }) =>
       renderComponent(DataTableSort, {

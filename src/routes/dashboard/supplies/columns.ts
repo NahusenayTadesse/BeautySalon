@@ -3,6 +3,7 @@
 import DataTableLinks from '$lib/components/Table/data-table-links.svelte';
     import DataTableActions from './data-table-actions.svelte';
 import DataTableSort from '$lib/components/Table/data-table-sort.svelte';
+import { Row } from '$lib/components/ui/table';
 
 
 
@@ -57,13 +58,29 @@ import DataTableSort from '$lib/components/Table/data-table-sort.svelte';
       }), 
       
       sortable: true,  
-      cell: info => `${info.getValue()} Pieces`,   // always “day”
+      cell: info => info.getValue(),   // always “day”
     },
+
+        { accessorKey: 'unitOfMeasure',
+      header: ({ column }) =>
+      renderComponent(DataTableSort, {
+        name: 'Unit of Measurement',
+        onclick: column.getToggleSortingHandler(), 
+      }), 
+      
+      sortable: true,  
+      cell: info => info.getValue(),   // always “day”
+    },
+  
   
       
     {
       accessorKey: 'supplier',
-      header: 'Supplier'
+      header: ({ column }) =>
+      renderComponent(DataTableSort, {
+        name: 'Supplier',
+        onclick: column.getToggleSortingHandler(), 
+      }),
     },
     
 

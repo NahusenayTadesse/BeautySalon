@@ -10,7 +10,7 @@ export const load: PageServerLoad = async({locals})=>{
      
     
 
-    const supplyList = await db.select(
+    let supplyList = await db.select(
         {
             id: supplies.id,
             name: supplies.name,
@@ -18,13 +18,14 @@ export const load: PageServerLoad = async({locals})=>{
             description: supplies.description,
             quantity: supplies.quantity,
             supplier: supplies.supplier,
+            unitOfMeasure: supplies.unitOfMeasure
 
         }
     ).from(supplies)
-    .where(eq(supplies.branchId, locals?.user?.branch))
+    .where(eq(supplies.branchId, locals?.user?.branch));
   
 
-
+   supplyList = supplyList.map(r => ({ ...r, price: Number(r.price), quantity: Number(r.quantity) }));
     return{
          supplyList
     }

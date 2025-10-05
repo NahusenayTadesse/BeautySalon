@@ -27,7 +27,8 @@ export const load: PageServerLoad = async ({ params, locals }) => {
            costPerUnit: supplies.costPerUnit,
            description: supplies.description,
            quantity: supplies.quantity,
-           reorderLevel: supplies.reorderLevel,
+           reorderLevel: supplies.reorderLevel, 
+           unitOfMeasure: supplies.unitOfMeasure,
            supplier: supplies.supplier,
            createdBy: user.name,  
            createdAt: sql<string>`DATE_FORMAT(${supplies.createdAt}, '%Y-%m-%d')`,
@@ -86,11 +87,11 @@ export const actions: Actions = {
 
     
     try{
-     await db.update(supplies).set({name: supplyName, description,
+     await db.update(supplies).set({name: supplyName, description, 
        unitOfMeasure,
        quantity, costPerUnit, supplier, reorderLevel,
         branchId: locals?.user?.branch,
-        createdBy: locals?.user?.id
+        updatedBy: locals?.user?.id
     }).where(eq(supplies.id, supplyId));
 
  

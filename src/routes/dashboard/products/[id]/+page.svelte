@@ -40,11 +40,7 @@
 
 
 	const { form, errors, enhance, delayed,  capture, restore } = superForm(data.form, {
-		taintedMessage: () => {
-			return new Promise((resolve) => {
-				resolve(window.confirm('Do you want to leave?\nChanges you made may not be saved.'));
-			});
-		},
+	
 		validators: zod4Client(editProduct),
 		resetForm: false
 
@@ -115,7 +111,7 @@
 			{@render fe('Product Name', 'productName', 'text', 'Add Product Name' , true)} 
 			
 			{@render selects('category', data.categories)}
-			 {@render fe('Cost per unit', 'costPerUnit', 'number', "Add the cost per unit of the product" )}
+			{@render fe('Cost per unit', 'costPerUnit', 'number', "Add the cost per unit of the product" )}
 
 			{@render fe('Price', 'price', 'number', 'Add Product Price' , true)} 
 			{@render fe('Quantity', 'quantity', 'number', 'Add Product Quantity' , true)} 

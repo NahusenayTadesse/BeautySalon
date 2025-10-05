@@ -245,8 +245,7 @@
 
 		<Card.Root class="flex w-xl mt-8 flex-col gap-4">
 	<Card.Header class="mb-4">
-		<Card.Title class="text-2xl text-center">Add An Appointment</Card.Title>
-		<Card.Description class="text-center">Add New Appointments to track the how many have</Card.Description>
+		<Card.Title class="text-2xl text-center">Confirm Appointment</Card.Title>
 	</Card.Header>
 	<Card.Content>
 

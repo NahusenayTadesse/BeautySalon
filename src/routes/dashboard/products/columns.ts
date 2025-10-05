@@ -39,13 +39,13 @@ import DataTableSort from '$lib/components/Table/data-table-sort.svelte';
 
     { accessorKey: 'price',
       header: ({ column }) =>
-      renderComponent(DataTableSort, {
+         renderComponent(DataTableSort, {
         name: 'Price',
+        
         onclick: column.getToggleSortingHandler(), 
-      }), 
+      }),  sortable: true,
       
-      sortable: true,  
-      cell: info => `${info.getValue()} ETB`,   // always “day”
+      cell: info => info.getValue() + ' ETB',  
 
     },
     
@@ -54,10 +54,8 @@ import DataTableSort from '$lib/components/Table/data-table-sort.svelte';
       renderComponent(DataTableSort, {
         name: 'Commission',
         onclick: column.getToggleSortingHandler(), 
-      }), 
-      
-      sortable: true,  
-      cell: info => `${info.getValue()} ETB`,  
+      }),  sortable: true,
+      cell: info => `${info.getValue()} ETB`, 
 
     },
 
@@ -91,7 +89,7 @@ import DataTableSort from '$lib/components/Table/data-table-sort.svelte';
       
     {
       accessorKey: 'supplier',
-      header: 'supplier'
+      header: 'Supplier'
     },
     
 

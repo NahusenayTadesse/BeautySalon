@@ -24,6 +24,7 @@
     { name: 'Name', value: data.supply?.name },
 	{ name: 'Cost Per Unit', value: data.supply?.costPerUnit },
     { name: 'Available Quantity', value: data.supply?.quantity },
+    { name: 'Unit of Measurement', value: data.supply?.unitOfMeasure },
     { name: 'Product Description', value: data.supply?.description },
     { name: 'Reorder Notification Quantity', value: data.supply?.reorderLevel},
     { name: 'Product Supplier', value: data.supply?.supplier },
@@ -35,11 +36,7 @@
 
 
 	const { form, errors, enhance, delayed,  capture, restore } = superForm(data.form, {
-		taintedMessage: () => {
-			return new Promise((resolve) => {
-				resolve(window.confirm('Do you want to leave?\nChanges you made may not be saved.'));
-			});
-		},
+		
 		validators: zod4Client(editSupply),
 		resetForm: false
 
@@ -52,7 +49,8 @@
 	  $form.costPerUnit = data.supply.costPerUnit,
 	  $form.quantity = data.supply.quantity,
 	  $form.reorderLevel = data.supply.reorderLevel,
-	  $form.supplier = data.supply.supplier
+	  $form.supplier = data.supply.supplier,
+	  $form.unitOfMeasure = data.supply.unitOfMeasure
 
 
 	
@@ -120,7 +118,7 @@
 	</div>
   {@render fe('Quantity', 'quantity', 'number', "Enter the number of items the product currently has", true, "0")}
   {@render fe('Supplier', 'supplier', 'text', "Enter the supplier of the product" )}
-    {@render fe('Unit of Measurement', 'unitOfMeasurement', 'text', "Enter Unit of Measurement", true)}
+    {@render fe('Unit of Measurement', 'unitOfMeasure', 'text', "Enter Unit of Measurement", true)}
 
   {@render fe('Reorder Notify Level', 'reorderLevel', 'number', "Enter when you want to be notified" )}
   {@render fe('Cost per unit', 'costPerUnit', 'number', "Cost Per Unit" )}

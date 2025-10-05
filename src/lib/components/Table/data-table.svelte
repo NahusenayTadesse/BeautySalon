@@ -141,9 +141,9 @@
  <Table.Root>
   <Table.Header>
    {#each table.getHeaderGroups() as headerGroup (headerGroup.id)}
-    <Table.Row>
+    <Table.Row >
      {#each headerGroup.headers as header (header.id)}
-      <Table.Head colspan={header.colSpan} >
+      <Table.Head colspan={header.colSpan} class="text-start p-0 pr-2" >
        {#if !header.isPlaceholder}
         <FlexRender
          
@@ -160,7 +160,7 @@
    {#each table.getRowModel().rows as row (row.id)}
     <Table.Row data-state={row.getIsSelected() && "selected"}>
      {#each row.getVisibleCells() as cell (cell.id)}
-      <Table.Cell class="capitalize text-center">
+      <Table.Cell class="capitalize">
        <FlexRender
         
         content={cell.column.columnDef.cell}

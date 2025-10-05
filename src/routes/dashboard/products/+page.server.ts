@@ -11,7 +11,7 @@ export const load: PageServerLoad = async({locals})=>{
      
     
 
-    const productList = await db.select(
+    let productList = await db.select(
         {
             id: products.id,
             name: products.name,
@@ -39,7 +39,8 @@ export const load: PageServerLoad = async({locals})=>{
                 products.supplier,
                 transactionProducts.id
             );
-
+    productList =  productList.map(r => ({ ...r, price: Number(r.price), 
+        commission: Number(r.commission), quantity: Number(r.quantity), saleCount: Number(r.saleCount) }));
 
     return{
          productList

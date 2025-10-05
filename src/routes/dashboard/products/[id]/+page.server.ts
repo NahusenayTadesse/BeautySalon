@@ -100,12 +100,12 @@ export const actions: Actions = {
     }
 
 
-        const { productId, productName, description, commission, quantity, price, supplier, reorderLevel, costPerUnit } = form.data;
+        const { productId, productName, category, description, commission, quantity, price, supplier, reorderLevel, costPerUnit } = form.data;
 
     
     try{
      await db.update(products).set({
-      name: productName, commissionAmount: commission.toString(), description, 
+        name: productName, commissionAmount: commission.toString(), description, categoryId: category,
         quantity, price: price.toString(), supplier, reorderLevel, cost: costPerUnit.toString(),
         updatedBy: locals?.user?.id
     }).where(eq(products.id, productId));

@@ -63,15 +63,15 @@ export const editProduct = z.object({
 		.number()
 		.int({ message: 'Quantity can only be full numbers, no decimals.' })
 		.positive({ message: 'Quantity must be a positive number.' }),
-	price: z.number({message: 'Price is required'}).positive({ message: 'Price must be a positive number.' }),
-	commission: z.number({message: "Commission is required, enter 0 if it is not decided yet" }).nonnegative({ message: 'Price must be a positive number.' }),
+	price: z.coerce.number({message: 'Price is required'}).positive({ message: 'Price must be a positive number.' }),
+	commission: z.coerce.number({message: "Commission is required, enter 0 if it is not decided yet" }).nonnegative({ message: 'Price must be a positive number.' }),
 	supplier: z.string().min(1, { message: 'Supplier is required.' }),
   reorderLevel: z.coerce
 		.number()
 		.int({ message: 'Reorder Level can only be full numbers, no decimals.' })
 		.positive({ message: 'Reorder Level must be a positive number.' }),
   
-	costPerUnit: z.number({message: 'Cost Per Unit is required'}).positive({ message: 'Cost Per Unit must be a positive number.' }),
+	costPerUnit: z.coerce.number({message: 'Cost Per Unit is required'}).positive({ message: 'Cost Per Unit must be a positive number.' }),
 });
 
 export type EditProduct= typeof editProduct;
