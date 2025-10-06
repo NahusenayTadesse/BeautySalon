@@ -17,6 +17,15 @@ export const selectItem = `hover:bg-gray-100 hover:shadow-md hover:scale-101 dur
 		{ value: 'male', name: 'Male' },
 		{ value: 'female', name: 'Female' }
 	];
+
+
+  export function minutesToHoursString(minutes: number) {
+  const h = Math.floor(minutes / 60);
+  const m = minutes % 60;
+  return `${h}h ${m}m`;
+}
+
+
  
   
   

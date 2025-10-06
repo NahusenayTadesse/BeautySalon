@@ -20,7 +20,7 @@
    import { Button } from "$lib/components/ui/button/index.js";
 	import { ChevronDownIcon, Frown } from "@lucide/svelte";
 
-   let pagination = $state<PaginationState>({ pageIndex: 0, pageSize: 20 });
+   let pagination = $state<PaginationState>({ pageIndex: 0, pageSize: 10 });
       let columnFilters = $state<ColumnFiltersState>([]);
 
 

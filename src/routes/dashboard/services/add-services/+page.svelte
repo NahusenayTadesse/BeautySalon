@@ -13,6 +13,7 @@ import { Input } from "$lib/components/ui/input/index.js";
 	import { zod4Client } from "sveltekit-superforms/adapters";
 	import { serviceSchema } from "$lib/ZodSchema";
 	import { superForm } from "sveltekit-superforms/client";
+	import SelectComp from "$lib/formComponents/SelectComp.svelte";
 
 
 	let { data } = $props();
@@ -66,6 +67,17 @@ import { Input } from "$lib/components/ui/input/index.js";
 		{/if}
 	</div>
 {/snippet}
+{#snippet selects(name, items)}
+
+<div class="flex w-full flex-col justify-start gap-2">
+		<Label for={name} class="capitalize">{name.replace(/([a-z])([A-Z])/g, '$1 $2')}:</Label>
+
+		<SelectComp {name} bind:value={$form[name]} {items} />
+		{#if $errors[name]}<span class="text-red-500">{$errors[name]}</span>{/if}
+	</div>
+    
+{/snippet}
+
 <Card.Root class="w-lg flex flex-col gap-4">
   <Card.Header>
     <Card.Title class="text-2xl">Add a Service</Card.Title>
@@ -75,6 +87,8 @@ import { Input } from "$lib/components/ui/input/index.js";
 
 <form use:enhance action="?/addProduct" id="main" class="flex flex-col gap-4" method="POST">
   {@render fe('Service Name', 'serviceName', 'text', "Enter Service Name", true)}
+     {@render selects('category', data?.categories)} 
+
 
     <div class="flex w-full flex-col gap-2 justify-start">
 		<Label for="notes" >Service Description (optional)</Label>
@@ -89,6 +103,9 @@ import { Input } from "$lib/components/ui/input/index.js";
 	</div>
   {@render fe('Duration of Service', 'durationMinutes', 'number', "Enter the average number of minutes it takes to complete service", true, "0")}
   {@render fe('Price', 'price', 'number', "Enter the price of item", true, "0")}
+  			{@render fe('Commission', 'commission', 'number', 'Add Service Commision' , true)} 
+
+
 
 
     

@@ -11,7 +11,7 @@ export const load: PageServerLoad = async ({  locals }) => {
 
 
 
-        const appointmentsList = await db.select(
+        let appointmentsList = await db.select(
            {
             extraSettings: appointments.id,
             customerName: sql<string>`TRIM(CONCAT(${customers.firstName}, ' ', COALESCE(${customers.lastName}, '')))`,
@@ -50,6 +50,7 @@ export const load: PageServerLoad = async ({  locals }) => {
 )
         .orderBy(asc(appointments.appointmentTime))
 
+  appointmentsList = appointmentsList.map(r => ({ ...r, paidAmount: Number(r.paidAmount) }));
 
         return {
             appointmentsList

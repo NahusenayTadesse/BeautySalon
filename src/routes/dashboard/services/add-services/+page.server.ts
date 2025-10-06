@@ -4,16 +4,24 @@ import { fail } from '@sveltejs/kit';
 
 import { serviceSchema } from '$lib/ZodSchema';
 import { db } from '$lib/server/db';
-import {  services } from '$lib/server/db/schema/';
+import {  services, serviceCategories } from '$lib/server/db/schema/';
 import type {  Actions } from "./$types";
 import type { PageServerLoad } from './$types.js';
 
 
 export const load: PageServerLoad = async () => {
   const form = await superValidate(zod4(serviceSchema));
+    const categories = await db
+                  .select({
+                    value: serviceCategories.id,
+                    name: serviceCategories.name,
+                    description: serviceCategories.description
+                  })
+                  .from(serviceCategories);
 
   return {
-    form
+    form,
+    categories
   };
 };
 
@@ -28,11 +36,11 @@ export const actions: Actions = {
     }
 
 
-        const { serviceName, description, durationMinutes, price } = form.data;
+        const { serviceName, category, description, durationMinutes, price } = form.data;
 
     
     try{
-     await db.insert(services).values({serviceName, description, durationMinutes, price});
+     await db.insert(services).values({serviceName, categoryId: category, description, durationMinutes, price});
      
 
 

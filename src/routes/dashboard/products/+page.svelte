@@ -8,7 +8,8 @@
   import DataTable from '$lib/components/Table/data-table.svelte';
 
 	import Loading from "$lib/components/Loading.svelte";
-	import { Frown } from "@lucide/svelte";
+	import { Frown, Plus } from "@lucide/svelte";
+	import { Button } from "$lib/components/ui/button";
 
   
    
@@ -26,9 +27,11 @@
  {:then customerList} 
 
   {#if data.productList.length === 0}
-   <div class="w-5xl h-96 flex justify-center items-center">
+   <div class="w-5xl h-96 flex flex-col justify-center items-center">
    <p class="text-center flex flex-row gap-4 mt-4 text-4xl justify-self-cente"><Frown class="animate-bounce w-16  h-12" />
-     No cusotmers added Yet for this date </p>
+     Products List is Empty </p>
+     <Button href="/dashboard/products/add-products"><Plus />Add New Products</Button>
+
      </div>
  {:else}
      <h2 class="text-2xl my-4">No of Products {data.productList?.length} </h2>

@@ -130,6 +130,8 @@ export type EditSupply = typeof editSupply;
 export const serviceSchema = z.object({
 	serviceName: z.string().min(1, { message: 'Service Name is required.' }),
 	description: z.string().optional(),
+  commission: z.coerce.number({message: "Commission is required, enter 0 if it is not decided yet" }).nonnegative({ message: 'Price must be a positive number.' }),
+
   category: z.number('Category cannot be empty. Please select a Category'),
 	durationMinutes: z.coerce
 		.number()
@@ -141,6 +143,23 @@ export const serviceSchema = z.object({
 
 
 export type ServiceSchema = typeof serviceSchema;
+
+export const editService = z.object({
+  serviceId: z.number(),
+	serviceName: z.string().min(1, { message: 'Service Name is required.' }),
+  	commission: z.coerce.number({message: "Commission is required, enter 0 if it is not decided yet" }).nonnegative({ message: 'Price must be a positive number.' }),
+
+	description: z.string().optional(),
+  category: z.number('Category cannot be empty. Please select a Category'),
+	durationMinutes: z.coerce
+		.number()
+		.int()
+		.positive({ message: 'Duration Minutes must be a positive integer.' }),
+	price: z.coerce.number().positive({ message: 'Price must be a positive number.' })
+});
+
+export type EditService = typeof editService;
+
 
 
 export const staffSchema = z.object({
