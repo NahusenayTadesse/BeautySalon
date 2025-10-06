@@ -22,6 +22,7 @@ Branch Id =
 {data.role?.branch} -->
 
 <script>
+
   /* size tokens */
   const svg = 'w-32 h-32 mb-4 drop-shadow-lg';
   const span = 'font-extrabold text-4xl tracking-tight';
@@ -45,8 +46,11 @@ Branch Id =
     transform: perspective(1000px) rotateX(8deg) rotateY(-4deg) scale(1.08);
   }
 </style>
-
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-10 mt-12 px-6 max-w-6xl mx-auto justify-center items-center">
+<svelte:head>
+  <title>Dashboard</title>
+</svelte:head>
+<div class="flex flex-col justify-center items-center lg:w-6xl w-[95%]">
+<div class="grid grid-cols-1 md:grid-cols-2  lg:grid-cols-2 gap-10 mt-12 max-x-6xl px-6 w-full mx-auto align-middle justify-center items-center">
   <!-- Products -->
   <a href="/dashboard/products"
      class="card rounded-3xl shadow-2xl p-10 bg-gradient-to-br from-fuchsia-500 via-pink-500 to-rose-500 text-white flex flex-col items-center justify-center relative overflow-hidden">
@@ -87,5 +91,6 @@ Branch Id =
     </svg>
     <span class={span}>Customers</span>
   </a>
+</div>
 </div>
 

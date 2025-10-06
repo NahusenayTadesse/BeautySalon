@@ -29,7 +29,7 @@
   {#if data.serviceList.length === 0}
    <div class="w-5xl h-96 flex flex-col justify-center items-center">
    <p class="text-center flex flex-row gap-4 mt-4 text-4xl justify-self-cente"><Frown class="animate-bounce w-16  h-12" />
-     No cusotmers added Yet for this date </p>
+     No services added yet </p>
      <Button href="/dashboard/services/add-services"><Plus />Add New Services</Button>
 
      </div>

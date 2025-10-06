@@ -7,10 +7,11 @@ import { Input } from "$lib/components/ui/input/index.js";
 	import { Plus } from "@lucide/svelte";
   import { Button } from "$lib/components/ui/button/index.js";
 	import { zod4Client } from "sveltekit-superforms/adapters";
-	import { staffSchema } from "$lib/ZodSchema";
-	import { superForm } from "sveltekit-superforms/client";
+	import { staffSchema } from "$lib/zodschemas/appointmentSchema";
+	import { fileProxy, superForm } from "sveltekit-superforms/client";
 	import LoadingBtn from "$lib/formComponents/LoadingBtn.svelte";
 	import SelectComp from "$lib/formComponents/SelectComp.svelte";
+	import DatePicker2 from "$lib/formComponents/DatePicker2.svelte";
 
 
 	let { data } = $props();
@@ -28,15 +29,20 @@ import { Input } from "$lib/components/ui/input/index.js";
 
 		}
 	);
+		  const govId = fileProxy(form, 'govId');
+		  const contract = fileProxy(form, 'contract');
+
+
+	
 
 	export const snapshot: Snapshot = { capture, restore };
 // 	 function getItemNameById(items: any, value: any) {
 //   const item = items.find(i=> i.value === value);
 //   return item ? item.name : null; // returns null if not found
 // }
-
-
-
+ let date = new Date();
+ 
+ $form.hiredAt = date.toLocaleDateString("en-CA");
 
 
 </script>
@@ -73,19 +79,56 @@ import { Input } from "$lib/components/ui/input/index.js";
 	</div>
     
 {/snippet}
+
+
 <Card.Root class="w-lg flex flex-col gap-4">
   <Card.Header>
     <Card.Title class="text-2xl">Add New Staff Member</Card.Title>
   </Card.Header>
   <Card.Content>
 
-<form use:enhance action="?/addProduct" id="main" class="flex flex-col gap-4" method="POST">
-  {@render fe('First Name', 'firstName', 'text', "Enter Staff's First Name", true)}
+<form use:enhance action="?/addStaff" id="main" class="flex flex-col gap-4" method="POST" enctype="multipart/form-data"  >
+	<div class="flex flex-row gap-2">
+		  {@render fe('First Name', 'firstName', 'text', "Enter Staff's First Name", true)}
   {@render fe('Last Name', 'lastName', 'text', "Enter Staff's last Name", true)}
+	</div>
+
+     {@render selects('position', data?.allPositions)}
+
+   {@render fe('Phone', 'phone', 'tel', "Enter Phone Number", true)}
+
   {@render fe('Email', 'email', 'email', "Enter Email", true)}
-  {@render fe('Phone', 'phone', 'tel', "Enter Phone Number", true)}
-  {@render selects('position', data?.allPositions)}
-  
+  {@render fe('Salary', 'salary', 'number', 'Enter Salary', true)}
+ <div class="flex w-full flex-col justify-start gap-2">
+		<Label for='hiredAt' class="capitalize">Hired On</Label>
+
+		<DatePicker2  bind:data ={$form.hiredAt}/>
+
+		{#if $errors.hiredAt}<span class="text-red-500">{$errors.hiredAt}</span>{/if}
+		  		<input type='text' name="hiredAt" bind:value={$form.hiredAt} />
+
+	</div>
+
+<div class="flex w-full flex-col justify-start gap-2">
+
+	 <Label for='govId' class="capitalize">Upload new staff member Goverment Id</Label>
+	 <Input type="file" name="govId"
+	 accept="image/*,application/pdf" bind:files={$govId} multiple={false} />
+	 {#if $errors.govId} <span>{$errors.govId}</span> {/if}
+ 	 </div>	
+
+	
+
+
+	 
+<div class="flex w-full flex-col justify-start gap-2">
+
+	 <Label for='contract' class="capitalize">Upload new staff member Contract</Label>
+	 <Input type="file" name="contract"
+	 accept="image/*,application/pdf" bind:files={$contract} multiple={false} />
+	 {#if $errors.govId} <span>{$errors.govId}</span> {/if}
+ 	 </div>	
+
     
 		<Button type="submit" class="mt-4" form="main">
 	{#if $delayed}
@@ -104,6 +147,3 @@ import { Input } from "$lib/components/ui/input/index.js";
 
 
 
-{#each data.allStaff as staf}
-	 {staf.name} <br />
-{/each}

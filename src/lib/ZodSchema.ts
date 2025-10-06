@@ -162,33 +162,7 @@ export type EditService = typeof editService;
 
 
 
-export const staffSchema = z.object({
-  firstName: z
-    .string()
-    .min(1, "First name is required")
-    .max(100, "First name is too long"),
 
-  lastName: z
-    .string()
-    .min(1, "Last name is required")
-    .max(100, "Last name is too long"),
-
-  email: z
-    .email()
-    .min(1, "Email is required"),
-  phone: z
-    .string()
-    .min(7, "Phone number must be at least 7 digits")
-    .max(20, "Phone number is too long")
-    .regex(/^[\d+\-\s()]+$/, "Invalid phone number format"),
-
-  position: z
-    .number("Position is required")
-});
-
-
-
-export type StaffForm = z.infer<typeof staffSchema>;
 
 
 export const createRoleSchema = z.object({

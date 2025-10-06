@@ -5,7 +5,7 @@
 	import { page } from '$app/state';
 	import DarkMode from './DarkMode.svelte';
 	import { bgGradient, selectItem } from '$lib/global.svelte';
-	import { slide } from 'svelte/transition';
+	import { fade, slide } from 'svelte/transition';
 	const navigation = 	[
   { title: 'Dashboard', url: '/dashboard', icon: LayoutDashboard },
   { title: 'Customers', url: '/dashboard/customers', icon: Users },
@@ -119,7 +119,7 @@
           {blacken(item.url)}">
                 {#snippet child({ props })}
                   <a href={item.url}
-				  {...props} transition:slide|global>
+				  {...props} transition:fade>
                     <item.icon class="!w-5 !h-5" />
                     <span>{item.title}</span>
 			  </a>

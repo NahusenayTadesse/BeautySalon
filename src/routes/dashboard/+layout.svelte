@@ -9,7 +9,7 @@
 <Sidebar.Provider>
   <AppSidebar />
   <main>
-    <Sidebar.Trigger  />
+    <Sidebar.Trigger class="absolute top-2 left-2 lg:sticky" />
     <div class="p-4">
       {@render children?.()}
     </div>
