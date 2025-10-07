@@ -33,6 +33,8 @@ export const load: PageServerLoad = async ({ params, locals }) => {
             status: staff.employmentStatus,
             salary: salaries.amount,
             hireDate: sql<string>`DATE_FORMAT(${staff.hireDate}, '%Y-%m-%d')`,
+            govId: staff.govtId,
+             contract: staff.contract,
             
             addedBy: user.name,
             years: sql<number>`TIMESTAMPDIFF(YEAR, ${staff.hireDate}, CURDATE())`,

@@ -77,6 +77,7 @@ const {
     try{
 
            const imageName = `${generateUserId()}${path.extname(govId.name)}`;
+          
 
            const govPath: string = path.normalize(
   path.join(FILES_DIR, imageName));    		
@@ -105,10 +106,10 @@ const {
   lastName, 
   email, 
   phone, 
-  govId: govPath,
-  contract: contractPath,
+  govtId: imageName,
+  contract: contractName,
   type: position,
-  hireDate: hiredAt,
+  hireDate: new Date(hiredAt),
   createdBy: locals.user?.id,
   branchId: locals.user?.branch
 
@@ -123,15 +124,18 @@ const {
 
      
     
-
+   delete form.data.govId;
+   delete form.data.contract;
      setFlash({ type: 'success', message: 'Staff Successfully Added' }, cookies);
-    return message(form, 'Ha')
+    return {
+
+      form
+    }
 		} catch(err){
              console.error("Error" + err)
-             setFlash({ type: 'error', message: err.code === 'ER_DUP_ENTRY' ? 'Phone number is already taken. Please choose another one.': err.message }, cookies);
+             setFlash({ type: 'error', message: err.message }, cookies);
                     
-                 if(err.code === 'ER_DUP_ENTRY')
-                        return setError(form, 'phone', 'Phone Number already exists.');
+                
                        
              
                      return fail(400, {

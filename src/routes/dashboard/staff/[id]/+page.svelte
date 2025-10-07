@@ -27,6 +27,8 @@ let singleTable = $derived([
 	{ name: 'Hired On', value: data.staffMember?.hireDate },
 	{ name: 'Added By', value: data.staffMember?.addedBy },
 	{ name: 'Current Salary', value: data.staffMember?.salary === null ? 'Not Added Yet' : data.staffMember?.salary + ' ETB'  },
+	{ name: 'Goverment Id', value:data.staffMember?.govId  },
+	{ name: 'Contract', value: data.staffMember?.contract  },
 ]); 
 
 const { form, errors, enhance, delayed, capture, restore } = superForm(data.form, {
@@ -130,7 +132,7 @@ const { form, errors, enhance, delayed, capture, restore } = superForm(data.form
     </div>
 	 
 	
-
+ <a href="/dashboard/files/{data.staffMember.contract}" download>Hello </a>
 
 
 
