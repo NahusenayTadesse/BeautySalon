@@ -2,12 +2,11 @@
 	
 import { Input } from "$lib/components/ui/input/index.js";
 	import { Label } from '$lib/components/ui/label/index.js';
-  import { Textarea } from "$lib/components/ui/textarea/index.js";
   import LoadingBtn from "$lib/formComponents/LoadingBtn.svelte";
 	import { Plus } from "@lucide/svelte";
   import { Button } from "$lib/components/ui/button/index.js";
 	// import { zod4Client } from "sveltekit-superforms/adapters";
-	import type { ServiceCategorySchema } from "$lib/ZodSchema";
+	import type { AddCustomerSchema } from "$lib/ZodSchema";
     // import { createRoleSchema } from "$lib/ZodSchema";
 	import  type {  Infer, SuperValidated } from "sveltekit-superforms";
 	  import { superForm } from 'sveltekit-superforms'
@@ -15,7 +14,7 @@ import { Input } from "$lib/components/ui/input/index.js";
 	import { gender } from "$lib/global.svelte";
 
 
-  let { data,  action="?/addCategory" } : { data : SuperValidated<Infer<ServiceCategorySchema>>, action: string } = $props();
+  let { data,  action="/dashboard/cusotmers?/addCustomer" } : { data : SuperValidated<Infer<AddCustomerSchema>>, action: string } = $props();
 
 	const { form, errors, enhance, delayed } = superForm(
 		data,

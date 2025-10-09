@@ -91,3 +91,61 @@ export const staffSchema = z.object({
 
 
 export type StaffForm = z.infer<typeof staffSchema>;
+
+
+export const editStaff = z.object({
+  staffId: z.number(),
+  firstName: z
+    .string()
+    .min(1, "First name is required")
+    .max(100, "First name is too long"),
+
+  lastName: z
+    .string()
+    .min(1, "Last name is required")
+    .max(100, "Last name is too long"),
+
+  email: z
+    .string()
+    .min(1, "Email is required")
+    .email("Invalid email address"),
+
+  phone: z
+    .string()
+    .min(7, "Phone number must be at least 7 digits")
+    .max(20, "Phone number is too long")
+    .regex(/^[\d+\-\s()]+$/, "Invalid phone number format"),
+
+  position: z
+    .number({ message: "Position is required" }),
+
+  hiredAt: z
+    .string({ message: 'Hired At date is required' })
+    .min(1, "Hired At date is required"),
+
+  salary: z
+    .coerce
+    .number({ message: "Salary is required" })
+    .nonnegative({ message: "Salary must be a non-negative number" }),
+
+   govId: z
+    .instanceof(File, { message: 'A file is required.' })
+    .refine((file) => file.size > 0, 'File cannot be empty.')
+    .refine((file) => file.size <= MAX_FILE_SIZE, `Max file size is 10MB.`)
+    .refine((file) => ACCEPTED_FILE_TYPES.includes(file.type), 
+      'Please upload a valid image (JPG, PNG, WebP, HEIC/HEIF) or PDF.')
+    .optional(),
+
+    contract: z
+    .instanceof(File, { message: 'A file is required.' })
+    .refine((file) => file.size > 0, 'File cannot be empty.')
+    .refine((file) => file.size <= MAX_FILE_SIZE, `Max file size is 10MB.`)
+    .refine((file) => ACCEPTED_FILE_TYPES.includes(file.type), 
+      'Please upload a valid image (JPG, PNG, WebP, HEIC/HEIF) or PDF.')
+    .optional(),
+  
+});
+
+
+
+export type EditStaff = z.infer<typeof editStaff>;

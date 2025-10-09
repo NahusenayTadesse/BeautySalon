@@ -2,7 +2,7 @@
  import EllipsisIcon from "@lucide/svelte/icons/ellipsis";
  import { Button } from "$lib/components/ui/button/index.js";
  import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
- 	import { Copy, ExternalLink} from "@lucide/svelte";
+ 	import { Copy, ExternalLink } from "@lucide/svelte";
 	import { dropdownClass } from "$lib/global.svelte";
 
  let { id, phone,  customerName, createdById, createdBy }:

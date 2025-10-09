@@ -2,7 +2,7 @@
 
 import { superValidate } from 'sveltekit-superforms';
 import { zod4 } from 'sveltekit-superforms/adapters';
-import {  editService as schema } from '$lib/ZodSchema';
+import {  editStaff as schema } from '$lib/zodschemas/appointmentSchema';
 
 
 
@@ -25,9 +25,11 @@ export const load: PageServerLoad = async ({ params, locals }) => {
         const staffMember = await db.select(
           { 
            id: staff.id,
-          name: sql<string>`TRIM(CONCAT(${staff.firstName}, ' ', COALESCE(${staff.lastName}, '')))`,
+           firstName: staff.firstName,
+           lastName: staff.lastName,
            
             category: staffTypes.name,
+            categoryId: staffTypes.id,
             phone: staff.phone,
             email: staff.email,
             status: staff.employmentStatus,
@@ -74,8 +76,20 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 }
 
 
+import fs from 'node:fs';
+import path from 'node:path';
+import { generateUserId } from '$lib/global.svelte';
+import { Readable } from 'node:stream';
+import { pipeline } from 'node:stream/promises';
+import { env } from '$env/dynamic/private';
+import { setFlash } from 'sveltekit-flash-message/server';
+const FILES_DIR: string = env.FILES_DIR ?? '.tempFiles';
+if (!fs.existsSync(FILES_DIR)) {
+  fs.mkdirSync(FILES_DIR, { recursive: true });
+}
+
 export const actions: Actions = {
-  editProduct: async ({ request, cookies, locals }) => {
+  editStaff: async ({ request, cookies, locals }) => {
     const form = await superValidate(request, zod4(schema));
 
     if (!form.valid) {
@@ -83,18 +97,86 @@ export const actions: Actions = {
       setFlash({ type: 'error', message: "Please check your form data." }, cookies);
       return fail(400, { form });
     }
-
-
-        const { serviceId, serviceName, category, durationMinutes, description, commission, price } = form.data;
     
-    try{
-     await db.update(services).set({
-        name: serviceName, commissionAmount: commission.toString(), description, categoryId: category,
-        durationMinutes,
-        price: price.toString(),
-        updatedBy: locals?.user?.id
-    }).where(eq(services.id, serviceId));
 
+        const { staffId, firstName, lastName, position, phone, email, salary, hiredAt, govId, contract } = form.data; 
+
+
+
+
+   
+       
+    try{
+
+       const files = await db.select({govtId: staff.govtId, contract: staff.contract}).from(staff).where(eq(staff.id, staffId)).then(rows => rows[0]);
+       let newGovId: string | null;
+       let newContract: string | null;
+           if(govId && govId.size > 0){
+             
+             const imageName = `${generateUserId()}${path.extname(govId.name)}`;
+                      
+            
+                       const govPath: string = path.normalize(
+              path.join(FILES_DIR, imageName));    		
+            
+                const nodejs_wstream = fs.createWriteStream(govPath);
+                const web_rstream = govId.stream();
+                const nodejs_rstream = Readable.fromWeb(web_rstream);
+
+
+                newGovId = imageName;
+                await pipeline(nodejs_rstream, nodejs_wstream).catch(() => {
+            
+                  return fail(500);
+                });
+           }
+           else {
+             newGovId = files.govtId
+           }
+
+
+
+           if(contract && contract.size > 0){
+             
+            const contractName = `${generateUserId()}${path.extname(contract.name)}`;
+
+           const contractPath: string = path.normalize(
+  path.join(FILES_DIR, contractName));    		
+
+    const nodejs_wstreamContract = fs.createWriteStream(contractPath);
+    const web_rstreamContract = contract.stream();
+    const nodejs_rstreamContract = Readable.fromWeb(web_rstreamContract);
+
+     newContract = contractName;
+    await pipeline(nodejs_rstreamContract, nodejs_wstreamContract).catch(() => {
+      return fail(500);
+    });
+           }
+           else {
+             newContract = files.contract
+           }
+     
+
+  
+  
+  
+       await db.update(staff).set({
+        firstName, lastName, 
+        type: position,
+        phone, email,
+        hireDate: new Date(hiredAt),
+        govtId: newGovId,
+        contract: newContract,
+        updatedBy: locals?.user?.id
+    }).where(eq(staff.id, staffId));
+
+    await db.update(salaries).set({
+           amount: salary,
+           staffId,
+           updatedBy: locals.user?.id,
+       })
+ delete form.data.govId;
+   delete form.data.contract;
  
       // Stay on the same page and set a flash message
       setFlash({ type: 'success', message: "Service Updated Successuflly" }, cookies);

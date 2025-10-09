@@ -73,7 +73,7 @@
 				{@render fe('Position Name', 'name', 'text', 'Enter Role Name', true)}
 
 				<div>
-					<Label for="description">Position Description</Label>
+					<Label for="description">Position </Label>
 
 					<Textarea
 						name="description"

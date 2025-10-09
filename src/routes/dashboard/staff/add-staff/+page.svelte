@@ -47,7 +47,7 @@ import { Input } from "$lib/components/ui/input/index.js";
 
 </script>
 <svelte:head>
-	<title>Add New Service </title>
+	<title>Add New Staff </title>
 </svelte:head>
     
 {#snippet fe(label = '', name = '', type = '', placeholder = '', required=false, min="", max="")}
