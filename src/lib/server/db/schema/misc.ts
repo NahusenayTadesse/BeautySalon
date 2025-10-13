@@ -33,7 +33,7 @@ export const auditLog = mysqlTable('audit_log', {
     ipAddress: varchar('ip_address', { length: 45 })
 }); 
 
-export const reports = mysqlTable('audit_log', {
+export const reports = mysqlTable('reports', {
     id: int('id').autoincrement().primaryKey(),
     reportDate: date('report_date').notNull().unique(), 
     bookedAppointments: int('booked_appointments').default(0),

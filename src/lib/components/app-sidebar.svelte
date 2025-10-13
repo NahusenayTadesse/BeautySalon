@@ -1,5 +1,5 @@
 <script lang="ts">
-	import {  Users, UserRoundCog, ChartArea, Hexagon,Calendar, Package, SquareChartGantt, IdCardLanyard, LayoutDashboard, ShoppingBasket, Container } from '@lucide/svelte';
+	import {  Users, UserRoundCog, ChartArea, Calendar, SquareChartGantt, IdCardLanyard, LayoutDashboard, ShoppingBasket, Container, Banknote } from '@lucide/svelte';
 	import * as Sidebar from '$lib/components/ui/sidebar/index.js';
 	import type { ComponentProps } from 'svelte';
 	import { page } from '$app/state';
@@ -15,6 +15,7 @@
   { title: 'Supplies', url: '/dashboard/supplies', icon: Container },
   { title: 'Reports', url: '/dashboard/reports', icon: ChartArea },
   { title: 'Staff', url: '/dashboard/staff', icon: IdCardLanyard },
+  { title: 'Sales', url: '/dashboard/sales', icon: Banknote },
   { title: 'Admin Panel', url: '/dashboard/admin-panel', icon: UserRoundCog}
 ]
 

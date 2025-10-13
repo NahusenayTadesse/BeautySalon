@@ -8,6 +8,13 @@
       "when": 1758925183110,
       "tag": "0000_fancy_mystique",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "5",
+      "when": 1760017991799,
+      "tag": "0001_free_rockslide",
+      "breakpoints": true
     }
   ]
 }
