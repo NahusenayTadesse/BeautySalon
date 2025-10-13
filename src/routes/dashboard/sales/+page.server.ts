@@ -6,7 +6,7 @@ import { eq } from "drizzle-orm";
 export async function load({ locals }) {
     const fetchedServices = await db
         .select({
-            id: services.id,
+           value: services.id,
             name: services.name,
             price: services.price
         })
@@ -14,7 +14,7 @@ export async function load({ locals }) {
 
     const fetchedProducts = await db
         .select({
-            id: products.id,
+            value: products.id,
             name: products.name,
             price: products.price
         })

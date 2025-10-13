@@ -25,7 +25,7 @@
   <ComboboxComp items={data.services}  name="service" bind:value={service} />
     
   <Input type="number" min="1"  > </Input>
-     <input type="text" value={product} />
+
 
 
   </div>
