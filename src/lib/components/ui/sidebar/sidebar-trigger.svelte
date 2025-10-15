@@ -31,6 +31,6 @@
 	}}
 	{...restProps}
 >
-<TextAlignJustify class="size-8" />	
+<TextAlignJustify class="size-4" />	
 <span class="sr-only">Toggle Sidebar</span>
 </Button>

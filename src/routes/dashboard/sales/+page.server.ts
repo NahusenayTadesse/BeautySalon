@@ -1,6 +1,6 @@
 import { db } from "$lib/server/db";
-import { products, services } from '$lib/server/db/schema';
-import { eq } from "drizzle-orm";
+import { products, services, staff } from '$lib/server/db/schema';
+import { eq, sql } from "drizzle-orm";
 
 
 export async function load({ locals }) {
@@ -20,8 +20,16 @@ export async function load({ locals }) {
         })
         .from(products).where(eq(products.branchId, locals.user?.branch));
 
+     const fetchedStaff = await db
+        .select({
+            value: staff.id,
+            name: sql<string>`TRIM(CONCAT(${staff.firstName}, ' ', COALESCE(${staff.lastName}, '')))`,
+        })
+        .from(staff).where(eq(staff.branchId, locals.user?.branch))
+
     return {
         services: fetchedServices,
-        products: fetchedProducts
+        products: fetchedProducts,
+        staffes: fetchedStaff
     };
 }

@@ -109,12 +109,12 @@
     <Sidebar.Group>
       <Sidebar.GroupLabel > <div class="flex flex-row gap-4 py-8 items-center justify-center"> 
 		<img src="/logo.png" class="w-8 h-8" alt="Logo" >
-		 <h4 class="text-gray-900 dark:text-white"> NSS Marketing </h4> </div></Sidebar.GroupLabel>
+		 <h4 class="text-gray-900 dark:text-white !text-[22px]"> NSS Marketing </h4> </div></Sidebar.GroupLabel>
       <Sidebar.GroupContent class="mt-8">
         <Sidebar.Menu class="w-full gap-3">
           {#each navigation as item (item.title)}
             <Sidebar.MenuItem>
-              <Sidebar.MenuButton class="text-lg flex items-center gap-3 rounded-lg px-3 py-6
+              <Sidebar.MenuButton class="text-lg flex items-center gap-3 rounded-lg px-3 py-5
           font-normal transition-colors duration-300 hover:bg-sidebar-accent
           hover:text-sidebar-accent-foreground {selectItem}
           {blacken(item.url)}">
@@ -132,7 +132,7 @@
       </Sidebar.GroupContent>
     </Sidebar.Group>
   </Sidebar.Content>
-  	<Sidebar.Footer class="bg-white dark:bg-black">
-		<DarkMode />
+  	<Sidebar.Footer class="bg-white dark:bg-black flex flex-row">
+		Powered By <a href="https://nssdigitals.com" target="_blank">NSS</a>
 	</Sidebar.Footer>
 </Sidebar.Root>
