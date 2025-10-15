@@ -5,13 +5,16 @@
 
 
  import ComboboxComp from "$lib/formComponents/ComboboxComp.svelte";
+	import { X } from "@lucide/svelte";
   // Number of inputs
-  let productCount = $state(0);
-  let serviceCount = $state(0);
+   let productArr = $state(Array([0]));
+  let productCount = $derived(productArr.length);
+  let serviceCount = $state(1);
+     let serviceArr = $derived(Array(serviceCount));
+
   let { data } = $props()  // Array to hold input values
 
-   let productArr = $derived(Array(productCount));
-   let serviceArr = $derived(Array(serviceCount));
+  
    let product = $state(0)
    let service = $state(0)
    let staff = $state(0)
@@ -31,6 +34,9 @@
 
 let arrParts = `flex flex-col justify-start gap-2 w-full`
 </script>
+<svelte:head>
+   <title>Sales</title>
+</svelte:head>
 
   {#snippet fe(
 	label = '',
@@ -57,14 +63,15 @@ let arrParts = `flex flex-col justify-start gap-2 w-full`
 {/snippet}
 
  <div class="flex flex-row gap-4">
-   <Button onclick={()=>productCount++}>Add Product</Button>
+   <Button onclick={()=>productArr.push([productArr.length])}>Add Product</Button>
    <Button onclick={()=>serviceCount++}>Add Service</Button>
 
  </div>
- <div class="flex flex-col gap-4 mt-6 w-full">
+ <div class="flex flex-col gap-4 mt-6 w-[800px]" >
 
 {#each productArr as value, i}
-  <div class="flex flex-row gap-2">
+  <div class="flex flex-row gap-2 items-end">
+    
     <div class={arrParts}>
   <Label for="staff"> Selling Staff Member</Label>
   <ComboboxComp items={data.staffes}  name="staff" bind:value={staff} />
@@ -73,11 +80,21 @@ let arrParts = `flex flex-col justify-start gap-2 w-full`
     
   <Label for="product"> Selling Product</Label>
 
-  <ComboboxComp items={data.products}  name="product" bind:value={product} />
+  <ComboboxComp items={data.products}  name="product[{value}]" bind:value={product} />
   </div>
     
   {@render fe('Number of Products', 'product', 'number')}
- 
+  <Button variant="outline"
+   title="Remove this product from list"
+   onclick={()=>
+     {productArr.splice(i, 1);
+
+     }
+   }
+   >
+    <X class="w-8 h-8"  /> 
+
+  </Button>
 
   </div>
    
