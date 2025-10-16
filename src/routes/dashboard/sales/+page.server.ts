@@ -7,15 +7,15 @@ export async function load({ locals }) {
     const fetchedServices = await db
         .select({
            value: services.id,
-            name: services.name,
+            name: sql<string>`TRIM(CONCAT(${services.name}, ' ', COALESCE(CONCAT(${services.price}, ' ETB'), '')))` ,
             price: services.price
         })
-        .from(services).where(eq(services.branchId, locals.user?.branch));;
+        .from(services).where(eq(services.branchId, locals.user?.branch));
 
     const fetchedProducts = await db
         .select({
             value: products.id,
-            name: products.name,
+            name: sql<string>`TRIM(CONCAT(${products.name}, ' ', COALESCE(CONCAT(${products.price}, ' ETB'), '')))` ,
             price: products.price
         })
         .from(products).where(eq(products.branchId, locals.user?.branch));
