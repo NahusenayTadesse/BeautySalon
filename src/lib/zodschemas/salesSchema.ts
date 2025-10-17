@@ -1,5 +1,5 @@
 // salesSchema.ts
-import { z } from "zod";
+import { z } from "zod/v4";
 
 /* ------------------------------------------------------------------ */
 /* helpers                                                            */
@@ -20,7 +20,7 @@ const productLineSchema = z.object({
     .string()
     .min(1, "Staff member is required when a product is added"),
   product: z
-    .number({ invalid_type_error: "Product is required" })
+    .number({ message: "Product is required" })
     .int()
     .positive("Product is required"),
   noofproducts: z
@@ -35,7 +35,7 @@ const serviceLineSchema = z.object({
     .string()
     .min(1, "Staff member is required when a service is added"),
   service: z
-    .number({ invalid_type_error: "Service is required" })
+    .number({ message: "Service is required" })
     .int()
     .positive("Service is required"),
   serviceTip: money,

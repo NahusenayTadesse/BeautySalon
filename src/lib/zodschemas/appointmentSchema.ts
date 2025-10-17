@@ -51,9 +51,8 @@ export const staffSchema = z.object({
     .max(100, "Last name is too long"),
 
   email: z
-    .string()
-    .min(1, "Email is required")
-    .email("Invalid email address"),
+      .email("Invalid email address")
+      .min(1, "Email is required"),
 
   phone: z
     .string()
