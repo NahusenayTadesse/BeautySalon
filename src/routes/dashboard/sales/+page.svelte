@@ -58,19 +58,40 @@ let checkoutTotal = $derived(
 
 
 let total = $derived(checkoutTotal + checkoutTotalService);
+
+	// import { zod4Client } from "sveltekit-superforms/adapters";
+	// import { inventoryItemSchema } from "$lib/ZodSchema";
+	// import { superForm } from "sveltekit-superforms/client";
+
+  // const { form, errors, enhance, delayed, capture, restore } = superForm(
+	// 	data.form,
+	// 	{
+	// 		taintedMessage: () => {
+	// 			return new Promise((resolve) => {
+	// 				resolve(window.confirm('Do you want to leave?\nChanges you made may not be saved.'));
+	// 			});
+	// 		},
+
+	// 		validators: zod4Client(inventoryItemSchema)
+
+	// 	}
+	// );
+
+
 </script>
 <svelte:head>
    <title>Sales</title>
 </svelte:head>
+<form action="?/addSales" method="post" enctype="multipart/form-data" >
 
-
+<div class="mt-6 w-full max-w-3xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg shadow p-4">
 
  <div class="flex flex-row gap-4">
-   <Button onclick={()=>{productArr.push([productArr.length]); amount.push(1); tips.push(0)}}>Add Product</Button>
-   <Button onclick={()=>serviceArr.push([serviceArr.length])}>Add Service</Button>
+   <Button type="button" onclick={()=>{productArr.push([productArr.length]); amount.push(1); tips.push(0)}}>Add Product</Button>
+   <Button type="button" onclick={()=>serviceArr.push([serviceArr.length])}>Add Service</Button>
 
  </div>
- <div class="flex flex-col gap-4 mt-6 w-[800px]" >
+ <div class="flex flex-col gap-4 mt-6 " >
 
 {#each productArr as value, i}
   <div class="flex flex-row gap-2 items-end">
@@ -83,7 +104,7 @@ let total = $derived(checkoutTotal + checkoutTotalService);
     
   <Label for="product"> Selling Product</Label>
 
-  <ComboboxComp items={data.products}  name="product[{value}]" bind:value={product[i]} />
+  <ComboboxComp items={data.products}  name="product" bind:value={product[i]} />
   </div>
     <div class={arrParts}>
         <Label for="noofproducts"> Number of Product</Label>
@@ -93,10 +114,10 @@ let total = $derived(checkoutTotal + checkoutTotalService);
       <div class={arrParts}>
         <Label for="tip"> Tip</Label>
 
-   <Input type="number" name="tip" bind:value={tips[i]}/>
+   <Input type="number" name="tips" bind:value={tips}/>
    </div>
 
-  <Button variant="outline"
+  <Button type="button" variant="outline"
    title="Remove this product from list"
    onclick={()=>
      {productArr.splice(i, 1);
@@ -121,7 +142,7 @@ let total = $derived(checkoutTotal + checkoutTotalService);
  {#each serviceArr as value, i}
   <div class="flex flex-row gap-2 w-full items-end">
 <div class={arrParts}>
-    <Label for="staff">Staff Member Who Rendered Service</Label>
+    <Label for="staff">Service Provider</Label>
   
 
     <ComboboxComp items={data.staffes}  name="staff" bind:value={staff} />
@@ -137,17 +158,18 @@ let total = $derived(checkoutTotal + checkoutTotalService);
    <Input type="number" name="serviceTip" bind:value={serviceTips[i]}/>
    </div>
 
-   <Button variant="outline"
+   <Button type="button" variant="outline"
    title="Remove this service from list"
    onclick={()=>
      {serviceArr.splice(i, 1);
+      service.splice(i,1);
       serviceTips.splice(i, 1);
     
 
 
      }
    }
-   >
+   > {i}
     <X class="w-8 h-8"  /> 
 
   </Button>
@@ -159,8 +181,7 @@ let total = $derived(checkoutTotal + checkoutTotalService);
 
 
 
-<div class="mt-6 w-full max-w-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg shadow p-4">
-  <div class="flex items-center justify-between mb-2">
+  <div class="flex items-center justify-between mb-2 mt-8">
     <h3 class="text-lg font-medium text-slate-700 dark:text-slate-100">Transaction summary</h3>
     <span class="text-sm text-slate-500 dark:text-slate-400">{productArr.length} products · {serviceArr.length} services</span>
   </div>
@@ -189,10 +210,10 @@ let total = $derived(checkoutTotal + checkoutTotalService);
   </div>
 
   <div class="mt-3 flex gap-2">
-    <Button onclick={() => {/* save action placeholder */}}>Save Sale</Button>
-    <Button variant="outline" onclick={() => {/* reset action placeholder */}}>Reset</Button>
+    <Button type="submit">Save Sale</Button>
+    <Button variant="outline" type="reset" >Reset</Button>
   </div>
 </div>
 
-
+</form>
 

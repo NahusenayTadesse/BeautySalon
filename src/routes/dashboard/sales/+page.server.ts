@@ -1,7 +1,9 @@
 import { db } from "$lib/server/db";
 import { products, services, staff } from '$lib/server/db/schema';
 import { eq, sql } from "drizzle-orm";
-
+import { superValidate } from 'sveltekit-superforms';
+import { zod4 } from 'sveltekit-superforms/adapters';
+import { salesSchema as schema } from '$lib/zodschemas/salesSchema'
 
 export async function load({ locals }) {
     const fetchedServices = await db
@@ -25,11 +27,16 @@ export async function load({ locals }) {
             value: staff.id,
             name: sql<string>`TRIM(CONCAT(${staff.firstName}, ' ', COALESCE(${staff.lastName}, '')))`,
         })
-        .from(staff).where(eq(staff.branchId, locals.user?.branch))
+        .from(staff).where(eq(staff.branchId, locals.user?.branch));
+
+
+        //   const form = await superValidate(zod4(schema));
+
 
     return {
         services: fetchedServices,
         products: fetchedProducts,
-        staffes: fetchedStaff
+        staffes: fetchedStaff,
+       
     };
 }
