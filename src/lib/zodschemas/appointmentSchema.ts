@@ -1,9 +1,9 @@
 import { z } from 'zod/v4';
 
-const MAX_FILE_SIZE = 10 * 1024 * 1024; // 5MB limit
+export const MAX_FILE_SIZE = 10 * 1024 * 1024; // 5MB limit
 
 // Updated list to include common mobile camera/screenshot formats
-const ACCEPTED_FILE_TYPES = [
+export const ACCEPTED_FILE_TYPES = [
   'image/jpeg',   // Common for both platforms
   'image/png',    // Common for both platforms (and screenshots)
   'image/webp',   // Common modern format (often Android screenshots/exports)

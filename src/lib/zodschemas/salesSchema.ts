@@ -1,5 +1,6 @@
 // salesSchema.ts
 import { z } from "zod/v4";
+import { ACCEPTED_FILE_TYPES, MAX_FILE_SIZE } from "./appointmentSchema";
 
 /* ------------------------------------------------------------------ */
 /* helpers                                                            */
@@ -17,8 +18,7 @@ const money = z
 /* ------------------------------------------------------------------ */
 const productLineSchema = z.object({
   staff: z
-    .string()
-    .min(1, "Staff member is required when a product is added"),
+    .number("Staff is required"),
   product: z
     .number({ message: "Product is required" })
     .int()
@@ -28,30 +28,42 @@ const productLineSchema = z.object({
     .int()
     .positive("Number of products must be at least 1"),
   tip: money,
+  
 });
 
 const serviceLineSchema = z.object({
   staff: z
-    .string()
-    .min(1, "Staff member is required when a service is added"),
+    .number("Staff is required"),
   service: z
     .number({ message: "Service is required" })
     .int()
     .positive("Service is required"),
   serviceTip: money,
+
+  
 });
 
-/* ------------------------------------------------------------------ */
-/* entire form                                                        */
-/* ------------------------------------------------------------------ */
+
 export const salesSchema = z
   .object({
     products: z.array(productLineSchema),
     services: z.array(serviceLineSchema),
+    productAmount: z.number().nonnegative('Product Amount cannot be less than zero'),
+    serviceAmount: z.number().nonnegative('Service Amount cannot be less than zero'),
+    total: z.number().nonnegative('Total cannot be less than zero'),
+    receipt: z
+    .instanceof(File, { message: 'A file is required.' })
+    .refine((file) => file.size > 0, 'File cannot be empty.')
+    .refine((file) => file.size <= MAX_FILE_SIZE, `Max file size is 10MB.`)
+    .refine((file) => ACCEPTED_FILE_TYPES.includes(file.type), 
+      'Please upload a valid image (JPG, PNG, WebP, HEIC/HEIF) or PDF.'),
+
   })
   .refine(
     (data) => data.products.length > 0 || data.services.length > 0,
-    "At least one product or service must be added"
+    "At least one product or service must be added",
+
+    
   );
 
 /* ------------------------------------------------------------------ */

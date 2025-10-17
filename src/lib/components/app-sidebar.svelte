@@ -133,6 +133,8 @@
     </Sidebar.Group>
   </Sidebar.Content>
   	<Sidebar.Footer class="bg-white dark:bg-black flex flex-row">
+		<Sidebar.GroupLabel>
 		Powered By <a href="https://nssdigitals.com" target="_blank">NSS</a>
+		</Sidebar.GroupLabel>
 	</Sidebar.Footer>
 </Sidebar.Root>

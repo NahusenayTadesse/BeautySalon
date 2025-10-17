@@ -33,6 +33,7 @@ let singleContainer = `flex flex-row  gap-3 border-1
  border-white/20 dark:border-black/20 
  backdrop-blur-md shadow-lg bg-white/10
   dark:bg-gray-700 p-3 rounded-lg w-full items-end`;
+let errorsStyle = `text-red-500 text-sm`;
 
 
 
@@ -61,11 +62,11 @@ let singleContainer = `flex flex-row  gap-3 border-1
 	);
 
   function addProduct() {
-		$form.products = [...$form.products, { staff: '', product: 0, noofproducts: 1, tip: 0 }];
+		$form.products = [...$form.products, { staff: 0, product: 0, noofproducts: 1, tip: 0}];
 	}
 
    function addService() {
-		$form.services = [...$form.services, { staff: '', service: 0, serviceTip: 0 }];
+		$form.services = [...$form.services, { staff: 0, service: 0, serviceTip: 0 }];
 	}
   
 
@@ -85,7 +86,13 @@ let singleContainer = `flex flex-row  gap-3 border-1
   }, 0)
 );
 
-let total = $derived(checkoutTotal + checkoutTotalService);
+let total = $derived(checkoutTotal + checkoutTotalService); 
+
+$effect(() => {
+  $form.productAmount = checkoutTotal;
+  $form.serviceAmount = checkoutTotalService;
+  $form.total = total;
+})
 
 let submitted = $state(false);
 
@@ -102,13 +109,9 @@ function onsubmit(){
 <form action="?/addSales" method="post" enctype="multipart/form-data" use:enhance {onsubmit} >
 
   <SuperDebug data={$form} />
-  {#if $message}
-      <p>{$message}</p>
-  {/if} 
 
-  {#if $errors.products}
-    <p>{$errors.products._errors}</p>
-   {/if}
+
+
 
 <div class="mt-6 w-full max-w-3xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg shadow p-4">
 
@@ -129,7 +132,12 @@ function onsubmit(){
     <div class={arrParts}>
   <Label for="staff"> Selling Staff Member</Label>
   <ComboboxComp items={data.staffes}  name="staff" bind:value={value.staff} />
-  
+
+    {#if $errors.products?.[i]?.staff}
+    <p class={errorsStyle}>{$errors.products[i].staff}</p>
+  {/if}
+
+
   </div>
   <div class={arrParts}>
     
@@ -137,16 +145,27 @@ function onsubmit(){
 
   <ComboboxComp items={data.products}  name="product" bind:value={value.product} />
 
+   {#if $errors.products?.[i]?.product}
+    <p class={errorsStyle}>{$errors.products[i].product}</p>
+  {/if}
+
   </div>
     <div class={arrParts}>
         <Label for="noofproducts"> Number of Product</Label>
 
    <Input type="number" min="1" name="noofproducts" bind:value={value.noofproducts}/>
+
+    {#if $errors.products?.[i]?.noofproducts}
+    <p class={errorsStyle}>{$errors.products[i].noofproducts}</p>
+  {/if}
    </div>
       <div class={arrParts}>
         <Label for="tip"> Tip</Label>
 
    <Input type="number" name="tip" bind:value={value.tip}/>
+    {#if $errors.products?.[i]?.tip}
+    <p class={errorsStyle}>{$errors.products[i].tip}</p>
+  {/if}
    </div>
 
   <Button type="button" variant="outline"
@@ -181,16 +200,27 @@ function onsubmit(){
   
 
     <ComboboxComp items={data.staffes}  name="staff" bind:value={value.staff} />
+     {#if $errors.services?.[i]?.staff}
+    <p class={errorsStyle}>{$errors.services[i].staff}</p>
+  {/if}
 </div>
 <div class={arrParts}>
    <Label for="staff"> Service</Label>
 
   <ComboboxComp items={data.services}  name="service" bind:value={value.service} />
+
+  {#if $errors.services?.[i]?.service}
+    <p class={errorsStyle}>{$errors.services[i].service}</p>
+  {/if}
   </div>  
     <div class={arrParts}>
         <Label for="serviceTip"> Tip</Label>
 
    <Input type="number" name="serviceTip" bind:value={value.serviceTip}/> 
+
+   {#if $errors.services?.[i]?.serviceTip}
+    <p class={errorsStyle}>{$errors.services[i].serviceTip}</p>
+  {/if}
 
    </div>
 
@@ -224,14 +254,17 @@ function onsubmit(){
     <div class="flex flex-col">
       <span class="uppercase text-xs tracking-wide text-slate-400">Products</span>
       <span class="mt-1 text-base font-semibold text-slate-800 dark:text-slate-50">ETB
-        {checkoutTotal ? Number(checkoutTotal).toFixed(2) : '0.00'}
+        {$form.productAmount ? Number($form.productAmount).toFixed(2) : '0.00'}
+        <input type="hidden" bind:value={$form.productAmount} name="productAmount">
       </span>
     </div>
 
     <div class="flex flex-col">
       <span class="uppercase text-xs tracking-wide text-slate-400">Services</span>
       <span class="mt-1 text-base font-semibold text-slate-800 dark:text-slate-50">ETB
-        {checkoutTotalService ? Number(checkoutTotalService).toFixed(2) : '0.00'}
+        {$form.serviceAmount ? Number($form.serviceAmount).toFixed(2) : '0.00'}
+        <input type="hidden" bind:value={$form.serviceAmount} name="serviceAmount">
+
       </span>
     </div>
   </div>
@@ -239,9 +272,15 @@ function onsubmit(){
   <div class="mt-4 border-t border-slate-100 dark:border-slate-700 pt-3 flex items-baseline justify-between">
     <span class="text-lg text-gray-900 dark:text-white">Grand Total</span>
     <span class="text-2xl font-extrabold text-emerald-600 dark:text-emerald-400">ETB
-      {total ? Number(total).toFixed(2) : '0.00'}
+      {$form.total ? Number($form.total).toFixed(2) : '0.00'}
+        <input type="hidden" bind:value={$form.total} name="total">
+
     </span>
   </div>
+
+  {#if $errors._errors }
+    <p class={errorsStyle}>{$errors._errors}</p>
+  {/if}
 
   <div class="mt-3 flex gap-2">
     <Button type="submit">Save Sale</Button>

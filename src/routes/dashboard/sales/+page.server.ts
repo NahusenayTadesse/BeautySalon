@@ -1,5 +1,5 @@
 import { db } from "$lib/server/db";
-import { products, services, staff } from '$lib/server/db/schema';
+import { products, services, staff, transactionProducts } from '$lib/server/db/schema';
 import { eq, sql } from "drizzle-orm";
 import { superValidate, fail } from 'sveltekit-superforms';
 import { zod4 } from 'sveltekit-superforms/adapters';
@@ -56,9 +56,18 @@ export const actions: Actions = {
       // Stay on the same page and set a flash message
       setFlash({ type: 'error', message: "Please check your form data." }, cookies);
       return fail(400, { form });
-    }
+    }       
+     
+          const { products, services, productAmount, serviceAmount, receipt } = form.data;
+
+
+          
+          
        
           setFlash({ type: 'success', message: "Form Success" }, cookies);
+
+
+          
 
           return {
             form
