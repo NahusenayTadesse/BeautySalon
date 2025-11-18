@@ -109,7 +109,7 @@
     <Sidebar.Group>
       <Sidebar.GroupLabel > <div class="flex flex-row gap-4 py-8 items-center justify-center"> 
 		<img src="/logo.png" class="w-8 h-8" alt="Logo" >
-		 <h4 class="text-gray-900 dark:text-white !text-[22px]"> NSS Marketing </h4> </div></Sidebar.GroupLabel>
+		 <h4 class="text-gray-900 dark:text-white !text-[22px]"> Company Name </h4> </div></Sidebar.GroupLabel>
       <Sidebar.GroupContent class="mt-8">
         <Sidebar.Menu class="w-full gap-3">
           {#each navigation as item (item.title)}
@@ -134,7 +134,7 @@
   </Sidebar.Content>
   	<Sidebar.Footer class="bg-white dark:bg-black flex flex-row">
 		<Sidebar.GroupLabel>
-		Powered By <a href="https://nssdigitals.com" target="_blank">NSS</a>
+		Powered By  <a href="https://comepanynameting.com" target="_blank" class="ml-1">Comapnay Nameg</a>
 		</Sidebar.GroupLabel>
 	</Sidebar.Footer>
 </Sidebar.Root>

@@ -16,8 +16,10 @@
     <div class="flex flex-row gap-4 items-center">
     <DarkMode />
     <Avatar.Root> 
-     <Avatar.Fallback class="bg-white dark:bg-black text-black dark:text-white border-1 dark:border-white border-black">{data.role?.name[0].toUpperCase()}</Avatar.Fallback>
-</Avatar.Root>
+    <Avatar.Fallback class="flex items-center justify-center  rounded-full text-white font-medium bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 dark:from-indigo-800 dark:via-purple-700 dark:to-pink-800 border-0">
+      {data.role?.name?.[0]?.toUpperCase()}
+    </Avatar.Fallback>
+    </Avatar.Root>
 </div>
   
     </div>

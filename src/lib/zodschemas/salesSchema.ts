@@ -2,9 +2,7 @@
 import { z } from "zod/v4";
 import { ACCEPTED_FILE_TYPES, MAX_FILE_SIZE } from "./appointmentSchema";
 
-/* ------------------------------------------------------------------ */
-/* helpers                                                            */
-/* ------------------------------------------------------------------ */
+
 const toNum = (v: unknown) => (v === "" || v == null ? 0 : Number(v));
 
 const money = z
@@ -13,9 +11,7 @@ const money = z
   .transform(toNum)
   .refine((n) => !Number.isNaN(n), "Must be a valid number");
 
-/* ------------------------------------------------------------------ */
-/* single items                                                       */
-/* ------------------------------------------------------------------ */
+
 const productLineSchema = z.object({
   staff: z
     .number("Staff is required"),
@@ -66,7 +62,4 @@ export const salesSchema = z
     
   );
 
-/* ------------------------------------------------------------------ */
-/* TypeScript type                                                    */
-/* ------------------------------------------------------------------ */
 export type SalesForm = z.infer<typeof salesSchema>;
