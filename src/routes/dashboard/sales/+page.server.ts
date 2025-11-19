@@ -1,5 +1,5 @@
 import { db } from "$lib/server/db";
-import { customers, products as prds, services as srvs, staff, transactionProducts, transactions, transactionServices } from '$lib/server/db/schema';
+import { commissionProduct, commissionService, customers, paymentMethods, products as prds, services as srvs, staff, transactionProducts, transactions, transactionServices } from '$lib/server/db/schema';
 import { eq, sql } from "drizzle-orm";
 import { superValidate, fail, fileProxy } from 'sveltekit-superforms';
 import { zod4 } from 'sveltekit-superforms/adapters';
@@ -42,12 +42,20 @@ export async function load({ locals }) {
 
           const form = await superValidate(zod4(schema));
 
-
+   const allMethods = await db
+                .select({
+                  value: paymentMethods.id,
+                  name: paymentMethods.name,
+                  description: paymentMethods.description
+                })
+                .from(paymentMethods).where(eq(paymentMethods.isActive, true));
     return {
         services: fetchedServices,
         products: fetchedProducts,
         staffes: fetchedStaff,
         customers: fetchedCustomer,
+        allMethods,
+        
         form
        
     };
@@ -72,7 +80,7 @@ export const actions: Actions = {
 
     const form = await superValidate(formData, zod4(schema));
 
-    const { products, services, productAmount, serviceAmount, total, receipt } = form.data; 
+    const { paymentMethod, total, receipt } = form.data; 
 
 
 const product_staff = formData.getAll('product_staff');   // ← fix typo
@@ -128,28 +136,33 @@ const serviceTip    = formData.getAll('serviceTip');
           .values({
             amount: total,
             paymentStatus: 'paid', // or map from UI if you add the field
-            paymentMethodId: 1, 
+            paymentMethodId: paymentMethod, 
             recieptLink: imageName,
+            branchId: locals.user?.branch,
+            createdBy: locals.user?.id
           })
           .$returningId(); 
 
 
 
            const fetchedProducts = await tx          // ← tx, not db
-  .select({ value: prds.id, price: prds.price })
+  .select({ value: prds.id, price: prds.price,
+      commissionProduct: prds.commissionAmount,
+   })
   .from(prds)
   .where(eq(prds.branchId, locals.user?.branch));
 
 const fetchedServices = await tx          // ← tx, not db
-  .select({ value: srvs.id, price: srvs.price })
+  .select({ value: srvs.id, price: srvs.price, commissionService: srvs.commissionAmount })
   .from(srvs)
   .where(eq(srvs.branchId, locals.user?.branch));
          
 
       
         // 2. product lines
-        if (product.length) {
-  await tx.insert(transactionProducts).values(
+        if (product.length) { 
+          
+   const txnPrdId = await tx.insert(transactionProducts).values(
     product.map((_, idx) => ({
       transactionId: txn.id,
       staffId:       product_staff[idx]  || null,
@@ -160,13 +173,37 @@ const fetchedServices = await tx          // ← tx, not db
       total:
         getPrice(fetchedProducts, product[idx]) * noofproducts[idx]
         + Number(tip[idx] || 0),
+        branchId: locals.user?.branch,
+            createdBy: locals.user?.id
     }))
-  );
-}
+  ).$returningId();
+
+   const today = new Date();
+
+    await tx.insert(commissionProduct).values(
+         product.map((_, idx) => ({
+           
+          saleItemId: txnPrdId[idx].id,
+          staffId: product_staff[idx],
+          amount: getCommission(fetchedProducts, product[idx]) * noofproducts[idx],
+          commissionDate: today,
+          branchId: locals.user?.branch,
+          createdBy: locals.user?.id
+         }
+        )
+      )
+    );
+
+  }
+
+  
+
+  
+ 
 
 // 4. service lines
 if (service.length) {
-  await tx.insert(transactionServices).values(
+   const txnsrvid = await tx.insert(transactionServices).values(
     service.map((_, idx) => ({
       transactionId: txn.id,
       staffId:       service_staff[idx] || null,
@@ -177,7 +214,21 @@ if (service.length) {
         getPrice(fetchedServices, service[idx])
         + Number(serviceTip[idx] || 0),
     }))
-  );
+  ).$returningId();
+     const today = new Date();
+     await tx.insert(commissionService).values(
+         service.map((_, idx) => ({
+           
+          saleItemId: txnsrvid[idx].id,
+          staffId: service_staff[idx],
+          amount: getCommission(fetchedServices, service[idx]),
+          commissionDate: today,
+          branchId: locals.user?.branch,
+          createdBy: locals.user?.id
+         }
+        )
+      )
+    );
 }
       });
 
@@ -202,4 +253,14 @@ function getPrice(
 ): number {
   const item = list.find((i) => i.value === value);
   return item ? Number(item.price) : 0;
+}
+
+function getCommission(
+  list: Array<{ value: number; price: string; commissionPct: string | null }>,
+  value: number
+): number {
+  const item = list.find((i) => i.value === value);
+  if (!item) return 0;
+  const pct = Number(item.commissionPct ?? 0);
+  return (Number(item.price) * pct) / 100;
 }

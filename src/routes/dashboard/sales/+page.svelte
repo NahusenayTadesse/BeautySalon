@@ -31,8 +31,6 @@
 	import { salesSchema } from '$lib/zodschemas/salesSchema';
 	import { fileProxy, superForm } from 'sveltekit-superforms/client';
 	import { fly } from 'svelte/transition';
-	import SuperDebug from 'sveltekit-superforms';
-	import Loading from '$lib/components/Loading.svelte';
 	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';
 
 	const { form, errors, message, enhance, delayed, capture, restore } = superForm(data.form, {
@@ -92,8 +90,14 @@
 
 <h1>Sales</h1>
 
-<SuperDebug data={$form} />
+{#snippet combo(name, items)}
+	<div class="flex w-full flex-col justify-start gap-2">
+		<Label for={name} class="capitalize">{name.replace(/([a-z])([A-Z])/g, "$1 $2")}:</Label>
 
+		<ComboboxComp {name} bind:value={$form[name]} {items} />
+		{#if $errors[name]}<span class="text-red-500">{$errors[name]}</span>{/if}
+	</div>
+{/snippet} 
 <form action="?/addSales" method="post" enctype="multipart/form-data" use:enhance {onsubmit}>
 	<div
 		class="mt-6 w-full max-w-3xl rounded-lg border border-slate-200 bg-white p-4 shadow dark:border-slate-700 dark:bg-slate-800"
@@ -241,17 +245,22 @@
 		{#if $form.products.length > 0 || $form.services.length > 0}
 			<div class="my-8 flex w-full flex-col justify-start gap-2">
 				<Label for="receipt" class="capitalize">Upload Reciept or Screenshot of Sale</Label>
+				<div class="flex flex-row">
 				<Input
 					type="file"
 					name="receipt"
 					accept="image/*,application/pdf"
 					bind:files={$file}
 					multiple={false}
-				/>
+				/> 
+				<Button variant="ghost" onclick={()=> { $file = 0}}><X /></Button>
+				</div>
 				{#if $errors.receipt}
 					<span>{$errors.receipt}</span>
 				{/if}
-			</div>
+			</div> 
+
+		   {@render combo("paymentMethod", data.allMethods)}
 		{/if}
 
 		<div
@@ -284,7 +293,7 @@
 				onclick={() => {
 					$form.products.length = 0;
 					$form.services.length = 0;
-					$file.;
+					$form.file = "";
 				}}
 			>
 				<BrushCleaning />

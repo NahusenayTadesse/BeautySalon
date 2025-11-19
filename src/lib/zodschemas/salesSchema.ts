@@ -44,6 +44,7 @@ export const salesSchema = z
   .object({
     products: z.array(productLineSchema),
     services: z.array(serviceLineSchema),
+    paymentMethod: z.number('Payment Method is required'),
     productAmount: z.number().nonnegative('Product Amount cannot be less than zero'),
     serviceAmount: z.number().nonnegative('Service Amount cannot be less than zero'),
     total: z.number().nonnegative('Total cannot be less than zero'),
