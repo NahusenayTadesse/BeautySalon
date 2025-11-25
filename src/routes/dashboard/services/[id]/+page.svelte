@@ -18,6 +18,7 @@
 	
 	import { Textarea } from '$lib/components/ui/textarea/index.js';
 	import { minutesToHoursString } from '$lib/global.svelte';
+	import Delete from '$lib/forms/Delete.svelte';
 
 
 
@@ -90,6 +91,7 @@ $form.durationMinutes = data.service?.duration
 		 Back
 		 {/if}
 	</Button>
+	<Delete />
 	</div>
 {#if edit === false}
  <div class="p-4 w-full"><SingleTable {singleTable}/></div> {/if}

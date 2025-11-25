@@ -17,28 +17,27 @@
 </script>
 
 <svelte:head>
-        <title> Staff List</title>
+        <title> Reports </title>
 </svelte:head>
   
 
  {#await data}
   
   <Loading  name="Customers"/>
- {:then staffList} 
+ {:then reports} 
 
-  {#if data.staffList.length === 0}
+  {#if data.allReports.length === 0}
    <div class="w-5xl h-96 flex flex-col justify-center items-center">
    <p class="text-center flex flex-row gap-4 mt-4 text-4xl justify-self-cente"><Frown class="animate-bounce w-16  h-12" />
-     No staff members added yet </p>
-     <Button href="/dashboard/services/add-services"><Plus />Add New Staff Members</Button>
+     Reports is Empty </p>
 
      </div>
  {:else}
-     <h2 class="text-2xl my-4">No of Staff {data.staffList?.length} </h2>
+     <h2 class="text-2xl my-4">No of Reports {data.allReports?.length} </h2>
 
- <div class="lg:w-full w-[350px] lg:p-0 p-2 mt-8 mb-4 pt-4">
+ <div class="lg:w-[1250px] w-[350px] lg:p-0 p-2 mt-8 mb-4 pt-4 px-2">
 
-   <DataTable data={data.staffList} {columns} filterBlacklist={['id']} />
+   <DataTable data={data.allReports} {columns}  />
  </div>
  {/if}
   {:catch}

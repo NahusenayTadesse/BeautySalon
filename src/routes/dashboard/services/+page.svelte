@@ -38,7 +38,7 @@
 
  <div class="lg:w-[90%] w-[350px] lg:p-0 p-2 mt-8 mb-4 pt-4">
 
-   <DataTable data={data.serviceList} {columns} />
+   <DataTable data={data.serviceList} {columns} filterBlacklist={['id','name', 'description']} />
  </div>
  {/if}
   {:catch}

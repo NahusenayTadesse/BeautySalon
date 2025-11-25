@@ -6,5 +6,5 @@ export const load: PageServerLoad = async() => {
 
     const date = new Date();
 
-     redirect(307, `/dashboard/appointments/${date.toLocaleDateString("en-CA")}`);
+    return redirect(307, `/dashboard/appointments/${date.toLocaleDateString("en-CA")}`);
 }

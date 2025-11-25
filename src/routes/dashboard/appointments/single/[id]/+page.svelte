@@ -15,12 +15,13 @@
 	import { fileProxy, superForm } from 'sveltekit-superforms/client';
 	import ComboboxComp from '$lib/formComponents/ComboboxComp.svelte';
 	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';
-	import { ArrowLeft, Pencil, Plus, Save } from '@lucide/svelte';
+	import { ArrowLeft, Pencil, Plus, Save, Trash } from '@lucide/svelte';
 	import SelectComp from '$lib/formComponents/SelectComp.svelte';
 	import type { Snapshot } from '@sveltejs/kit';
 	import DataTable from '$lib/components/Table/data-table.svelte';
 	
 	import DatePicker2 from '$lib/formComponents/DatePicker2.svelte';
+	import Delete from '$lib/forms/Delete.svelte';
 
   let singleTable = $derived([
     { name: 'Name', value: data.appointmentsList.customerName },
@@ -88,13 +89,15 @@
         <title> Appointment Details</title>
  </svelte:head>
 
+ {#if data.appointmentsList.customerName}
+
 
   <div class="bg-white dark:bg-black shadow-lg dark:shadow-md dark:shadow-gray-900
    rounded-md min-w-3xl w-md flex flex-col justify-center items-center">
     <div class="bg-gradient-to-r w-full from-dark to-black text-white py-6 px-8 rounded-lg flex flex-col justify-start items-start">
       <h1 class="text-center w-full">Appointment Details</h1>
     </div>
-	<div class="flex flex-row justify-start items-start w-full pl-4 mt-4">
+	<div class="flex flex-row justify-start items-start w-full pl-4 mt-4 gap-2">
 	<Button onclick={()=> edit = !edit}>
 		{#if !edit}
 		<Pencil class="w-4 h-4"/>
@@ -105,6 +108,11 @@
 		 Back
 		 {/if}
 	</Button>
+	<Delete />
+	 <form action="?/delete" use:enhance method="post" >
+	<input type="hidden" value={data.appointmentsList.id} name="id" />
+   <Button type="submit" variant="destructive"> Delete <Trash /></Button>
+</form>
 	</div>
 {#if edit === false}
  <div class="p-4 w-full"><SingleTable {singleTable}/></div> {/if}
@@ -147,7 +155,7 @@
 
 	<div class="flex flex-col mt-4 w-full">
 		<DataTable data={data.reciepts} {columns} {search}  />
-          
+        <Button href="/dashboard/sales/appointments/{data.appointmentsList.id}"> <Plus /> Add Sales for Customer</Button>
 	 </div>
 
 	     
@@ -283,3 +291,13 @@
 
   </Card.Content>
   </Card.Root>
+
+  {:else} 
+
+<div class="flex items-center justify-center w-full h-64 bg-white dark:bg-black rounded-md shadow-sm p-6">
+	<h1 aria-live="assertive" class="text-5xl md:text-6xl font-extrabold uppercase text-center text-red-600 dark:text-red-400">
+		THERE IS NO APPOINTMENT HERE
+	</h1>
+</div>
+
+  {/if}

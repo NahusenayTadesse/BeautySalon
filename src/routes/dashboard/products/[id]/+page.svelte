@@ -18,6 +18,7 @@
 	import type { Snapshot } from '@sveltejs/kit';
 	
 	import { Textarea } from '$lib/components/ui/textarea/index.js';
+	import Delete from '$lib/forms/Delete.svelte';
 
 
 
@@ -101,6 +102,7 @@
 		 Back
 		 {/if}
 	</Button>
+	<Delete />
 	</div>
 {#if edit === false}
  <div class="p-4 w-full"><SingleTable {singleTable}/></div> {/if}

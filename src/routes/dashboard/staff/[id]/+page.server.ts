@@ -82,7 +82,6 @@ import { generateUserId } from '$lib/global.svelte';
 import { Readable } from 'node:stream';
 import { pipeline } from 'node:stream/promises';
 import { env } from '$env/dynamic/private';
-import { setFlash } from 'sveltekit-flash-message/server';
 const FILES_DIR: string = env.FILES_DIR ?? '.tempFiles';
 if (!fs.existsSync(FILES_DIR)) {
   fs.mkdirSync(FILES_DIR, { recursive: true });

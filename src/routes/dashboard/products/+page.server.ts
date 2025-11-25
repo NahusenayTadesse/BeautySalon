@@ -36,8 +36,7 @@ export const load: PageServerLoad = async({locals})=>{
                 productCategories.name,
                 products.commissionAmount,
                 products.quantity,
-                products.supplier,
-                transactionProducts.id
+                products.supplier
             );
     productList =  productList.map(r => ({ ...r, price: Number(r.price), 
         commission: Number(r.commission), quantity: Number(r.quantity), saleCount: Number(r.saleCount) }));

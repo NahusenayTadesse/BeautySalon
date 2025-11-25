@@ -64,7 +64,7 @@ import Copy from '$lib/Copy.svelte';
       renderComponent(DataTableSort, {
         name: 'Years of Service',
         onclick: column.getToggleSortingHandler(), 
-      }),  sortable: true },
+      }),  sortable: true, filterVariant: 'range' },
 
 
   

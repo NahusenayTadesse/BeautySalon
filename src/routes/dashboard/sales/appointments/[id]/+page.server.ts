@@ -1,13 +1,37 @@
 import { db } from "$lib/server/db";
-import { commissionProduct, commissionService, customers, paymentMethods, products as prds, services as srvs, staff, transactionProducts, transactions, transactionServices } from '$lib/server/db/schema';
-import { eq, sql } from "drizzle-orm";
+import { appointments, commissionProduct, commissionService, customers, paymentMethods, products as prds, services as srvs, staff, transactionBookingFee, transactionProducts, transactions, transactionServices, user } from '$lib/server/db/schema';
+import { eq, sql, and } from "drizzle-orm";
 import { superValidate } from 'sveltekit-superforms';
 import { zod4 } from 'sveltekit-superforms/adapters';
 import { salesSchema as schema } from '$lib/zodschemas/salesSchema'
-import type { Actions } from "./$types";
+
 import { setFlash } from "sveltekit-flash-message/server";
 
-export async function load({ locals }) {
+export async function load({ locals, params }) {
+
+    const {id} = params;
+
+
+const bookings = await db.select({
+    customerId: customers.id,
+    customerName: sql<string>`
+        TRIM(CONCAT(${customers.firstName}, ' ', COALESCE(${customers.lastName}, '')))`,
+    totalBookingFees: sql<number>`SUM(${transactions.amount})`,
+})
+.from(transactionBookingFee)
+.innerJoin(appointments, eq(transactionBookingFee.appointmentId, appointments.id))
+.leftJoin(customers, eq(appointments.customerId, customers.id))
+.leftJoin(transactions, eq(transactionBookingFee.transactionId, transactions.id))
+.where(
+    and(
+        eq(appointments.branchId, locals?.user?.branch),
+        eq(appointments.id, id) // if you want *all* appointments for a customer, remove this filter
+    )
+)
+.groupBy(customers.id, customers.firstName, customers.lastName)
+ .then(rows => rows[0]);;
+
+
     const fetchedServices = await db
         .select({
            value: srvs.id,
@@ -55,6 +79,7 @@ export async function load({ locals }) {
         staffes: fetchedStaff,
         customers: fetchedCustomer,
         allMethods,
+        bookings,
         
         form
        
@@ -66,6 +91,7 @@ import { generateUserId } from '$lib/global.svelte';
 import { Readable } from 'node:stream';
 import { pipeline } from 'node:stream/promises';
 import { env } from '$env/dynamic/private';
+import type { Actions } from "../../$types";
 const FILES_DIR: string = env.FILES_DIR ?? '.tempFiles';
 
 if (!fs.existsSync(FILES_DIR)) {
@@ -73,9 +99,9 @@ if (!fs.existsSync(FILES_DIR)) {
 }
 
 export const actions: Actions = {
-  addSales: async({request, cookies, locals}) => {
+  addSales: async({request, cookies, locals, params}) => {
 
-    
+    const {id} = params;
     const formData = await request.formData();
 
     const form = await superValidate(formData, zod4(schema));
@@ -92,11 +118,6 @@ const service_staff = formData.getAll('service_staff');
 const service       = formData.getAll('service');
 const serviceTip    = formData.getAll('serviceTip');
     
-    
-    
-
-        
-     console.log(form);
 
         // if (!form.valid) {
         //    // Stay on the same page and set a flash message
@@ -105,7 +126,8 @@ const serviceTip    = formData.getAll('serviceTip');
         //  }
 
     //  console.log(products[0].product, products[0].staff, products[0].noofproducts, products[0].tip)
-
+try {
+      await db.transaction(async (tx) => {
      const imageName = `${generateUserId()}${path.extname(receipt.name)}`;
     
     const file_path: string = path.normalize(
@@ -128,8 +150,7 @@ const serviceTip    = formData.getAll('serviceTip');
     //        return fail(400, { form });
     //      }
 
-          try {
-      await db.transaction(async (tx) => {
+          
         // 1. master transaction row
         const [txn] = await tx
           .insert(transactions)
@@ -164,6 +185,7 @@ const fetchedServices = await tx          // ← tx, not db
           
    const txnPrdId = await tx.insert(transactionProducts).values(
     product.map((_, idx) => ({
+      customerId: id,
       transactionId: txn.id,
       staffId:       product_staff[idx]  || null,
       productId:     product[idx]        || null,
@@ -182,7 +204,7 @@ const fetchedServices = await tx          // ← tx, not db
 
     await tx.insert(commissionProduct).values(
          product.map((_, idx) => ({
-           
+          
           saleItemId: txnPrdId[idx].id,
           staffId: product_staff[idx],
           amount: getCommission(fetchedProducts, product[idx]) * noofproducts[idx],
@@ -218,6 +240,7 @@ const fetchedServices = await tx          // ← tx, not db
 if (service.length) {
    const txnsrvid = await tx.insert(transactionServices).values(
     service.map((_, idx) => ({
+      customerId: id,
       transactionId: txn.id,
       staffId:       service_staff[idx] || null,
       serviceId:     service[idx]       || null,

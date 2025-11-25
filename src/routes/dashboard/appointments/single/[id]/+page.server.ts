@@ -21,7 +21,7 @@ import { appointments, appointmentStatuses, customers, paymentMethods, transacti
 import { eq, and, sql } from "drizzle-orm";
 import type { Actions, PageServerLoad } from "./$types";
 import {setError, fail } from 'sveltekit-superforms';
-import { setFlash } from 'sveltekit-flash-message/server';
+import { redirect, setFlash } from 'sveltekit-flash-message/server';
 
 
 
@@ -31,7 +31,6 @@ export const load: PageServerLoad = async ({ params, locals }) => {
      const {id} = params;
        const form = await superValidate(zod4(schema));
        const editForm = await superValidate(zod4(editAppointment))
-
   const customersList = await db.select({
      value: customers.id,
     name: sql<string>`concat(${customers.firstName}, ' ', ${customers.lastName}, ' - ', ${customers.phone})`,
@@ -236,7 +235,33 @@ const file_path: string = path.normalize(
         form
       });
     }
+  },
+  delete: async({cookies, params })=> {
+ 
+    const {id} = params;
+     
+
+    try {
+      if (!id) {
+        setFlash({ type: 'error', message: 'Invalid appointment id.' }, cookies);
+        return fail(400);
+      }
+
+      await db.delete(appointments).where(eq(appointments.id, id));
+        const date = new Date();
+         
+       
+        //  redirect(307, `/dashboard/appointments/${date.toLocaleDateString("en-CA")}`, { type: 'success', message: "Delete Successful!" }, cookies);
+         return {
+           location: `/dashboard/appointments/${date.toLocaleDateString("en-CA")}`
+         }
+
+    } catch (err) {
+      console.error('Error deleting appointment:', err);
+      setFlash({ type: 'error', message: `Unexpected Error: ${err?.message}` }, cookies);
+    }
+    
 
 
-  }
+  },
 }

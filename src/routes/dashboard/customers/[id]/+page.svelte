@@ -18,6 +18,7 @@
 	import { Input } from '$lib/components/ui/input/index.js';
 	import { gender } from '$lib/global.svelte';
 	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';
+	import Delete from '$lib/forms/Delete.svelte';
 
 	let count = $derived((data.customer?.appointmentCount ?? 0) > 1 ? 'Appointments Made' : 'Appointment Made');
 
@@ -126,6 +127,7 @@
 		 Back
 		 {/if}
 	</Button>
+	<Delete />
 	</div>
 {#if edit === false}
  <div class="p-4 w-full"><SingleTable {singleTable}/></div>
