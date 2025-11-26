@@ -1,16 +1,20 @@
 <script lang="ts" generics="TData, TValue">
  import { type ColumnDef,
-     getCoreRowModel, getPaginationRowModel, 
+     getCoreRowModel, getPaginationRowModel, type ColumnFilter, ColumnFiltering,
      getSortedRowModel, getFilteredRowModel, type PaginationState,
       type SortingState, type ColumnFiltersState, type VisibilityState,
 	  type GlobalFilterColumn} from "@tanstack/table-core";
+
+    import { Input } from '$lib/components/ui/input/index.js';
+
+ 
         import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
 
     
-       let { data, columns, search = true }: DataTableProps<TData, TValue> = $props();
-
-
-  import { Input } from "$lib/components/ui/input/index.js";
+let { data, columns, search = true }: DataTableProps<TData, TValue> = $props();
+// let filterSchema = $derived(
+//   discoverFilterSchema(data).filter(meta => !filterBlacklist.includes(meta.key))
+// );  import { Input } from "$lib/components/ui/input/index.js";
 
  import {
   createSvelteTable,
@@ -21,13 +25,15 @@
 	import { ChevronDownIcon, Frown } from "@lucide/svelte";
 
    let pagination = $state<PaginationState>({ pageIndex: 0, pageSize: 10 });
-      let columnFilters = $state<ColumnFiltersState>([]);
+  let columnFilters = $state<ColumnFiltersState>([]);
 
 
- type DataTableProps<TData, TValue> = {
+type DataTableProps<TData, TValue> = {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
- };
+  search?: boolean;
+  filterBlacklist?: string[]; // <-- new
+};
  
  let sorting = $state<SortingState>([]);
  let globalFilter = $state<GlobalFilterColumn>();
@@ -101,6 +107,13 @@
  <div class="lg:w-full w-full bg-white rounded-lg dark:bg-gray-950 p-2">
 <div class="rounded-md min-w-full border-0">
       {#if search}
+        <div class="py-4">
+    <!-- <Filters
+      schema={filterSchema}
+      filters={columnFilters}
+      onChange={f => (columnFilters = f)}
+    /> -->
+  </div>
       <div class="flex flex-row gap-4 items-center py-4">
          
     <Input
@@ -110,6 +123,10 @@
       bind:value={globalFilter}
       oninput={()=>table.setGlobalFilter(globalFilter)}
     />
+
+    
+
+   
 
     <DropdownMenu.Root>
       <DropdownMenu.Trigger>
@@ -151,6 +168,7 @@
          context={header.getContext()}
         />
        {/if}
+
       </Table.Head>
      {/each}
     </Table.Row>

@@ -21,7 +21,8 @@ import { appointments, appointmentStatuses, customers, paymentMethods, transacti
 import { eq, and, sql } from "drizzle-orm";
 import type { Actions, PageServerLoad } from "./$types";
 import {setError, fail } from 'sveltekit-superforms';
-import { redirect, setFlash } from 'sveltekit-flash-message/server';
+import { setFlash } from 'sveltekit-flash-message/server';
+import { redirect } from '@sveltejs/kit';
 
 
 
@@ -115,12 +116,12 @@ export const load: PageServerLoad = async ({ params, locals }) => {
                 .from(paymentMethods).where(eq(paymentMethods.isActive, true));
 
         return {
-            appointmentsList,
-            customersList,
-            form,
-            allMethods,
-            reciepts,
-            editForm
+          appointmentsList: appointmentsList ?? [],
+          customersList: customersList ?? [],
+          form,
+          allMethods: allMethods ?? [],
+          reciepts: reciepts ?? [],
+          editForm
         }
 }
 
@@ -247,14 +248,16 @@ const file_path: string = path.normalize(
         return fail(400);
       }
 
-      await db.delete(appointments).where(eq(appointments.id, id));
+      // await db.delete(appointments).where(eq(appointments.id, id));
         const date = new Date();
-         
+
        
-        //  redirect(307, `/dashboard/appointments/${date.toLocaleDateString("en-CA")}`, { type: 'success', message: "Delete Successful!" }, cookies);
-         return {
-           location: `/dashboard/appointments/${date.toLocaleDateString("en-CA")}`
-         }
+        //  setFlash({ type: 'success', message: "Delete Successful!" }, cookies);
+
+         redirect(303, `/dashboard/appointments/${date.toLocaleDateString("en-CA")}`)
+        //  return {
+        //    location: `/dashboard/appointments/${date.toLocaleDateString("en-CA")}`
+        //  }
 
     } catch (err) {
       console.error('Error deleting appointment:', err);

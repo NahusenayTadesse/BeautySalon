@@ -15,13 +15,14 @@
 	import { fileProxy, superForm } from 'sveltekit-superforms/client';
 	import ComboboxComp from '$lib/formComponents/ComboboxComp.svelte';
 	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';
-	import { ArrowLeft, Pencil, Plus, Save, Trash } from '@lucide/svelte';
+	import { ArrowLeft, Frown, Pencil, Plus, Save, Trash } from '@lucide/svelte';
 	import SelectComp from '$lib/formComponents/SelectComp.svelte';
 	import type { Snapshot } from '@sveltejs/kit';
 	import DataTable from '$lib/components/Table/data-table.svelte';
 	
 	import DatePicker2 from '$lib/formComponents/DatePicker2.svelte';
 	import Delete from '$lib/forms/Delete.svelte';
+	import Empty from '$lib/components/Empty.svelte';
 
   let singleTable = $derived([
     { name: 'Name', value: data.appointmentsList.customerName },
@@ -109,10 +110,7 @@
 		 {/if}
 	</Button>
 	<Delete />
-	 <form action="?/delete" use:enhance method="post" >
-	<input type="hidden" value={data.appointmentsList.id} name="id" />
-   <Button type="submit" variant="destructive"> Delete <Trash /></Button>
-</form>
+	 
 	</div>
 {#if edit === false}
  <div class="p-4 w-full"><SingleTable {singleTable}/></div> {/if}
@@ -294,10 +292,6 @@
 
   {:else} 
 
-<div class="flex items-center justify-center w-full h-64 bg-white dark:bg-black rounded-md shadow-sm p-6">
-	<h1 aria-live="assertive" class="text-5xl md:text-6xl font-extrabold uppercase text-center text-red-600 dark:text-red-400">
-		THERE IS NO APPOINTMENT HERE
-	</h1>
-</div>
+ <Empty title="appointments" />
 
   {/if}

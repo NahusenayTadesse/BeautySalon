@@ -7,7 +7,7 @@ import { appointments, customers, paymentMethods, transactionBookingFee, transac
 import { eq, and, sql } from "drizzle-orm";
 import type { PageServerLoad } from '../$types';
 import { superValidate } from 'sveltekit-superforms';
-import type { Actions } from '@sveltejs/kit';
+import { redirect, type Actions } from '@sveltejs/kit';
 import { fail } from 'sveltekit-superforms';
 import { setFlash } from 'sveltekit-flash-message/server';
 
@@ -132,5 +132,32 @@ export const actions: Actions = {
     }
 
 
-  }
+  },
+  delete: async({cookies, params })=> {
+   
+      const {id} = params;
+       
+  
+      try {
+        if (!id) {
+          setFlash({ type: 'error', message: 'Invalid appointment id.' }, cookies);
+          return fail(400);
+        }
+  
+        await db.delete(customers).where(eq(customers.id, id));
+  
+         
+           setFlash({ type: 'success', message: "Delete Successful!" }, cookies);
+  
+          redirect(303, `/dashboard/customers`)
+       
+  
+      } catch (err) {
+        console.error('Error deleting appointment:', err);
+        setFlash({ type: 'error', message: `Unexpected Error: ${err?.message}` }, cookies);
+      }
+      
+  
+  
+    },
 }

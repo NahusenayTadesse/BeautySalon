@@ -19,6 +19,7 @@
 	import { gender } from '$lib/global.svelte';
 	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';
 	import Delete from '$lib/forms/Delete.svelte';
+	import Empty from '$lib/components/Empty.svelte';
 
 	let count = $derived((data.customer?.appointmentCount ?? 0) > 1 ? 'Appointments Made' : 'Appointment Made');
 
@@ -72,7 +73,7 @@
 
 </script>
  <svelte:head>
-        <title> Appointment Details</title>
+        <title> Customer Details</title>
  </svelte:head>
 
  {#snippet fe(
@@ -111,12 +112,14 @@
 	</div>
 {/snippet}
 
+{#if data?.customer}
+
   <div class="bg-white dark:bg-black shadow-lg dark:shadow-md dark:shadow-gray-900
    rounded-md min-w-3xl w-md flex flex-col justify-center items-center">
     <div class="bg-gradient-to-r w-full from-dark to-black text-white py-6 px-8 rounded-lg flex flex-col justify-start items-start">
       <h1 class="text-center w-full">Cusotmer Details</h1>
     </div>
-	<div class="flex flex-row justify-start items-start w-full pl-4 mt-4">
+	<div class="flex flex-row justify-start items-start w-full pl-4 mt-4 gap-2">
 	<Button onclick={()=> edit = !edit}>
 		{#if !edit}
 		<Pencil class="w-4 h-4"/>
@@ -179,6 +182,9 @@
         
 	</div>
 	 {/if}
+{:else}
+  <Empty title="customer" />
+{/if}
 	
 
 
