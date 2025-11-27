@@ -20,6 +20,8 @@
 	import DatePicker2 from '$lib/formComponents/DatePicker2.svelte';
 	import { fly } from 'svelte/transition';
 	import Delete from '$lib/forms/Delete.svelte';
+	import DataTable from '$lib/components/Table/data-table.svelte';
+	import { commissionProduct } from './columns.js';
 
 
 
@@ -115,14 +117,14 @@ let contractPdf = $state(false);
 	</div>
  
 
-  {#if govtId === false}
+  {#if govtId === false && data.staffMember?.govId }
   <div class="relative">
 	<button onclick={()=> {govtId = true}} type="button" title="Replace Gov't ID"><Trash class="absolute right-0 top-0" /></button>
    <img src='/dashboard/files/{data.staffMember?.govId}' alt="" srcset="" transition:fly={{x:-200, duration: 300}}>
    </div>
    {/if}
 
-{#if govtId}
+{#if govtId || data.staffMember?.govId === null}
 
 <div class="flex w-full flex-col justify-start gap-2 relative" transition:fly={{x:-200, duration: 300 }}>
 	<button onclick={()=> {govtId = false}} type="button" title="Replace Gov't ID">
@@ -140,7 +142,8 @@ let contractPdf = $state(false);
 
 
 
-  {#if contractPdf === false}
+  {#if contractPdf === false && data.staffMember?.contract }
+  {#if data.staffMember?.contract?.endsWith('.pdf')}
   <div class="relative">
 	<button onclick={()=> {contractPdf = true}} type="button" title="Replace Contract"><Trash class="absolute right-0 top-0" /></button>
 
@@ -150,12 +153,12 @@ let contractPdf = $state(false);
      <a href="/dashboard/files/{$form.contract}" download="{$form.firstName} {$form.lastName} Contract PDF">Download the PDF</a>.</p>
 </object>
 </div>
-
+{/if}
 {/if}
  
 
 
-{#if contractPdf}
+{#if contractPdf || data.staffMember?.contract === null}
 <div class="flex w-full flex-col justify-start gap-2 relative" transition:fly={{x:-200, duration: 300 }}> 
 	<button onclick={()=> {contractPdf = false}} type="button" title="Replace Contract"><Trash class="absolute right-0 top-0" /></button>
 
@@ -183,8 +186,11 @@ let contractPdf = $state(false);
     </div>
 
 	 
+	<div class="lg:w-1/2 w-4/5 my-8">
 	
+		 <DataTable data={data.productCommissions} columns={commissionProduct} search={false} />
 
+	</div>
 
 
    {#snippet fe(

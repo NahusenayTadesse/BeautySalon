@@ -245,7 +245,7 @@ const file_path: string = path.normalize(
 
     try {
       if (!id) {
-      setFlash({ type: 'error', message: `Unexpected Error: ${err?.message}` }, cookies);
+      setFlash({ type: 'error', message: `There is no appointment with the provided ID.` }, cookies);
         return fail(400);
       }
 

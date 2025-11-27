@@ -7,7 +7,7 @@ import {  editStaff as schema } from '$lib/zodschemas/appointmentSchema';
 
 
 import { db } from "$lib/server/db";
-import {  staff, staffTypes, salaries, staffContacts, staffSchedule, staffServices, user  } from "$lib/server/db/schema";
+import {  staff, staffTypes, salaries, user, deductions, commissionService, commissionProduct, bonuses, overTime, products  } from "$lib/server/db/schema";
 import { eq, and, sql } from "drizzle-orm";
 import type { Actions, PageServerLoad } from "./$types";
 import { fail } from 'sveltekit-superforms';
@@ -66,9 +66,104 @@ export const load: PageServerLoad = async ({ params, locals }) => {
                 })
                 .from(staffTypes);
 
+    const currentYear = new Date().getFullYear();
+    const currentMonth = new Date().getMonth() + 1; // getMonth() is 0-indexed
+
+    // Helper function for date filtering logic (same for all compensation tables)
+    const currentMonthFilter = (dateField: any) => 
+        sql`${sql.raw('YEAR(')}${dateField}${sql.raw(')')} = ${currentYear} 
+          
+    AND ${sql.raw('MONTH(')}${dateField}${sql.raw(')')} = ${currentMonth}`;
+
+    // --- Select Commissions (Service) ---
+    const serviceCommissions = await db.select({
+        staffId: commissionService.staffId,
+        amount: commissionService.amount,
+        date: commissionService.commissionDate,
+    })
+    .from(commissionService)
+    .where(
+      
+        eq(commissionService.staffId, id),
+      
+    );
+
+    // --- Select Commissions (Product) ---
+  const productCommissions = await db  // <-- add await
+  .select({
+    product: products.name,
+    amount: commissionProduct.amount,
+    date: commissionProduct.commissionDate,
+  })
+  .from(commissionProduct)
+  .leftJoin(products, eq(commissionProduct.saleItemId, products.id))
+  .where(eq(commissionProduct.staffId, id));
+
+    // --- Select Bonuses ---
+    const staffBonuses = db.select({
+        staffId: bonuses.staffId,
+   
+        description: bonuses.description,
+        amount: bonuses.amount,
+        date: bonuses.bonusDate,
+    })
+    .from(bonuses)
+    .where(
+      and(
+        eq(bonuses.staffId, id),
+        currentMonthFilter(bonuses.bonusDate)
+      )
+    );
+
+    // --- Select Overtime ---
+    const staffOvertime = db.select({
+        staffId: overTime.staffId,
+        type: sql<'overtime'>`'overtime'`,
+        // Calculate total for description, showing hours and rate is useful
+        description: sql<string>`CONCAT('Overtime (', ${overTime.hours}, ' hours at $', ${overTime.amountPerHour}, '/hr)')`,
+        amount: overTime.total,
+        date: overTime.date,
+    })
+    .from(overTime)
+    .where(
+      and(
+        eq(overTime.staffId, id),
+        currentMonthFilter(overTime.date)
+      )
+    );
+
+    // --- Select Deductions ---
+    const staffDeductions = db.select({
+        staffId: deductions.staffId,
+        type: sql<'deduction'>`'deduction'`,
+        description: deductions.type, // Using the 'type' column for description
+        // Amount is stored as a positive number in the table, but we mark it as a deduction
+        amount: deductions.amount, 
+        date: deductions.deductionDate,
+    })
+    .from(deductions)
+    .where(
+      and(
+        eq(deductions.staffId, id),
+        currentMonthFilter(deductions.deductionDate)
+      )
+    );
+
+    // --- Combine all results using unionAll ---
+
+
+
+
+
+  
+
         return {
             staffMember,
-           
+           staffDeductions,
+           staffOvertime,
+            staffBonuses,
+            productCommissions,
+            serviceCommissions,
             form,
             categories,
    
