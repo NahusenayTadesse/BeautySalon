@@ -82,6 +82,10 @@
 
   
  let search = false;
+
+ let date = new Date();
+
+ let redirect = `/dashboard/appointments/${date.toLocaleDateString("en-CA")}`;
  
 
 
@@ -109,7 +113,7 @@
 		 Back
 		 {/if}
 	</Button>
-	<Delete />
+	<Delete  {redirect} />
 	 
 	</div>
 {#if edit === false}

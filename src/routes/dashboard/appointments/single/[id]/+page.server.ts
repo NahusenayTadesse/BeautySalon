@@ -240,28 +240,24 @@ const file_path: string = path.normalize(
   delete: async({cookies, params })=> {
  
     const {id} = params;
-     
+ 
+
 
     try {
       if (!id) {
-        setFlash({ type: 'error', message: 'Invalid appointment id.' }, cookies);
+      setFlash({ type: 'error', message: `Unexpected Error: ${err?.message}` }, cookies);
         return fail(400);
       }
 
-      // await db.delete(appointments).where(eq(appointments.id, id));
-        const date = new Date();
+      await db.delete(appointments).where(eq(appointments.id, id));
 
        
-        //  setFlash({ type: 'success', message: "Delete Successful!" }, cookies);
-
-         redirect(303, `/dashboard/appointments/${date.toLocaleDateString("en-CA")}`)
-        //  return {
-        //    location: `/dashboard/appointments/${date.toLocaleDateString("en-CA")}`
-        //  }
+        setFlash({ type: 'success', message: "Appointment Deleted Successfully!" }, cookies);
 
     } catch (err) {
       console.error('Error deleting appointment:', err);
       setFlash({ type: 'error', message: `Unexpected Error: ${err?.message}` }, cookies);
+      return fail(400)
     }
     
 

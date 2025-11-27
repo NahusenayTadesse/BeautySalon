@@ -130,7 +130,7 @@
 		 Back
 		 {/if}
 	</Button>
-	<Delete />
+	<Delete redirect="/dashboard/customers" />
 	</div>
 {#if edit === false}
  <div class="p-4 w-full"><SingleTable {singleTable}/></div>

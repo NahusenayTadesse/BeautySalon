@@ -139,23 +139,22 @@ export const actions: Actions = {
        
   
       try {
-        if (!id) {
-          setFlash({ type: 'error', message: 'Invalid appointment id.' }, cookies);
-          return fail(400);
-        }
-  
-        await db.delete(customers).where(eq(customers.id, id));
-  
-         
-           setFlash({ type: 'success', message: "Delete Successful!" }, cookies);
-  
-          redirect(303, `/dashboard/customers`)
-       
-  
-      } catch (err) {
-        console.error('Error deleting appointment:', err);
-        setFlash({ type: 'error', message: `Unexpected Error: ${err?.message}` }, cookies);
+      if (!id) {
+      setFlash({ type: 'error', message: `Unexpected Error: ${err?.message}` }, cookies);
+        return fail(400);
       }
+
+      await db.delete(customers).where(eq(customers.id, id));
+
+       
+        setFlash({ type: 'success', message: "Customer Deleted Successfully!" }, cookies);
+
+    } catch (err) {
+      console.error('Error deleting customer:', err);
+      setFlash({ type: 'error', message: `Unexpected Error: ${err?.message}` }, cookies);
+      return fail(400)
+    }
+    
       
   
   

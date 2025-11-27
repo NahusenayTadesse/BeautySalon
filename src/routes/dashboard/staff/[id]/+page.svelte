@@ -19,6 +19,7 @@
 	import { Textarea } from '$lib/components/ui/textarea/index.js';
 	import DatePicker2 from '$lib/formComponents/DatePicker2.svelte';
 	import { fly } from 'svelte/transition';
+	import Delete from '$lib/forms/Delete.svelte';
 
 
 
@@ -71,7 +72,7 @@ let contractPdf = $state(false);
     <div class="bg-gradient-to-r w-full from-dark to-black text-white py-6 px-8 rounded-lg flex flex-col justify-start items-start">
       <h1 class="text-center w-full">Service Details</h1>
     </div>
-	<div class="flex flex-row justify-start items-start w-full pl-4 mt-4">
+	<div class="flex flex-row justify-start items-start w-full pl-4 mt-4 gap-2">
 	<Button onclick={()=> edit = !edit}>
 		{#if !edit}
 		<Pencil class="w-4 h-4"/>
@@ -82,6 +83,7 @@ let contractPdf = $state(false);
 		 Back
 		 {/if}
 	</Button>
+	<Delete redirect="/dashboard/staff" />
 	</div>
 {#if edit === false}
  <div class="p-4 w-full"><SingleTable {singleTable}/></div> {/if}

@@ -4,7 +4,14 @@
 	import { Trash } from "@lucide/svelte";
      import * as Dialog from "$lib/components/ui/dialog/index.js";
   import { ScrollArea } from "$lib/components/ui/scroll-area/index.js";
+	import LoadingBtn from "$lib/formComponents/LoadingBtn.svelte";
+	import { goto } from "$app/navigation";
     let isOpen = $state(false);
+
+    let { redirect = '/dashboard'} = $props();
+
+    let deleting = $state(false);
+
 
 </script>
  
@@ -19,9 +26,35 @@
   <ScrollArea class="h-auto rounded-md border p-2">
    <h5 class="text-center">Are you sure you want to Delete? This action is irreversable</h5>
  <div class="flex flex-row justify-center gap-4 items-center pt-4" >
-     <form action="?/delete"  method="post"
-     use:enhance >
-   <Button type="submit" size="lg" variant="destructive"> Delete <Trash /></Button>
+   <form
+  method="post"
+  action="?/delete"
+  use:enhance={() => {
+    deleting = true;                        // 1. start spinner
+
+    return async ({ result, update }) => {
+      await update();                       // 2. apply action result to page
+      deleting = false;                     // 3. stop spinner
+
+      if (result.type === 'success') {
+        await goto(redirect);             // 4. navigate on success
+      }
+    };
+  }}
+>
+
+  <Button
+    type="submit"
+    disabled={deleting}
+    variant="destructive"
+    size="lg"
+  >
+    {#if deleting}
+      <LoadingBtn name="Deleting" />
+    {:else}
+      <Trash /> Delete
+    {/if}
+  </Button>
 </form>
 
   <Button onclick={() => (isOpen = false)} size="lg">Cancel</Button>

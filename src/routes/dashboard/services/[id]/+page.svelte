@@ -91,7 +91,7 @@ $form.durationMinutes = data.service?.duration
 		 Back
 		 {/if}
 	</Button>
-	<Delete />
+	<Delete redirect="/dashboard/services" />
 	</div>
 {#if edit === false}
  <div class="p-4 w-full"><SingleTable {singleTable}/></div> {/if}

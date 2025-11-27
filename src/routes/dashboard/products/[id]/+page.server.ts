@@ -118,5 +118,31 @@ export const actions: Actions = {
     } } catch(err){
          console.error("Error" + err)
     }
-  }
+  },
+    delete: async({cookies, params })=> {
+     
+        const {id} = params;
+         
+    
+        try {
+        if (!id) {
+        setFlash({ type: 'error', message: `Unexpected Error: ${err?.message}` }, cookies);
+          return fail(400);
+        }
+  
+        await db.delete(products).where(eq(products.id, id));
+  
+         
+          setFlash({ type: 'success', message: "Product Deleted Successfully!" }, cookies);
+  
+      } catch (err) {
+        console.error('Error deleting product:', err);
+        setFlash({ type: 'error', message: `Unexpected Error: ${err?.message}` }, cookies);
+        return fail(400)
+      }
+      
+        
+    
+    
+      },
 };
