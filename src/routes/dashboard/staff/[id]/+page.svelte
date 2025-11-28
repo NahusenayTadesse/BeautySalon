@@ -22,6 +22,7 @@
 	import DataTable from '$lib/components/Table/data-table.svelte';
 	import { commissionProduct, commissionService, overtime } from './columns.js';
 	import DateMonth from '$lib/formComponents/DateMonth.svelte';
+	import RangeDates from '$lib/formComponents/RangeDates.svelte';
 
 
 

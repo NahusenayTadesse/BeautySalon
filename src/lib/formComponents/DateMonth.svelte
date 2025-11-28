@@ -20,6 +20,9 @@
 
     let open = $state(false);
    let contentRef = $state<HTMLElement | null>(null);
+
+
+ 
 </script>
 <Popover.Root bind:open>
   <Popover.Trigger
@@ -38,9 +41,9 @@
   </Popover.Trigger>
     <Popover.Content bind:ref={contentRef} class="w-auto p-0">
 
-<RangeCalendar bind:value weekdayFormat="long" class="relative rounded-lg pb-4 w-auto border shadow-sm" numberOfMonths={2} />
+<RangeCalendar bind:value class="relative rounded-lg pb-4 w-auto border shadow-sm" numberOfMonths={2} />
 <Button disabled={!value.start || !value.end} class="absolute right-0 bottom-0"
- href={`${link}/${id}/${value.start}-${value.end}`}
+ href={`${link}/ranges/${value.start}-${value.end}-${id}`}
  onclick={()=>{
     open = false;
     }}> 

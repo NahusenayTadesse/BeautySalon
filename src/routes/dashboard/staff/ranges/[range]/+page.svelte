@@ -20,9 +20,8 @@
 	import { fly } from 'svelte/transition';
 	import Delete from '$lib/forms/Delete.svelte';
 	import DataTable from '$lib/components/Table/data-table.svelte';
-	import { commissionProduct, commissionService, overtime } from '../columns.js';
+	import { commissionProduct, commissionService, overtime } from './columns.js';
 	import DateMonth from '$lib/formComponents/DateMonth.svelte';
-
 
 
 let singleTable = $derived([

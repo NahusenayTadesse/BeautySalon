@@ -17,10 +17,17 @@ import { setFlash } from 'sveltekit-flash-message/server';
 
 export const load: PageServerLoad = async ({ params, locals }) => {
     
-    const {id} = params.id;
 
-     const {range} = params.range;
+     const {range} = params;
 
+     const [
+  y1, m1, d1,
+  y2, m2, d2,
+  id
+] = range.split("-");
+
+const start = `${y1}-${m1}-${d1}`;
+const end   = `${y2}-${m2}-${d2}`;
        const form = await superValidate(zod4(schema));
 
 
@@ -68,14 +75,28 @@ export const load: PageServerLoad = async ({ params, locals }) => {
                 })
                 .from(staffTypes);
 
-    const currentYear = new Date().getFullYear();
-    const currentMonth = new Date().getMonth() + 1; // getMonth() is 0-indexed
+
 
     // Helper function for date filtering logic (same for all compensation tables)
-    const currentMonthFilter = (dateField: any) => 
-        sql`${sql.raw('YEAR(')}${dateField}${sql.raw(')')} = ${currentYear} 
-          
-    AND ${sql.raw('MONTH(')}${dateField}${sql.raw(')')} = ${currentMonth}`;
+const currentMonthFilter = (
+  dateField: any,
+  start?: string,
+  end?: string
+) => {
+  // If start/end are passed, return BETWEEN condition
+  if (start && end) {
+    return sql`${dateField} BETWEEN ${start} AND ${end}`;
+  }
+
+  // Otherwise fallback to current-month logic
+  const currentYear = new Date().getFullYear();
+  const currentMonth = new Date().getMonth() + 1;
+
+  return sql`
+    EXTRACT(YEAR FROM ${dateField}) = ${currentYear}
+    AND EXTRACT(MONTH FROM ${dateField}) = ${currentMonth}
+  `;
+};
 
     // --- Select Commissions (Service) ---
     const serviceCommissions = await db.select({
@@ -89,7 +110,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
   .leftJoin(services, eq(transactionServices.serviceId, services.id))
 
     .where(and(
-      currentMonthFilter(commissionService.commissionDate),
+        currentMonthFilter(commissionService.commissionDate, start, end),
       
         eq(commissionService.staffId, id),
     )
@@ -110,7 +131,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
   .where(
     and(
     eq(commissionProduct.staffId, id),
-    currentMonthFilter(commissionProduct.commissionDate)
+    currentMonthFilter(commissionProduct.commissionDate, start, end)
     )
   );
 
@@ -126,7 +147,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
     .where(
       and(
         eq(bonuses.staffId, id),
-        currentMonthFilter(bonuses.bonusDate)
+        currentMonthFilter(bonuses.bonusDate, start, end)
       )
     );
 
@@ -141,7 +162,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
     .where(
       and(
         eq(overTime.staffId, id),
-        currentMonthFilter(overTime.date)
+        currentMonthFilter(overTime.date, start, end)
       )
     );
 
@@ -157,7 +178,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
     .where(
       and(
         eq(deductions.staffId, id),
-        currentMonthFilter(deductions.deductionDate)
+        currentMonthFilter(deductions.deductionDate, start, end)
       )
     );
 
