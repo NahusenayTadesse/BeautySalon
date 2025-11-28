@@ -16,9 +16,11 @@ import { setFlash } from 'sveltekit-flash-message/server';
 
 
 export const load: PageServerLoad = async ({ params, locals }) => {
+    
+    const {id} = params.id;
 
+     const {range} = params.range;
 
-     const {id} = params;
        const form = await superValidate(zod4(schema));
 
 

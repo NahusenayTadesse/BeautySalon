@@ -124,8 +124,7 @@ export const overTime = mysqlTable('over_time', {
 
 export const commissionService = mysqlTable('commissions_services', {
    
-		 id: int('id').primaryKey().autoincrement(),
-
+	id: int('id').primaryKey().autoincrement(),
 	saleItemId: int('sale_item_id').references(() => transactionServices.id, {onDelete: 'set null'}),
     staffId: int('staff_id').references(() => staff.id, {onDelete: 'set null'}),
     amount: decimal('amount', { precision: 10, scale: 2 }).notNull(),

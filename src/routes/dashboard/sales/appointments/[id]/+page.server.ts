@@ -168,13 +168,13 @@ try {
 
            const fetchedProducts = await tx          // ← tx, not db
   .select({ value: prds.id, price: prds.price,
-      commissionProduct: prds.commissionAmount,
+      commissionPct: prds.commissionAmount,
    })
   .from(prds)
   .where(eq(prds.branchId, locals.user?.branch));
 
 const fetchedServices = await tx          // ← tx, not db
-  .select({ value: srvs.id, price: srvs.price, commissionService: srvs.commissionAmount })
+  .select({ value: srvs.id, price: srvs.price, commissionPct: srvs.commissionAmount })
   .from(srvs)
   .where(eq(srvs.branchId, locals.user?.branch));
          
@@ -190,10 +190,10 @@ const fetchedServices = await tx          // ← tx, not db
       staffId:       product_staff[idx]  || null,
       productId:     product[idx]        || null,
       quantity:      noofproducts[idx],
-      unitPrice:     getPrice(fetchedProducts, product[idx]),
+      unitPrice:     Number(getPrice(fetchedProducts, Number(product[idx]))),
       tip:           tip[idx],
       total:
-        getPrice(fetchedProducts, product[idx]) * noofproducts[idx]
+        Number(getPrice(fetchedProducts, Number(product[idx]))) * Number(noofproducts[idx])
         + Number(tip[idx] || 0),
         branchId: locals.user?.branch,
             createdBy: locals.user?.id
@@ -207,7 +207,7 @@ const fetchedServices = await tx          // ← tx, not db
           
           saleItemId: txnPrdId[idx].id,
           staffId: product_staff[idx],
-          amount: getCommission(fetchedProducts, product[idx]) * noofproducts[idx],
+          amount: Number(getCommission(fetchedProducts, Number(product[idx]))) * Number(noofproducts[idx]),
           commissionDate: today,
           branchId: locals.user?.branch,
           createdBy: locals.user?.id
@@ -244,10 +244,10 @@ if (service.length) {
       transactionId: txn.id,
       staffId:       service_staff[idx] || null,
       serviceId:     service[idx]       || null,
-      price:         getPrice(fetchedServices, service[idx]),
+      price:         Number(getPrice(fetchedServices, Number(service[idx]))),
       tip:           serviceTip[idx],
       total:
-        getPrice(fetchedServices, service[idx])
+        Number(getPrice(fetchedServices, Number(service[idx])))
         + Number(serviceTip[idx] || 0),
     }))
   ).$returningId();
@@ -257,7 +257,7 @@ if (service.length) {
            
           saleItemId: txnsrvid[idx].id,
           staffId: service_staff[idx],
-          amount: getCommission(fetchedServices, service[idx]),
+          amount: Number(getCommission(fetchedServices, Number(service[idx]))),
           commissionDate: today,
           branchId: locals.user?.branch,
           createdBy: locals.user?.id
@@ -270,7 +270,6 @@ if (service.length) {
 
        return  setFlash({ type: 'success', message: "New Sale Successuflly Added" }, cookies);
     } catch (e) {
-         console.error('Sale insert failed', e);
           setFlash({ type: 'error', message: "Error " + e }, cookies);
     }
   
@@ -292,11 +291,11 @@ function getPrice(
 }
 
 function getCommission(
-  list: Array<{ value: number; price: string; commissionPct: string | null }>,
-  value: number
+ list: Array<{ value: number; price: string; commissionPct: string | null }>, value: number
 ): number {
-  const item = list.find((i) => i.value === value);
-  if (!item) return 0;
-  const pct = Number(item.commissionPct ?? 0);
-  return (Number(item.price) * pct) / 100;
+	 const item = list.find((i) => i.value === value);
+ if (!item) return 0;
+
+ const fixedCommissionAmount = Number(item.commissionPct ?? 0); 
+ return fixedCommissionAmount; 
 }

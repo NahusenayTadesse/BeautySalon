@@ -197,7 +197,7 @@ type DataTableProps<TData, TValue> = {
   </Table.Body>
  </Table.Root>
  </div>
-  {#if search}
+  {#if table.getPageCount() > 1}
   <div class="flex items-center justify-end space-x-2 py-4">
     <Button
       variant="outline"

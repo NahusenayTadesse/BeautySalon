@@ -20,15 +20,14 @@
 	import { fly } from 'svelte/transition';
 	import Delete from '$lib/forms/Delete.svelte';
 	import DataTable from '$lib/components/Table/data-table.svelte';
-	import { commissionProduct, commissionService, overtime } from './columns.js';
+	import { commissionProduct, commissionService, overtime } from '../columns.js';
 	import DateMonth from '$lib/formComponents/DateMonth.svelte';
 
 
 
 let singleTable = $derived([
 	{ name: 'Name', value: `${data.staffMember?.firstName} ${data.staffMember?.lastName}`},
-	{ name: 'Position', value: data.staffMember.category },
-	
+	{ name: 'Position', value: data.staffMember.category },	
 	{ name: 'Hired On', value: data.staffMember?.hireDate },
 	{ name: 'Added By', value: data.staffMember?.addedBy },
 	{ name: 'Current Salary', value: data.staffMember?.salary === null ? 'Not Added Yet' : data.staffMember?.salary + ' ETB'  },

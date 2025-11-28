@@ -79,6 +79,7 @@ import { generateUserId } from '$lib/global.svelte';
 import { Readable } from 'node:stream';
 import { pipeline } from 'node:stream/promises';
 import { env } from '$env/dynamic/private';
+import { get } from 'node:http';
 const FILES_DIR: string = env.FILES_DIR ?? '.tempFiles';
 
 if (!fs.existsSync(FILES_DIR)) {
@@ -102,7 +103,6 @@ export const actions: Actions = {
 		const service = formData.getAll('service');
 		const serviceTip = formData.getAll('serviceTip');
 
-		console.log(form);
 
 		// if (!form.valid) {
 		//    // Stay on the same page and set a flash message
@@ -145,14 +145,17 @@ export const actions: Actions = {
 					.$returningId();
 
 				const fetchedProducts = await tx // ← tx, not db
-					.select({ value: prds.id, price: prds.price, commissionProduct: prds.commissionAmount })
+					.select({ value: prds.id, price: prds.price, commissionPct: prds.commissionAmount })
 					.from(prds)
 					.where(eq(prds.branchId, locals.user?.branch));
 
 				const fetchedServices = await tx // ← tx, not db
-					.select({ value: srvs.id, price: srvs.price, commissionService: srvs.commissionAmount })
+					.select({ value: srvs.id, price: srvs.price, commissionPct: srvs.commissionAmount })
 					.from(srvs)
 					.where(eq(srvs.branchId, locals.user?.branch));
+
+			
+
 
 				// 2. product lines
 				if (product.length) {
@@ -167,7 +170,7 @@ export const actions: Actions = {
 								unitPrice: getPrice(fetchedProducts, product[idx]),
 								tip: tip[idx],
 								total:
-									getPrice(fetchedProducts, product[idx]) * noofproducts[idx] +
+									Number(getPrice(fetchedProducts, Number(product[idx]))) * Number(noofproducts[idx]) +
 									Number(tip[idx] || 0),
 								branchId: locals.user?.branch,
 								createdBy: locals.user?.id
@@ -177,11 +180,12 @@ export const actions: Actions = {
 
 					const today = new Date();
 
+
 					await tx.insert(commissionProduct).values(
 						product.map((_, idx) => ({
-							saleItemId: txnPrdId[idx].id,
+							saleItemId: txnPrdId[idx].id,		
 							staffId: product_staff[idx],
-							amount: getCommission(fetchedProducts, product[idx]) * noofproducts[idx],
+							amount: Number(getCommission(fetchedProducts, Number(product[idx]))) * Number(noofproducts[idx]),
 							commissionDate: today,
 							branchId: locals.user?.branch,
 							createdBy: locals.user?.id
@@ -209,9 +213,9 @@ export const actions: Actions = {
 								transactionId: txn.id,
 								staffId: service_staff[idx] || null,
 								serviceId: service[idx] || null,
-								price: getPrice(fetchedServices, service[idx]),
+								price: Number(getPrice(fetchedServices, Number(service[idx]))),
 								tip: serviceTip[idx],
-								total: getPrice(fetchedServices, service[idx]) + Number(serviceTip[idx] || 0)
+								total: Number(getPrice(fetchedServices, Number(service[idx]))) + Number(serviceTip[idx] || 0)
 							}))
 						)
 						.$returningId();
@@ -220,7 +224,7 @@ export const actions: Actions = {
 						service.map((_, idx) => ({
 							saleItemId: txnsrvid[idx].id,
 							staffId: service_staff[idx],
-							amount: getCommission(fetchedServices, service[idx]),
+							amount: Number(getCommission(fetchedServices, Number(service[idx]))),
 							commissionDate: today,
 							branchId: locals.user?.branch,
 							createdBy: locals.user?.id
@@ -229,10 +233,9 @@ export const actions: Actions = {
 				}
 			});
 
-			return setFlash({ type: 'success', message: 'New Sale Successuflly Added' }, cookies);
+			return setFlash({ type: 'success', message: 'New Sale Successfully Added' }, cookies);
 		} catch (e) {
-			console.error('Sale insert failed', e);
-			setFlash({ type: 'error', message: 'Error ' + e }, cookies);
+		setFlash({ type: 'error', message: 'Error ' + e }, cookies);
 		}
 	}
 };
@@ -243,11 +246,11 @@ function getPrice(list: Array<{ value: number; price: string }>, value: number):
 }
 
 function getCommission(
-	list: Array<{ value: number; price: string; commissionPct: string | null }>,
-	value: number
+ list: Array<{ value: number; price: string; commissionPct: string | null }>, value: number
 ): number {
-	const item = list.find((i) => i.value === value);
-	if (!item) return 0;
-	const pct = Number(item.commissionPct ?? 0);
-	return (Number(item.price) * pct) / 100;
+	 const item = list.find((i) => i.value === value);
+ if (!item) return 0;
+
+ const fixedCommissionAmount = Number(item.commissionPct ?? 0); 
+ return fixedCommissionAmount; 
 }
