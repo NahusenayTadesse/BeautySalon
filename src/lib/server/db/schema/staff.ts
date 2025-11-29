@@ -143,6 +143,26 @@ export const commissionProduct = mysqlTable('commissions_product', {
 	...secureFields
 });
 
+export const tipsProduct = mysqlTable('tips_product', {
+   	id: int('id').primaryKey().autoincrement(),
+    saleItemId: int('sale_item_id')
+        .notNull()
+        .references(() => transactionProducts.id, {onDelete: 'cascade'}),
+    staffId: int('staff_id').references(() => staff.id, {onDelete: 'set null'}),
+    amount: decimal('amount', { precision: 10, scale: 2 }).notNull(),
+    tipDate: date('tip_date').notNull(),
+	...secureFields
+});
+
+export const tipsService = mysqlTable('tips_service', {
+id: int('id').primaryKey().autoincrement(),
+	saleItemId: int('sale_item_id').references(() => transactionServices.id, {onDelete: 'set null'}),
+    staffId: int('staff_id').references(() => staff.id, {onDelete: 'set null'}),
+    amount: decimal('amount', { precision: 10, scale: 2 }).notNull(),
+    tipDate: date('tip_date').notNull(),
+	...secureFields
+});
+
 export const staffServices = mysqlTable('staff_services', {
 	id: int('id').autoincrement().primaryKey(),
 	staffId: int('staff_id')

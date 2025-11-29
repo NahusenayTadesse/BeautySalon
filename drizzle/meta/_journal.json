@@ -15,6 +15,13 @@
       "when": 1760017991799,
       "tag": "0001_free_rockslide",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1764446390734,
+      "tag": "0002_amusing_wendell_rand",
+      "breakpoints": true
     }
   ]
 }
