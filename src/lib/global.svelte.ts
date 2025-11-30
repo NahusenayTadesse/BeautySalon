@@ -29,7 +29,12 @@ export const selectItem = `hover:bg-gray-100 hover:shadow-md hover:scale-101 dur
  
   
   
+import { getRequestEvent } from '$app/server';
     import { encodeBase32LowerCase } from '@oslojs/encoding';
+import { redirect } from '@sveltejs/kit';
+import { sql } from 'drizzle-orm';
+import type { MySqlColumn } from 'drizzle-orm/mysql-core';
+import { SvelteDate } from 'svelte/reactivity';
   
 
  export function generateUserId() {
@@ -53,3 +58,47 @@ export function extractUsername(email: string) {
   
     return email.substring(0, atIndex);
   }
+
+  export function getCurrentMonthRange(): string {
+    const today = new SvelteDate();
+
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, "0");
+    const day = String(today.getDate()).padStart(2, "0");
+
+    const firstOfMonth = `${year}-${month}-01`;
+    const todayStr = `${year}-${month}-${day}`;
+
+    return `${firstOfMonth}-${todayStr}`;
+} 
+
+
+export const currentMonthFilter = (
+  dateField: MySqlColumn,
+  start?: string,
+  end?: string
+) => {
+  // If start/end are passed, return BETWEEN condition
+  if (start && end) {
+    return sql`${dateField} BETWEEN ${start} AND ${end}`;
+  }
+
+  // Otherwise fallback to current-month logic
+  const currentYear = new SvelteDate().getFullYear();
+  const currentMonth = new SvelteDate().getMonth() + 1;
+
+  return sql`
+    EXTRACT(YEAR FROM ${dateField}) = ${currentYear}
+    AND EXTRACT(MONTH FROM ${dateField}) = ${currentMonth}
+  `;
+};
+
+export function requireLogin() {
+    const { locals } = getRequestEvent();
+
+    if (!locals.user) {
+        return redirect(302, '/login');
+    }
+
+    return locals.user;
+}

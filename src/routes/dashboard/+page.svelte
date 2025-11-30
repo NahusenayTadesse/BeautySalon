@@ -1,96 +1,58 @@
-<!-- <h1>Welcome to Dashboard</h1>
-
 <script lang="ts">
-	import { enhance } from '$app/forms';
+	import AppointmentCard from "$lib/components/dashboard/appointment-card.svelte";
+	import ReorderList from "$lib/components/dashboard/reorder-list.svelte";
+	import ReportSection from "$lib/components/dashboard/report-section.svelte";
+	import { PackageIcon, BoxIcon } from "@lucide/svelte";
+	import { columns } from "./reports/[range]/columns";
+	import DataTable from "$lib/components/Table/data-table.svelte";
 
- let {data, form} = $props();
+
+	let { data} = $props();
+	
+	
 </script>
 
-<form method="post" use:enhance action="?/send">
-    <input type="text" name="message" placeholder="Type your message" required />
-    <button type="submit">Send to Telegram</button>
-</form>
 
-Welcome {data.role?.name}
 
-{#if form?.success}
-    <p>✅ Sent: {form.sent}</p>
-{:else if form?.error}
-    <p>❌ Error: {form.error}</p>
-{/if}
-Branch Id = 
-{data.role?.branch} -->
+<div class="min-h-dvh mt-16 rounded-lg w-full bg-gradient-to-br from-background/10 via-background/10 to-muted/30
+ backdrop-blur-md border transition-colors duration-300">
+	<!-- Header Section -->
+	<div class="border-b border-border/50 bg-gradient-to-r from-primary/5 via-accent/5 to-secondary/5
+	 rounded-xl backdrop-blur-sm shadow-sm">
+		<div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+			<div class="flex items-center justify-between">
+				<div class="space-y-1">
+					<h1 class="text-3xl font-bold bg-gradient-to-r from-primary to-black dark:to-white bg-clip-text text-transparent">Dashboard</h1>
+					<p class="text-sm text-muted-foreground">Welcome back! Here's your daily overview.</p>
+				</div>
+				
+			</div>
+		</div>
+	</div>
 
-<script>
+	<!-- Main Content -->
+	<div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+		<!-- Stats Grid -->
+		<div class="grid gap-6 mb-8">
+			<AppointmentCard count={data.nofAppointments} />
+		</div>
 
-  /* size tokens */
-  const svg = 'w-32 h-32 mb-4 drop-shadow-lg';
-  const span = 'font-extrabold text-4xl tracking-tight';
-</script>
+		<!-- Reorder Items Grid -->
+		<div class="grid gap-6 md:grid-cols-2 mb-8">
+			<ReorderList title="Products to Reorder" description="Items below reorder level" items={data.reorderProducts} icon={PackageIcon} />
+			<ReorderList title="Supplies to Reorder" description="Items below reorder level" items={data.reorderSupplies} icon={BoxIcon} />
+		</div>
 
-<!-- quick custom keyframe -->
-<style>
-  @keyframes shimmer {
-    0%   { background-position: 200% 0; }
-    100% { background-position: -200% 0; }
-  }
-  .shimmer {
-    background-size: 200% 100%;
-    animation: shimmer 2.5s infinite linear;
-  }
-  .card {
-    transform-style: preserve-3d;
-    transition: transform .35s ease, box-shadow .35s ease;
-  }
-  .card:hover {
-    transform: perspective(1000px) rotateX(8deg) rotateY(-4deg) scale(1.08);
-  }
-</style>
-<svelte:head>
-  <title>Dashboard</title>
-</svelte:head>
-<div class="flex flex-col justify-center items-center lg:w-6xl w-[95%]">
-<div class="grid grid-cols-1 md:grid-cols-2  lg:grid-cols-2 gap-10 mt-12 max-x-6xl px-6 w-full mx-auto align-middle justify-center items-center">
-  <!-- Products -->
-  <a href="/dashboard/products"
-     class="card rounded-3xl shadow-2xl p-10 bg-gradient-to-br from-fuchsia-500 via-pink-500 to-rose-500 text-white flex flex-col items-center justify-center relative overflow-hidden">
-    <!-- moving sheen -->
-    <div class="absolute inset-0 shimmer bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
-    <svg class={svg} fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-      <path d="M3 7h18M3 12h18M3 17h18"/>
-    </svg>
-    <span class={span}>Products</span>
-  </a>
+		<!-- Report Section -->
+		<ReportSection>
+			<div class="flex flex-col gap-4">
+				<div class="rounded-lg border border-border/50 bg-muted/30 p-2 text-center">
+					       <DataTable data={data.todayReport} {columns} search={false}/>
 
-  <!-- Appointments -->
-  <a href="/dashboard/appointments"
-     class="card rounded-3xl shadow-2xl p-10 bg-gradient-to-br from-emerald-400 via-teal-400 to-cyan-500 text-white flex flex-col items-center justify-center relative overflow-hidden">
-    <div class="absolute inset-0 shimmer bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
-    <svg class={svg} fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-      <path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-    </svg>
-    <span class={span}>Appointments</span>
-  </a>
-
-  <!-- Supplies -->
-  <a href="/dashboard/supplies"
-     class="card rounded-3xl shadow-2xl p-10 bg-gradient-to-br from-amber-400 via-orange-500 to-red-500 text-white flex flex-col items-center justify-center relative overflow-hidden">
-    <div class="absolute inset-0 shimmer bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
-    <svg class={svg} fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-      <path d="M20 13V7a2 2 0 00-2-2H6a2 2 0 00-2 2v6m16 0v6a2 2 0 01-2 2H6a2 2 0 01-2-2v-6m16 0H4"/>
-    </svg>
-    <span class={span}>Supplies</span>
-  </a>
-
-  <!-- Customers -->
-  <a href="/dashboard/customers"
-     class="card rounded-3xl shadow-2xl p-10 bg-gradient-to-br from-sky-400 via-indigo-500 to-purple-600 text-white flex flex-col items-center justify-center relative overflow-hidden">
-    <div class="absolute inset-0 shimmer bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
-    <svg class={svg} fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-      <path d="M17 20h5v-2a4 4 0 00-3-3.87M9 20h6M3 20h5v-2a4 4 0 013-3.87M16 7a4 4 0 11-8 0 4 4 0 018 0z"/>
-    </svg>
-    <span class={span}>Customers</span>
-  </a>
-</div>
+				</div>
+			
+			</div>
+		</ReportSection>
+	</div>
 </div>
 

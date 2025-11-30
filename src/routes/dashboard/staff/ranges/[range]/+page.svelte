@@ -61,7 +61,7 @@ let govtId = $state(false);
 let contractPdf = $state(false);
 </script>
  <svelte:head>
-        <title> Staff Details</title>
+        <title> {data?.staffMember ? `${data.staffMember.firstName} ${data.staffMember.lastName} - Staff Details` : 'Staff Details'}</title>
  </svelte:head>
 
 
@@ -187,6 +187,18 @@ let contractPdf = $state(false);
 		<DateMonth id={data.staffMember?.id} link="/dashboard/staff" start={data?.start} end={data?.end} />
 
 	
+		<div class="mb-6">
+			<h3 class="text-lg font-semibold">Product Tips</h3>
+			<p class="text-sm text-gray-500 dark:text-gray-400 mb-2">Tips earned from product sales by {data?.staffMember?.firstName} {data?.staffMember?.lastName}.</p>
+			<DataTable data={data.productTips} columns={commissionProduct} search={false} />
+		</div>
+
+		<div class="mb-6">
+			<h3 class="text-lg font-semibold">Service Commissions</h3>
+			<p class="text-sm text-gray-500 dark:text-gray-400 mb-2">Tips earned from services performed by {data?.staffMember?.firstName} {data?.staffMember?.lastName}.</p>
+			<DataTable data={data.serviceTips} columns={commissionService} search={false} />
+		</div>
+
 		<div class="mb-6">
 			<h3 class="text-lg font-semibold">Product Commissions</h3>
 			<p class="text-sm text-gray-500 dark:text-gray-400 mb-2">Commissions earned from product sales by {data?.staffMember?.firstName} {data?.staffMember?.lastName}.</p>

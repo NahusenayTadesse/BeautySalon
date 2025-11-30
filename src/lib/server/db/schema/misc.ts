@@ -13,6 +13,7 @@ import {
 } from 'drizzle-orm/mysql-core';
 import { user } from './user';
 import { secureFields } from './secureFields';
+import { branches } from './branches';
 
 export const positions = mysqlTable('positions', {
 	id: int('id').primaryKey().autoincrement(),
@@ -47,4 +48,5 @@ export const reports = mysqlTable('reports', {
     totalStaffPaid: decimal('total_staff_paid', {precision: 10, scale: 2}),
     staffHired: int('staff_hired'),
     staffFired: int('staff_fired'),
+    branchId: int('branch_id').references(()=> branches.id, {onDelete:"set null"}),
 })

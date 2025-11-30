@@ -1,21 +1,11 @@
 import { redirect } from "@sveltejs/kit";
 import type { PageServerLoad } from "./$types";
+import { getCurrentMonthRange } from "$lib/global.svelte";
 
 
 export const load: PageServerLoad = async ({ params }) => {
    
-function getCurrentMonthRange(): string {
-    const today = new Date();
 
-    const year = today.getFullYear();
-    const month = String(today.getMonth() + 1).padStart(2, "0");
-    const day = String(today.getDate()).padStart(2, "0");
-
-    const firstOfMonth = `${year}-${month}-01`;
-    const todayStr = `${year}-${month}-${day}`;
-
-    return `${firstOfMonth}-${todayStr}`;
-}
 
    const { id } = params;
   

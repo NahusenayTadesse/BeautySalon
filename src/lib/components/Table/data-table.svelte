@@ -24,7 +24,7 @@ let { data, columns, search = true }: DataTableProps<TData, TValue> = $props();
    import { Button } from "$lib/components/ui/button/index.js";
 	import { ChevronDownIcon, Frown } from "@lucide/svelte";
 
-   let pagination = $state<PaginationState>({ pageIndex: 0, pageSize: 10 });
+   let pagination = $state<PaginationState>({ pageIndex: 0, pageSize: 30 });
   let columnFilters = $state<ColumnFiltersState>([]);
 
 

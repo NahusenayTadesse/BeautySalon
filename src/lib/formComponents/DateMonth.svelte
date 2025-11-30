@@ -1,6 +1,6 @@
 <script lang="ts">
   import RangeCalendar from "$lib/components/ui/range-calendar/range-calendar.svelte";
-  import { CalendarDate } from "@internationalized/date";
+  import { CalendarDate, type DateValue } from "@internationalized/date";
 	import { CalendarIcon, SlidersHorizontal } from "@lucide/svelte";
   import type { DateRange } from "bits-ui";
     import * as Popover from "$lib/components/ui/popover/index.js";
@@ -11,7 +11,7 @@
 
 
 
-  let { id, link="/dashboard/staff", start = '2025-11-08', end="2025-11-08" }: { id?: number, link: string, start?: string, end?: string } = $props();
+  let { id = null, link="/dashboard/staff", start = '2025-11-08', end="2025-11-08" }: { id?: number, link: string, start?: string, end?: string } = $props();
 
   let startDate = new Date(start);
   let endDate = new Date(end);
@@ -24,7 +24,22 @@
     let open = $state(false);
    let contentRef = $state<HTMLElement | null>(null);
 
+function formatDate(input: DateValue | string | null | undefined) {
+  if (!input || String(input).includes('Pick')) return 'Pick a date';
 
+  // CalendarDate → JS Date
+  const d = input instanceof CalendarDate
+          ? new Date(input.year, input.month - 1, input.day)
+          : new Date(input.toString());
+
+  return isNaN(d.getTime())          // make sure we really have a valid date
+       ? 'Pick a date'
+       : d.toLocaleDateString('en-US', {
+           year: 'numeric',
+           month: 'short',
+           day: 'numeric'
+         });
+}
  
 </script>
 <Popover.Root bind:open>
@@ -37,16 +52,20 @@
       !value && "text-muted-foreground"
     )}
   >
-    <CalendarIcon /> Showing: 
-{value
-  ? (value.start ?? "Pick a start date") + " - " + (value.end ?? "Pick an end date")
-  : "Pick a date"}
+    <CalendarIcon />
+{ value
+    ? formatDate(value.start ?? "Pick a start date") +
+      " - " +
+      formatDate(value.end ?? "Pick an end date")
+    : "Pick a date"
+    
+    }
   </Popover.Trigger>
-    <Popover.Content bind:ref={contentRef} class="w-auto p-0">
+    <Popover.Content bind:ref={contentRef} class="w-full p-0">
 
-<RangeCalendar bind:value class="relative rounded-lg pb-4 w-auto border shadow-sm" numberOfMonths={2} />
-<Button disabled={!value.start || !value.end} class="absolute right-0 bottom-0"
- href={`${link}/ranges/${value.start}-${value.end}-${id}`}
+<RangeCalendar bind:value class="relative rounded-lg pb-16 w-auto border shadow-sm" numberOfMonths={2} />
+<Button disabled={!value.start || !value.end} class="absolute right-2 bottom-2"
+ href={id === null ? `${link}/${value.start}-${value.end}` : `${link}/ranges/${value.start}-${value.end}-${id}`}
  onclick={()=>{
     open = false;
     }}> 

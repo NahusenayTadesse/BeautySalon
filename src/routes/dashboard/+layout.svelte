@@ -12,7 +12,7 @@
 <Sidebar.Provider>
   <AppSidebar />
   <main class="w-full mx-2">
-    <div class="absolute top-2 left-2 shadow-lg backdrop-blur-md p-2 rounded-lg lg:sticky align-middle w-full flex flex-row justify-between">
+    <div class="absolute z-100 top-2 left-2 shadow-lg backdrop-blur-md p-2 rounded-lg lg:sticky align-middle w-full flex flex-row justify-between">
     <Sidebar.Trigger class="p-4 rounded-lg bg-white dark:bg-black" />
     <div class="flex flex-row gap-4 items-center">
     <Search />

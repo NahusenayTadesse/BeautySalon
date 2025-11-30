@@ -7,7 +7,7 @@ import {  editStaff as schema } from '$lib/zodschemas/appointmentSchema';
 
 
 import { db } from "$lib/server/db";
-import {  staff, staffTypes, salaries, user, deductions, commissionService, commissionProduct, bonuses, overTime, products, services, transactionProducts, transactionServices  } from "$lib/server/db/schema";
+import {  staff, salaries, deductions, commissionService, commissionProduct, bonuses, overTime, products, services, transactionProducts, transactionServices, tipsProduct, tipsService  } from "$lib/server/db/schema";
 import { eq, and, sql } from "drizzle-orm";
 import type { Actions, PageServerLoad } from "./$types";
 import { fail } from 'sveltekit-superforms';
@@ -15,10 +15,10 @@ import { setFlash } from 'sveltekit-flash-message/server';
 
 
 
-export const load: PageServerLoad = async ({ params, locals }) => {
+export const load: PageServerLoad = async ({ params }) => {
     
 
-     const {range} = params;
+     const { range } = params;
 
      const [
   y1, m1, d1,
@@ -28,75 +28,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 
 const start = `${y1}-${m1}-${d1}`;
 const end   = `${y2}-${m2}-${d2}`;
-       const form = await superValidate(zod4(schema));
 
-
-        const staffMember = await db.select(
-          { 
-           id: staff.id,
-           firstName: staff.firstName,
-           lastName: staff.lastName,
-           
-            category: staffTypes.name,
-            categoryId: staffTypes.id,
-            phone: staff.phone,
-            email: staff.email,
-            status: staff.employmentStatus,
-            salary: salaries.amount,
-            hireDate: sql<string>`DATE_FORMAT(${staff.hireDate}, '%Y-%m-%d')`,
-            govId: staff.govtId,
-             contract: staff.contract,
-            
-            addedBy: user.name,
-            years: sql<number>`TIMESTAMPDIFF(YEAR, ${staff.hireDate}, CURDATE())`,
-
-          }
-        )
-        .from(staff)
-        .leftJoin(staffTypes, eq(staff.type, staffTypes.id))
-        .leftJoin(salaries, eq(staff.id, salaries.staffId))
-        .leftJoin(user, eq(staff.createdBy, user.id))
-          .where(
-            and  
-            (
-              eq(staff.branchId, locals?.user?.branch),
-              eq(staff.id, id)
-            ))
-        .then(rows => rows[0]);
-
-
-      
-
-         const categories = await db
-                .select({
-                  value: staffTypes.id,
-                  name: staffTypes.name,
-                  description: staffTypes.description
-                })
-                .from(staffTypes);
-
-
-
-    // Helper function for date filtering logic (same for all compensation tables)
-const currentMonthFilter = (
-  dateField: any,
-  start?: string,
-  end?: string
-) => {
-  // If start/end are passed, return BETWEEN condition
-  if (start && end) {
-    return sql`${dateField} BETWEEN ${start} AND ${end}`;
-  }
-
-  // Otherwise fallback to current-month logic
-  const currentYear = new Date().getFullYear();
-  const currentMonth = new Date().getMonth() + 1;
-
-  return sql`
-    EXTRACT(YEAR FROM ${dateField}) = ${currentYear}
-    AND EXTRACT(MONTH FROM ${dateField}) = ${currentMonth}
-  `;
-};
 
     // --- Select Commissions (Service) ---
     const serviceCommissions = await db.select({
@@ -135,6 +67,45 @@ const currentMonthFilter = (
     )
   );
 
+
+  const serviceTips = await db.select({
+        staffId: tipsService.staffId,
+        service: services.name,
+        amount: tipsService.amount,
+        date: tipsService.tipDate,
+    })
+    .from(tipsService)
+   .leftJoin(transactionServices, eq(tipsService.saleItemId, transactionServices.id))
+  .leftJoin(services, eq(transactionServices.serviceId, services.id))
+
+    .where(and(
+        currentMonthFilter(tipsService.tipDate, start, end),
+      
+        eq(tipsService.staffId, id),
+    )
+    );
+
+
+     const productTips = await db  // <-- add await
+  .select({
+    staffId: tipsProduct.staffId,
+    product: products.name,
+    amount: tipsProduct.amount,
+    date: tipsProduct.tipDate,
+  })
+  .from(tipsProduct)
+  .leftJoin(transactionProducts, eq(tipsProduct.saleItemId, transactionProducts.id))
+  .leftJoin(products, eq(transactionProducts.productId, products.id))
+
+  .where(
+    and(
+    eq(tipsProduct.staffId, id),
+    currentMonthFilter(tipsProduct.tipDate, start, end)
+    )
+  );
+
+
+
     // --- Select Bonuses ---
     const staffBonuses =  await db.select({
         staffId: bonuses.staffId,
@@ -166,6 +137,12 @@ const currentMonthFilter = (
       )
     );
 
+    
+
+
+
+
+
     // --- Select Deductions ---
     const staffDeductions = await db.select({
         staffId: deductions.staffId,
@@ -191,14 +168,15 @@ const currentMonthFilter = (
   
 
         return {
-            staffMember,
+            
            staffDeductions,
            staffOvertime,
+           productTips,
+           serviceTips,
             staffBonuses,
             productCommissions,
             serviceCommissions,
-            form,
-            categories,
+         
             start,
             end
    
@@ -208,7 +186,7 @@ const currentMonthFilter = (
 
 import fs from 'node:fs';
 import path from 'node:path';
-import { generateUserId } from '$lib/global.svelte';
+import { currentMonthFilter, generateUserId } from '$lib/global.svelte';
 import { Readable } from 'node:stream';
 import { pipeline } from 'node:stream/promises';
 import { env } from '$env/dynamic/private';
