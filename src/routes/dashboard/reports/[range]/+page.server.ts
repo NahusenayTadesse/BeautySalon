@@ -1,6 +1,6 @@
 import { db } from "$lib/server/db";
 import { reports } from "$lib/server/db/schema";
-import { and, gte, lte, sql } from "drizzle-orm";
+import { and, asc, eq, sql } from "drizzle-orm";
 
 import { currentMonthFilter } from "$lib/global.svelte";
 import type { PageServerLoad } from "../$types";
@@ -8,7 +8,7 @@ import type { PageServerLoad } from "../$types";
 
 
 
-export const load: PageServerLoad = async({params})=>{
+export const load: PageServerLoad = async({params, locals})=>{
 
     const { range } = params as { range: string };    
 
@@ -20,12 +20,6 @@ export const load: PageServerLoad = async({params})=>{
 const start = `${y1}-${m1}-${d1}`;
 const end   = `${y2}-${m2}-${d2}`; 
 
-const filterCondition = and(
-        // reports.reportDate >= start
-        gte(reports.reportDate, start), 
-        // reports.reportDate <= end
-        lte(reports.reportDate, end)     
-    );
 
 
 
@@ -47,14 +41,17 @@ date: sql<string>`DATE_FORMAT(${reports.reportDate}, '%W %Y-%m-%d')`,
             staffFired: reports.staffFired
         }
     ).from(reports)
-    .where (filterCondition);
+    .where ( and(
+        eq(reports.branchId, locals.user?.branch ),
+        currentMonthFilter(reports.reportDate, start, end)
+        ))
+        .orderBy(asc(reports.reportDate));
   
-  
+
 
     return{
          allReports,
          start,
-         end,
-         range
+         end
     }
 }

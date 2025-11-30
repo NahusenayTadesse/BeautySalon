@@ -53,6 +53,6 @@
          <h1 class="text-red-500">Unexpected Error: Reload</h1>
     </div>
   {/await}
-{data.range.split("-")}
+
 
   
