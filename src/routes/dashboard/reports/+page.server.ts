@@ -1,35 +1,9 @@
-import { db } from "$lib/server/db";
-import { reports } from "$lib/server/db/schema";
-import { sql } from "drizzle-orm";
-import type { PageServerLoad } from "../$types";
+import { redirect } from "@sveltejs/kit";
+import type { PageServerLoad } from "./$types";
+import { getCurrentMonthRange } from "$lib/global.svelte";
 
 
-
-
-export const load: PageServerLoad = async()=>{
-     
-    
-
-    const allReports = await db.select(
-        {
-            id: reports.id,
-date: sql<string>`DATE_FORMAT(${reports.reportDate}, '%W %Y-%m-%d')`,
-            bookedAppointments: reports.bookedAppointments,
-            productsSold: reports.productsSold,
-            serviceRendered: reports.servicesRendered,
-            dailyExpenses: reports.dailyExpenses,
-            dailyIncome: reports.dailyIncome,
-            transactions: reports.transactions,
-            staffPaid: reports.staffPaid,
-            totalStaffPaid: reports.totalStaffPaid,
-            staffHired: reports.staffHired,
-            staffFired: reports.staffFired
-        }
-    ).from(reports);
-  
-  
-
-    return{
-         allReports
-    }
+export const load: PageServerLoad = async () => {
+   
+   redirect (303, `/dashboard/reports/${getCurrentMonthRange()}`);
 }
