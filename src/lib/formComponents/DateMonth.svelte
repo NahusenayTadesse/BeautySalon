@@ -9,14 +9,17 @@
   import { buttonVariants } from "$lib/components/ui/button/index.js";
 	import Button from "$lib/components/ui/button/button.svelte";
 
+
+
+  let { id, link="/dashboard/staff", start = '2025-11-08', end="2025-11-08" }: { id?: number, link: string, start?: string, end?: string } = $props();
+
+  let startDate = new Date(start);
+  let endDate = new Date(end);
+
   let value = $state<DateRange>({
-    start: new CalendarDate(new Date().getFullYear(), new Date().getMonth() + 1, new Date().getDate()),
-    end: new CalendarDate(new Date().getFullYear(), new Date().getMonth() + 1, new Date().getDate()),
+    start: new CalendarDate( startDate.getFullYear(), startDate.getMonth() + 1, startDate.getDate()),
+    end: new CalendarDate( endDate.getFullYear(), endDate.getMonth() + 1, endDate.getDate()),
   }); 
-
-  let { id, link="/dashboard/staff" }: { id?: number, link: string } = $props();
-
-
 
     let open = $state(false);
    let contentRef = $state<HTMLElement | null>(null);
@@ -34,7 +37,7 @@
       !value && "text-muted-foreground"
     )}
   >
-    <CalendarIcon />
+    <CalendarIcon /> Showing: 
 {value
   ? (value.start ?? "Pick a start date") + " - " + (value.end ?? "Pick an end date")
   : "Pick a date"}

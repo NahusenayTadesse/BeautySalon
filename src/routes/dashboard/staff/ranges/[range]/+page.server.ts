@@ -199,6 +199,8 @@ const currentMonthFilter = (
             serviceCommissions,
             form,
             categories,
+            start,
+            end
    
         }
 }

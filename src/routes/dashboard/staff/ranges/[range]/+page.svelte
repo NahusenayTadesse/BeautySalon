@@ -53,7 +53,6 @@ $form.hiredAt = data.staffMember.hireDate
 export const snapshot: Snapshot = { capture, restore };
 
 let edit = $state(false)
-let search = false;
  
 const govId = fileProxy(form, 'govId');
 const contract = fileProxy(form, 'contract');
@@ -185,7 +184,7 @@ let contractPdf = $state(false);
 	 
 	<div class="lg:w-1/2 w-4/5 my-8"> 
 
-		<DateMonth id={data.staffMember?.id} link="/dashboard/staff" />
+		<DateMonth id={data.staffMember?.id} link="/dashboard/staff" start={data?.start} end={data?.end} />
 
 	
 		<div class="mb-6">
