@@ -279,6 +279,7 @@ export const actions: Actions = {
 			return setFlash({ type: 'success', message: 'New Sale Successfully Added' }, cookies);
 		} catch (e) {
 		setFlash({ type: 'error', message: 'Error ' + e }, cookies);
+		console.error(e)
 		}
 	}
 };

@@ -305,7 +305,7 @@
 				<BrushCleaning />
 
 				Reset</Button
-			> {$form.services.length}
+			> 
 
 			
 		</div>

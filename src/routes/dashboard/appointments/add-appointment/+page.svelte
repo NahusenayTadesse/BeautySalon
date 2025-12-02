@@ -5,7 +5,7 @@
 	import { Textarea } from '$lib/components/ui/textarea/index.js';
 	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';
 	import * as Card from '$lib/components/ui/card/index.js';
-	import { ArrowLeft,  CalendarIcon, Plus, X } from '@lucide/svelte';
+	import { ArrowLeft,  CalendarIcon, Frown, Plus, X } from '@lucide/svelte';
 	import { Button } from '$lib/components/ui/button/index.js';
 	import { zod4Client } from 'sveltekit-superforms/adapters';
 	import { appointmentSchema, existingCustomerAppointment } from '$lib/ZodSchema';
@@ -180,7 +180,7 @@ $effect(()=> {
 <Input
 			type="search"
 			placeholder="Search Customers..."
-			class="mb-4 w-full"
+			class="mb-4 w-lg max-w-md justify-self-center"
 			bind:value={customer}
 		/>
 		<!-- {#if customer.length > 0}
@@ -188,16 +188,16 @@ $effect(()=> {
 		{/if} -->
 
 		{#if customer !== ''}
-			<p class="mt-2 mb-2 font-medium">Search Results: {customer}</p>
+			<p class="mt-2 mb-2 font-medium text-center">Search Results: {customer}</p>
            <ul class="flex flex-col mb-4">
 			{#if customerList.length === 0}
-		  <p>
-			 No customer found
-			<button class="mb-4 text-blue-600" onclick={() => (addNew = true, /^\d+$/.test(customer) ? $form.phone = customer : $form.firstName = customer)}>Add New Customer</button>
+		  <p class="text-center text-red-500 flex flex-row items-end justify-center gap-2">
+			 <Frown /> No customer found 
+			<Button variant="outline" class="text-primary" onclick={() => (addNew = true, /^\d+$/.test(customer) ? $form.phone = customer : $form.firstName = customer)}><Plus /> Add New Customer</Button>
           </p>
 			{/if}
 		    {#each customerList as customer}
-			<li transition:fly={{x:-200, duration: 600}} class="">
+			<li transition:fly={{x:-200, duration: 600}} class="text-center">
 				<Button class="w-1/2" variant="outline" 
 				onclick={() => {selectedCustomer = customer; $existingForm.customerId = customer.value; }}
 				 >{customer.name}</Button>
@@ -220,14 +220,14 @@ $effect(()=> {
 		 
 
 
-		<form use:existingEnhance action="?/addExistingCustomerAppointment" id='existing'  class="flex flex-col gap-4" method="post" >
+		<form use:existingEnhance onsubmit={() => selectedCustomer=null} action="?/addExistingCustomerAppointment" id='existing'  class="flex flex-col gap-4" method="post" >
 			<div class="flex flex-col gap-4">
 		
 			<!-- {@render fe('Customer Gender', 'gender', 'text', 'Select Customer Gender', true)} -->
              {#if selectedCustomer}
 			 <div 
 			 class="flex flex-row justify-between border-1 p-2
-			  rounded-lg border-gray-400 dark:border-gray-300">
+			  rounded-lg border-gray-400 dark:border-gray-300" transition:fly={{ y: -200, duration: 200 }}>
 			  {selectedCustomer?.name} 
 			     <X onclick={() => selectedCustomer = null} />
 
@@ -304,7 +304,7 @@ $effect(()=> {
 			</div>
 		</div>
 
-			<Button type="submit" class="mt-4" form="existing">  
+			<Button type="submit" class="mt-4" form="existing" >  
 				{#if $existingDelayed}
 					<LoadingBtn name="Adding Appointment" />
 				{:else}
@@ -313,6 +313,7 @@ $effect(()=> {
 					Add Appointment
 				{/if}
 			</Button>
+
 		</form>
 	</Card.Content>
 </Card.Root>

@@ -26,7 +26,7 @@ export const load: PageServerLoad = async ({locals}) => {
     .where(
         and
         (eq(products.branchId, locals.user?.branch),
-        lte(products.reorderLevel, products.quantity)
+        lte(products.quantity, products.reorderLevel)
     )
     ); 
 
@@ -40,7 +40,7 @@ export const load: PageServerLoad = async ({locals}) => {
     .where(
         and
         (eq(supplies.branchId, locals.user?.branch),
-        lte(supplies.reorderLevel, supplies.quantity)
+        lte(supplies.quantity, supplies.reorderLevel)
     )
     ); 
 
@@ -52,14 +52,15 @@ export const load: PageServerLoad = async ({locals}) => {
                 productsSold: reports.productsSold,
                 serviceRendered: reports.servicesRendered,
                 dailyExpenses: reports.dailyExpenses,
+                staffPaid: reports.staffPaid,
                 dailyIncome: reports.dailyIncome,
                 transactions: reports.transactions,
+
             }
         ).from(reports)
-        .where ( and(
-            eq(reports.branchId, locals.user?.branch ),
+        .where (
             eq(reports.reportDate, sql`CURDATE()`)
-            ));
+            ).then(rows => rows[0]);
 
     return { 
 

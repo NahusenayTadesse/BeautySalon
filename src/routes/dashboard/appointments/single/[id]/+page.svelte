@@ -150,14 +150,14 @@
     </div>
 	 {#if data.reciepts?.length}
 	 	  <div class="bg-white dark:bg-black shadow-lg dark:shadow-md dark:shadow-gray-900
-   rounded-md w-full flex flex-col justify-center items-center mt-4">
-    <div class="bg-gradient-to-r w-full from-dark to-black text-white py-6 px-8 rounded-lg flex flex-col justify-center items-center">
-      <h1 class="text-center"> Booking Fee Paids </h1>
+   rounded-md w-full flex flex-col justify-center items-start mt-4">
+    <div class="bg-gradient-to-r lg:w-8/10 w-full from-dark to-black text-white py-6 px-8 rounded-lg flex flex-col justify-center items-start">
+      <h1 class="text-start"> Booking Fee Paids </h1>
 	  	 </div>
 
-	<div class="flex flex-col mt-4 w-full">
+	<div class="flex flex-col mt-4 lg:w-8/10 w-full">
 		<DataTable data={data.reciepts} {columns} {search}  />
-        <Button href="/dashboard/sales/appointments/{data.appointmentsList.id}"> <Plus /> Add Sales for Customer</Button>
+        <Button size="lg" class="w-lg" href="/dashboard/sales/appointments/{data.appointmentsList.id}"> <Plus /> Add Sales for Customer</Button>
 	 </div>
 
 	     

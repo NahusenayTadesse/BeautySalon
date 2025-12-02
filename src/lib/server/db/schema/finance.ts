@@ -53,7 +53,6 @@ export const transactionsRelations = relations(transactions, ({ one }) => ({
 
 export const transactionServices = mysqlTable('transaction_services', {
   id: int('id').primaryKey().autoincrement(),
-  customerId: int('customer_id').references(() => customers.id),
   appointmentId: int('appointment_id').references(() => appointments.id),
   staffId: int('staff_id').references(() => staff.id).notNull(),
   transactionId: int('transaction_id')
@@ -75,6 +74,7 @@ export const transactionServices = mysqlTable('transaction_services', {
 
 export const transactionProducts = mysqlTable('transaction_products', {
   id: int('id').primaryKey().autoincrement(),
+  appointmentId: int('appointment_id').references(() => appointments.id),
   transactionId: int('transaction_id')
     .notNull()
     .references(() => transactions.id, {onDelete: 'cascade'}),

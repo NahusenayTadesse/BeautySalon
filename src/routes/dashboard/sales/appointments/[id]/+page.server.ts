@@ -131,6 +131,8 @@ export const actions: Actions = {
 		const service = formData.getAll('service');
 		const serviceTip = formData.getAll('serviceTip');
 
+		console.log('Received form data:',  service, service.length);
+
 		// if (!form.valid) {
 		//    // Stay on the same page and set a flash message
 		//    setFlash({ type: 'error', message: "Please check your form data." }, cookies);
@@ -186,7 +188,6 @@ export const actions: Actions = {
 						.insert(transactionProducts)
 						.values(
 							product.map((_, idx) => ({
-								customerId: id,
 								transactionId: txn.id,
 								staffId: product_staff[idx] || null,
 								productId: product[idx] || null,
@@ -229,13 +230,15 @@ export const actions: Actions = {
 						)
 					);
 
+				}
+
 					// 4. service lines
 					if (service.length) {
 						const txnsrvid = await tx
 							.insert(transactionServices)
 							.values(
 								service.map((_, idx) => ({
-									customerId: id,
+									appointmentId: id,
 									transactionId: txn.id,
 									staffId: service_staff[idx] || null,
 									serviceId: service[idx] || null,
@@ -259,8 +262,10 @@ export const actions: Actions = {
 							}))
 						);
 					}
+				
 
 					const sumProduct = noofproducts.reduce((acc, n) => acc + Number(n), 0);
+					console.log("Service Length: " + service.length);
 
 					const existingReport = await tx
 						.select({
@@ -289,7 +294,7 @@ export const actions: Actions = {
 							.where(and(eq(reports.id, existingReport.id)));
 					} else {
 						await tx.insert(reports).values({
-							reportDate: today,
+							reportDate: sql`CURDATE()`,
 							productsSold: sumProduct,
 							servicesRendered: service.length,
 							dailyIncome: total,
@@ -297,12 +302,13 @@ export const actions: Actions = {
 							branchId: locals?.user?.branch
 						});
 					}
-				}
+				
 			});
 
 			return setFlash({ type: 'success', message: 'New Sale Successfully Added' }, cookies);
 		} catch (e) {
 			setFlash({ type: 'error', message: 'Error ' + e }, cookies);
+			console.error('Error processing sale:', e);
 		}
 	}
 };

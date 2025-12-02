@@ -3,7 +3,7 @@
 	import { cn } from "$lib/utils.js";
 	import type { ComponentProps } from "svelte";
 	import { useSidebar } from "./context.svelte.js";
-	import { Menu, TextAlignJustify } from "@lucide/svelte";
+	import { TextAlignJustify } from "@lucide/svelte";
 
 	let {
 		ref = $bindable(null),
