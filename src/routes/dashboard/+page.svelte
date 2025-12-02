@@ -3,7 +3,7 @@
 	import ReorderList from "$lib/components/dashboard/reorder-list.svelte";
 	import ReportSection from "$lib/components/dashboard/report-section.svelte";
 	import { PackageIcon, BoxIcon } from "@lucide/svelte";
-	import { columns } from "./reports/[range]/columns";
+	import { columns } from "./columns";
 	import DataTable from "$lib/components/Table/data-table.svelte";
 
 
@@ -11,7 +11,9 @@
 	
 	
 </script>
-
+ <svelte:head>
+	<title>Dashboard</title>
+ </svelte:head>
 
 
 <div class="min-h-dvh mt-16 rounded-lg w-full bg-gradient-to-br from-background/10 via-background/10 to-muted/30
@@ -32,6 +34,15 @@
 
 	<!-- Main Content -->
 	<div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+		<ReportSection>
+			<div class="flex flex-col gap-4">
+				<div class="rounded-lg border border-border/50 bg-muted/30 p-2 text-center">
+					       <DataTable data={data.todayReport} {columns} search={false}/>
+
+				</div>
+			
+			</div>
+		</ReportSection>
 		<!-- Stats Grid -->
 		<div class="grid gap-6 mb-8">
 			<AppointmentCard count={data.nofAppointments} />
@@ -44,15 +55,7 @@
 		</div>
 
 		<!-- Report Section -->
-		<ReportSection>
-			<div class="flex flex-col gap-4">
-				<div class="rounded-lg border border-border/50 bg-muted/30 p-2 text-center">
-					       <DataTable data={data.todayReport} {columns} search={false}/>
-
-				</div>
-			
-			</div>
-		</ReportSection>
+		
 	</div>
 </div>
 

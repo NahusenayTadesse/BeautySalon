@@ -44,25 +44,21 @@ export const load: PageServerLoad = async ({locals}) => {
     )
     ); 
 
+
     const todayReport = await db.select(
             {
                 id: reports.id,
-    date: sql<string>`DATE_FORMAT(${reports.reportDate}, '%W %Y-%m-%d')`,
                 bookedAppointments: reports.bookedAppointments,
                 productsSold: reports.productsSold,
                 serviceRendered: reports.servicesRendered,
                 dailyExpenses: reports.dailyExpenses,
                 dailyIncome: reports.dailyIncome,
                 transactions: reports.transactions,
-                staffPaid: reports.staffPaid,
-                totalStaffPaid: reports.totalStaffPaid,
-                staffHired: reports.staffHired,
-                staffFired: reports.staffFired
             }
         ).from(reports)
         .where ( and(
             eq(reports.branchId, locals.user?.branch ),
-            eq(reports.reportDate, new Date())
+            eq(reports.reportDate, sql`CURDATE()`)
             ));
 
     return { 

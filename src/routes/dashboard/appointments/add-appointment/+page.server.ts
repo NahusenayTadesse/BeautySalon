@@ -5,7 +5,7 @@ import { eq, and, sql } from "drizzle-orm"
 
 import { appointmentSchema as schema, existingCustomerAppointment } from '$lib/ZodSchema';
 import { db } from '$lib/server/db';
-import { products, customers, appointments } from '$lib/server/db/schema/';
+import { products, customers, appointments, reports } from '$lib/server/db/schema/';
 import type {  Actions } from "./$types";
 import type { PageServerLoad } from './$types.js';
 import { setFlash } from 'sveltekit-flash-message/server';
@@ -85,6 +85,37 @@ export const actions: Actions = {
         branchId: locals?.user?.branch
       });
 
+      const today = new Date();
+      
+       const existingReport = await db.select({
+          id: reports.id
+       }).from(reports).where(
+          (and(
+          eq(reports.reportDate, sql`CURDATE()`),
+          eq(reports.branchId, locals?.user?.branch)
+          )
+        )
+      
+       ).then(rows => rows[0]);
+
+       if(existingReport){
+          await db.update(reports).set({
+            bookedAppointments: sql<number>`${reports.bookedAppointments} + 1`
+          }).where(and(
+            
+            eq(reports.id, existingReport.id)
+
+          )
+          );
+       } else {
+          await db.insert(reports).values({
+            reportDate: today,
+            bookedAppointments: 1,
+            branchId: locals?.user?.branch
+          });
+       }
+       
+
             setFlash({ type: 'success', message: "New Appointment Successfully Added" }, cookies);
             return {
       form
@@ -135,6 +166,37 @@ export const actions: Actions = {
         branchId: locals?.user?.branch
       });
  
+
+       const today = new Date();
+      
+       const existingReport = await db.select({
+          id: reports.id
+       }).from(reports).where(
+          (and(
+          eq(reports.reportDate, sql`CURDATE()`),
+          eq(reports.branchId, locals?.user?.branch)
+          )
+        )
+      
+       ).then(rows => rows[0]);
+
+       if(existingReport){
+          await db.update(reports).set({
+            bookedAppointments: sql<number>`${reports.bookedAppointments} + 1`
+          }).where(and(
+            
+            eq(reports.id, existingReport.id)
+
+          )
+          );
+       } else {
+          await db.insert(reports).values({
+            reportDate: today,
+            bookedAppointments: 1,
+            branchId: locals?.user?.branch
+          });
+       }
+       
       // Stay on the same page and set a flash message
       setFlash({ type: 'success', message: "New Appointment Successfully Added" }, cookies);
       return {

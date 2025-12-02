@@ -15,7 +15,7 @@
 	import { fileProxy, superForm } from 'sveltekit-superforms/client';
 	import ComboboxComp from '$lib/formComponents/ComboboxComp.svelte';
 	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';
-	import { ArrowLeft, Frown, Pencil, Plus, Save, Trash } from '@lucide/svelte';
+	import { ArrowLeft, Frown, Pencil, Plus, Save, Trash, Upload, X } from '@lucide/svelte';
 	import SelectComp from '$lib/formComponents/SelectComp.svelte';
 	import type { Snapshot } from '@sveltejs/kit';
 	import DataTable from '$lib/components/Table/data-table.svelte';
@@ -269,8 +269,11 @@
 	{@render selects('paymentStatus', paymentStatus)}
 	 <div class="flex w-full flex-col justify-start gap-2">
 	 <Label for='image' class="capitalize">Upload Reciept or Screenshot of Booking Fee</Label>
+	 <div class="relative flex flex-row gap-2">
+	 <Upload class="h-6 w-6 absolute top-2 bottom-0.5 right-16" />
 	 <Input type="file" name="image"
-	 accept="image/*,application/pdf" bind:files={$file} multiple={false} />
+	 accept="image/*,application/pdf" bind:files={$file} multiple={false} /> <Button type="button" size="icon" variant="outline" title="Clear file input" onclick={() => $file = 0}>  <X /> </Button>
+	 </div>
 	 {#if $errors.image} <span>{$errors.image}</span> {/if}
 	 </div>	
     <!-- {@render fe('Upload Reciept or Screenshot of Booking Fee', 'image', 'file', 'Enter Name', true)} -->

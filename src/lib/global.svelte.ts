@@ -29,9 +29,7 @@ export const selectItem = `hover:bg-gray-100 hover:shadow-md hover:scale-101 dur
  
   
   
-import { getRequestEvent } from '$app/server';
     import { encodeBase32LowerCase } from '@oslojs/encoding';
-import { redirect } from '@sveltejs/kit';
 import { sql } from 'drizzle-orm';
 import type { MySqlColumn } from 'drizzle-orm/mysql-core';
 import { SvelteDate } from 'svelte/reactivity';
@@ -93,12 +91,3 @@ export const currentMonthFilter = (
   `;
 };
 
-export function requireLogin() {
-    const { locals } = getRequestEvent();
-
-    if (!locals.user) {
-        return redirect(302, '/login');
-    }
-
-    return locals.user;
-}

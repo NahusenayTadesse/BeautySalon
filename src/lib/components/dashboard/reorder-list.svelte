@@ -28,7 +28,7 @@
 					<CardDescription>{description}</CardDescription>
 				</div>
 				<div class="rounded-lg bg-accent/10 p-2">
-					<Icon class="size-5 text-accent" />
+					<Icon class="size-5 text-black dark:text-white" />
 				</div>
 			</div>
 		</CardHeader>

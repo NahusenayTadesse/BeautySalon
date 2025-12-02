@@ -19,7 +19,7 @@
 					<CardDescription>Daily performance metrics and data</CardDescription>
 				</div>
 				<div class="rounded-lg bg-secondary/10 p-2">
-					<FileTextIcon class="size-5 text-secondary" />
+					<FileTextIcon class="size-5 text-black dark:text-white" />
 				</div>
 			</div>
 		</CardHeader>

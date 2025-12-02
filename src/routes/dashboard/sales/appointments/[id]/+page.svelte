@@ -8,10 +8,10 @@
 
 	let { data } = $props();
 
-	function getName(List: Array<{ value: number; name: string }>, value: number) {
-		const single = List.find((s) => s.value === value);
-		return single ? single.name : null;
-	}
+	// function getName(List: Array<{ value: number; name: string }>, value: number) {
+	// 	const single = List.find((s) => s.value === value);
+	// 	return single ? single.name : null;
+	// }
 	function getPrice(
 		List: Array<{ value: number; name: string; price: string }>,
 		value: number
@@ -73,6 +73,7 @@
 		$form.productAmount = checkoutTotal;
 		$form.serviceAmount = checkoutTotalService;
 		$form.total = total - data.bookings.totalBookingFees;
+
 	});
 
 	let submitted = $state(false);
@@ -290,6 +291,8 @@
 				<Plus />
 				Add Sale {/if}</Button
 			>
+
+			 
 			<Button
 				variant="outline"
 				type="reset"
@@ -302,7 +305,9 @@
 				<BrushCleaning />
 
 				Reset</Button
-			>
+			> {$form.services.length}
+
+			
 		</div>
 	</div>
 </form>

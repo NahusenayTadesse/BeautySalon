@@ -5,13 +5,14 @@ import {
 	customers,
 	paymentMethods,
 	products as prds,
+	reports,
 	services as srvs,
 	staff,
 	transactionProducts,
 	transactions,
 	transactionServices
 } from '$lib/server/db/schema';
-import { eq, sql } from 'drizzle-orm';
+import { eq, sql, and } from 'drizzle-orm';
 import { superValidate } from 'sveltekit-superforms';
 import { zod4 } from 'sveltekit-superforms/adapters';
 import { salesSchema as schema } from '$lib/zodschemas/salesSchema';
@@ -94,7 +95,7 @@ export const actions: Actions = {
 
 		const { paymentMethod, total, receipt } = form.data;
 
-		const product_staff = formData.getAll('product_staff'); // ← fix typo
+		const product_staff = formData.getAll('product_staff'); 
 		const product = formData.getAll('product');
 		const noofproducts = formData.getAll('noofproducts');
 		const tip = formData.getAll('tip');
@@ -230,7 +231,49 @@ export const actions: Actions = {
 							createdBy: locals.user?.id
 						}))
 					);
-				}
+
+
+				} 
+
+				const today = new Date();
+
+				const sumProduct = noofproducts.reduce((acc, n) => acc + Number(n), 0);
+				
+
+      
+       const existingReport = await tx.select({
+          id: reports.id
+       }).from(reports).where(
+          (and(
+          eq(reports.reportDate, sql`CURDATE()`),
+          eq(reports.branchId, locals?.user?.branch)
+          )
+        )
+      
+       ).then(rows => rows[0]);
+
+       if(existingReport){
+          await tx.update(reports).set({
+            productsSold: sql<number>`${reports.productsSold} + ${sumProduct}`,
+            servicesRendered: sql<number>`${reports.servicesRendered} + ${service.length}`,
+            dailyIncome: sql`${sql`IFNULL(${reports.dailyIncome}, 0)`} + ${total}`,
+			transactions: sql<number>`${reports.transactions} + 1`
+          }).where(and(
+            
+            eq(reports.id, existingReport.id)
+
+          )
+          );
+       } else {
+          await tx.insert(reports).values({
+            reportDate: today,
+            productsSold: sumProduct,
+			servicesRendered: service.length,
+			dailyIncome: total,
+			transactions: 1,
+            branchId: locals?.user?.branch
+          });
+       }
 			});
 
 			return setFlash({ type: 'success', message: 'New Sale Successfully Added' }, cookies);
