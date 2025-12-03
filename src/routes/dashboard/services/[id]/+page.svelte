@@ -80,7 +80,7 @@ $form.durationMinutes = data.service?.duration
     <div class="bg-gradient-to-r w-full from-dark to-black text-white py-6 px-8 rounded-lg flex flex-col justify-start items-start">
       <h1 class="text-center w-full">Service Details</h1>
     </div>
-	<div class="flex flex-row justify-start items-start w-full pl-4 mt-4">
+	<div class="flex flex-row justify-start items-start gap-4 w-full pl-4 mt-4">
 	<Button onclick={()=> edit = !edit}>
 		{#if !edit}
 		<Pencil class="w-4 h-4"/>
