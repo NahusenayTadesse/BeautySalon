@@ -188,6 +188,7 @@ export const actions: Actions = {
 						.insert(transactionProducts)
 						.values(
 							product.map((_, idx) => ({
+								appointmentId: id,
 								transactionId: txn.id,
 								staffId: product_staff[idx] || null,
 								productId: product[idx] || null,

@@ -8,9 +8,9 @@ import {  editStaff as schema } from '$lib/zodschemas/appointmentSchema';
 import { db } from "$lib/server/db";
 import {  staff, staffTypes, salaries, user  } from "$lib/server/db/schema";
 import { eq, and, sql } from "drizzle-orm";
-import type { PageServerLoad } from "./$types";
+import type { LayoutServerLoad } from "./$types";
 
-export const load: PageServerLoad = async ({ params, locals }) => {
+export const load: LayoutServerLoad = async ({ params, locals }) => {
 
        const {range} = params;
 

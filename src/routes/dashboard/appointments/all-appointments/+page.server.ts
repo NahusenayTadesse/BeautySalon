@@ -5,19 +5,6 @@ import { getCurrentMonthRange } from "$lib/global.svelte";
 
 export const load: PageServerLoad = async () => {
    
-// function getCurrentMonthRange(): string {
-//     const today = new Date();
-
-//     const year = today.getFullYear();
-//     const month = String(today.getMonth() + 1).padStart(2, "0");
-//     const day = String(today.getDate()).padStart(2, "0");
-
-//     const firstOfMonth = `${year}-${month}-01`;
-//     const todayStr = `${year}-${month}-${day}`;
-
-//     return `${firstOfMonth}-${todayStr}`;
-// }
-
    redirect (303, `/dashboard/appointments/all-appointments/${getCurrentMonthRange()}`);
 }
 
