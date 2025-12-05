@@ -12,7 +12,7 @@
 	import SingleTable from '$lib/components/SingleTable.svelte';
 
 	import { Button } from '$lib/components/ui/button/index.js';
-	import { Download } from '@lucide/svelte';
+	import { Download, Eye } from '@lucide/svelte';
 
 let singleTable = $derived([
     { name: 'Date', value: data.singleTransaction?.date },
@@ -44,11 +44,23 @@ let singleTable = $derived([
 
 	
 	 
-    <div class="p-4 w-full"><SingleTable {singleTable}/><Button href="/dashboard/files/{data.singleTransaction.recieptLink}" download="Transaction Reciept" >
+    <div class="p-4 w-full"><SingleTable {singleTable}/>
+	  <div class="flex flex-row gap-2 w-full justify-end">
+
+		<Button href="/dashboard/files/{data.singleTransaction.recieptLink}" target="_blank" >
+
+	<Eye />
+	  View Reciept
+	</Button>
+		<Button href="/dashboard/files/{data.singleTransaction.recieptLink}" download="Transaction Reciept" >
 
 	<Download />
 	  Download Reciept
-	</Button></div> 
+	</Button> 
+
+	   
+	  </div>
+		</div> 
   
 	</div>
 
