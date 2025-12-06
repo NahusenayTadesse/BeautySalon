@@ -1,5 +1,5 @@
 <script lang="ts">
-	import {  Users, UserRoundCog, ChartArea, Calendar, SquareChartGantt, IdCardLanyard, LayoutDashboard, ShoppingBasket, Container, Banknote, BanknoteArrowUp } from '@lucide/svelte';
+	import {  Users, UserRoundCog, ChartArea, Calendar, SquareChartGantt, IdCardLanyard, LayoutDashboard, ShoppingBasket, Container, Banknote, BanknoteArrowUp, Receipt, ArrowLeftRight, ScanLine } from '@lucide/svelte';
 	import * as Sidebar from '$lib/components/ui/sidebar/index.js';
 	import type { ComponentProps } from 'svelte';
 	import { page } from '$app/state';
@@ -15,8 +15,9 @@
   { title: 'Supplies', url: '/dashboard/supplies', icon: Container },
   { title: 'Reports', url: '/dashboard/reports', icon: ChartArea },
   { title: 'Staff', url: '/dashboard/staff', icon: IdCardLanyard },
+  { title: 'Salary', url: '/dashboard/salary', icon: Banknote },
   { title: 'Sales', url: '/dashboard/sales', icon: BanknoteArrowUp },
-  { title: 'Transactions', url: '/dashboard/transactions', icon: Banknote },
+  { title: 'Transactions', url: '/dashboard/transactions', icon: ScanLine },
   { title: 'Admin Panel', url: '/dashboard/admin-panel', icon: UserRoundCog}
 ]
 

@@ -10,7 +10,7 @@ import {
   year,
   unique,
 } from 'drizzle-orm/mysql-core';
-import { appointments, customers } from './customer-appointment';
+import { appointments } from './customer-appointment';
 import { staff } from './staff';
 import { secureFields } from './secureFields';
 import { services } from './services';
@@ -138,48 +138,46 @@ export const expensesType = mysqlTable('expenses_type', {
      	id: int('id').autoincrement().primaryKey(),
       name: varchar('name', {length: 255}).notNull().unique(),
     description: varchar('description', {length: 255}),
-
     ...secureFields
 })
 
 
 
-export const payrollRuns = mysqlTable('payroll_runs', {
-	id: int('id').autoincrement().primaryKey(),
-	payPeriodStart: date('pay_period_start').notNull(),
-	payPeriodEnd: date('pay_period_end').notNull(),
-	paymentDate: date('payment_date').notNull(),
+// export const payrollRuns = mysqlTable('payroll_runs', {
+// 	id: int('id').autoincrement().primaryKey(),
+// 	payPeriodStart: date('pay_period_start').notNull(),
+// 	payPeriodEnd: date('pay_period_end').notNull(),
+// 	paymentDate: date('payment_date').notNull(),
 
-   month: mysqlEnum("month", [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December",
-  ]).notNull(),
+//    month: mysqlEnum("month", [
+//     "January",
+//     "February",
+//     "March",
+//     "April",
+//     "May",
+//     "June",
+//     "July",
+//     "August",
+//     "September",
+//     "October",
+//     "November",
+//     "December",
+//   ]).notNull(),
   
-  year: year('year').notNull(),
-	status: mysqlEnum('status', ['pending', 'processing', 'completed', 'failed'])
-		.notNull()
-		.default('pending'),
+//   year: year('year').notNull(),
+// 	status: mysqlEnum('status', ['pending', 'processing', 'completed', 'failed'])
+// 		.notNull()
+// 		.default('pending'),
 	
-    totalNet: decimal('total_net', { precision: 10, scale: 2 }),
-    totalDeductions: decimal('total_deductions', { precision: 10, scale: 2 }),
-	  totalPaid: decimal('total_paid', { precision: 10, scale: 2 }),
-	...secureFields
-}, (t) => [
-  unique().on(t.month, t.year)]);
+//     totalNet: decimal('total_net', { precision: 10, scale: 2 }),
+//     totalDeductions: decimal('total_deductions', { precision: 10, scale: 2 }),
+// 	  totalPaid: decimal('total_paid', { precision: 10, scale: 2 }),
+// 	...secureFields
+// }, (t) => [
+//   unique().on(t.month, t.year)]);
 
 export const payrollEntries = mysqlTable('payroll_entries', {
     id: int('id').autoincrement().primaryKey(),
-    payrollRunId: int('payroll_run_id').references(() => payrollRuns.id, {onDelete: 'restrict'}),
     staffId: int('staff_id').references(() => staff.id),
     month: mysqlEnum("month", [
     "January",
@@ -196,18 +194,32 @@ export const payrollEntries = mysqlTable('payroll_entries', {
     "December",
   ]).notNull(),
     year: year('year').notNull(),
+    payPeriodStart: date('pay_period_start').notNull(),
+	  payPeriodEnd: date('pay_period_end').notNull(),
+    basicSalary: decimal('basic_salary', { precision: 10, scale: 2 }),
+    overtimeAmount: decimal('overtime_amount', { precision: 10, scale: 2 }),
+    deductions: decimal('deduction', { precision: 10, scale: 2 }),    
+    commissionAmount: decimal('commission_amount', { precision: 10, scale: 2 }),
+    bonusAmount: decimal('bonus_amount', { precision: 10, scale: 2 }),
+    allowances: decimal('allowances', { precision: 10, scale: 2 }),
     netAmount: decimal('net_amount', { precision: 10, scale: 2 }),
     paidAmount: decimal('paid_amount', { precision: 10, scale: 2 }),
+    taxAmount: decimal('tax_amount', { precision: 10, scale: 2 }),
+    status: mysqlEnum('status', ['pending', 'approved', 'paid']).default('pending').notNull(),    
     paymentMethodId: int('payment_method_id').references(() => paymentMethods.id),  
+    paymentDate: date('payment_date'),
+    notes: varchar('notes', {length: 255}),
     recieptLink: varchar('reciept_link', {length: 255}),
     ...secureFields
 }, (t) => [
-  unique().on(t.staffId,t.month, t.year)]);
+  unique().on(t.staffId,t.payPeriodStart, t.payPeriodEnd)]);
 
 export const transactionRelations = relations(transactions, ({ many }) => ({
 	
-	transactionProductss: many(transactionProducts), // this will be connected via saleId
+	transactionProducts: many(transactionProducts), // this will be connected via saleId
 	transactionServices: many(transactionServices), // this will be connected via saleId
+	transactionSupplies: many(transactionSupplies), // this will be connected via saleId
+	transactionBookingFee: many(transactionBookingFee), // this will be connected via saleId
 }));
 
 export const transactionProductsRelations = relations(transactionProducts, ({ one }) => ({

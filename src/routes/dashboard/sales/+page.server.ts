@@ -8,6 +8,8 @@ import {
 	reports,
 	services as srvs,
 	staff,
+	tipsProduct,
+	tipsService,
 	transactionProducts,
 	transactions,
 	transactionServices
@@ -81,6 +83,7 @@ import { Readable } from 'node:stream';
 import { pipeline } from 'node:stream/promises';
 import { env } from '$env/dynamic/private';
 import { get } from 'node:http';
+import { no } from 'zod/v4/locales';
 const FILES_DIR: string = env.FILES_DIR ?? '.tempFiles';
 
 if (!fs.existsSync(FILES_DIR)) {
@@ -168,7 +171,7 @@ export const actions: Actions = {
 								staffId: product_staff[idx] || null,
 								productId: product[idx] || null,
 								quantity: noofproducts[idx],
-								unitPrice: getPrice(fetchedProducts, product[idx]),
+								unitPrice: getPrice(fetchedProducts, Number(product[idx])),
 								tip: tip[idx],
 								total:
 									Number(getPrice(fetchedProducts, Number(product[idx]))) * Number(noofproducts[idx]) +
@@ -178,7 +181,7 @@ export const actions: Actions = {
 							}))
 						)
 						.$returningId();
-
+ 
 					const today = new Date();
 
 
@@ -188,6 +191,17 @@ export const actions: Actions = {
 							staffId: product_staff[idx],
 							amount: Number(getCommission(fetchedProducts, Number(product[idx]))) * Number(noofproducts[idx]),
 							commissionDate: today,
+							branchId: locals.user?.branch,
+							createdBy: locals.user?.id
+						}))
+					);
+
+					await tx.insert(tipsProduct).values(
+						product.map((_, idx) => ({
+							saleItemId: txnPrdId[idx].id,		
+							staffId: product_staff[idx],
+							amount: tip[idx],
+							tipDate: today,
 							branchId: locals.user?.branch,
 							createdBy: locals.user?.id
 						}))
@@ -231,6 +245,19 @@ export const actions: Actions = {
 							createdBy: locals.user?.id
 						}))
 					);
+
+						await tx.insert(tipsService).values(
+						service.map((_, idx) => ({
+							saleItemId: txnsrvid[idx].id,
+							staffId: service_staff[idx],
+							amount: serviceTip[idx],
+							tipDate: today,
+							branchId: locals.user?.branch,
+							createdBy: locals.user?.id
+						}))
+					);
+
+					  
 
 
 				} 
@@ -279,7 +306,6 @@ export const actions: Actions = {
 			return setFlash({ type: 'success', message: 'New Sale Successfully Added' }, cookies);
 		} catch (e) {
 		setFlash({ type: 'error', message: 'Error ' + e }, cookies);
-		console.error(e)
 		}
 	}
 };

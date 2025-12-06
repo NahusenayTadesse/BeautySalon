@@ -7,83 +7,55 @@ import {  editProduct as schema } from '$lib/ZodSchema';
 
 
 import { db } from "$lib/server/db";
-import {  productCategories, products, transactionProducts, transactions, user  } from "$lib/server/db/schema";
-import { eq, and, sql } from "drizzle-orm";
+import {  salaries, deductions, commissionProduct, commissionService, staff, transactions, user  } from "$lib/server/db/schema";
+import { eq, and, sql, count } from "drizzle-orm";
 import type { Actions, PageServerLoad } from "./$types";
 import { fail } from 'sveltekit-superforms';
 import { setFlash } from 'sveltekit-flash-message/server';
 
 
 
-export const load: PageServerLoad = async ({ params, locals }) => {
+export const load: PageServerLoad = async ({ params}) => {
 
 
      const {id} = params;
        const form = await superValidate(zod4(schema));
 
 
-        const product = await db.select(
-          { 
-           id: products.id,
-           name: products.name,
-           price: products.price,
-           costPerUnit: products.cost,
-           description: products.description,
-           category: productCategories.name,
-           categoryId: productCategories.id,
-           commission: products.commissionAmount,
-           quantity: products.quantity,
-           reorderLevel: products.reorderLevel,
-           supplier: products.supplier,
-           saleCount: sql<number>`SUM(${transactionProducts.quantity })`,
-           createdBy: user.name,  
-           createdAt: sql<string>`DATE_FORMAT(${products.createdAt}, '%Y-%m-%d')`,
-           paidAmount: sql<number>`COALESCE(SUM(${transactions.amount}), 0)`,
+        const salaryDetail = await db.select({
+          id: staff.id,
+          name: sql<string>`TRIM(CONCAT(${staff.firstName}, ' ', COALESCE(${staff.lastName}, '')))`,
 
-          }
+          // sum of all deductions for the staff
+          deductions: sql<number>`COALESCE(SUM(${deductions.amount}), 0)`,
+
+          // sum of all commissions from commissionProduct AND commissionService
+          commissions: sql<number>`
+           COALESCE(SUM(${commissionProduct.amount}), 0)
+           + COALESCE(SUM(${commissionService.amount}), 0)
+          `,
+
+          // base salary (assumed single row per staff)
+          baseSalary: salaries.amount,
+        })
+          .from(staff)
+          .leftJoin(salaries, eq(salaries.staffId, staff.id))
+          .leftJoin(deductions, eq(deductions.staffId, staff.id))
+          .leftJoin(commissionProduct, eq(commissionProduct.staffId, staff.id))
+          .leftJoin(commissionService, eq(commissionService.staffId, staff.id))
+          .where((eq(staff.id, id)),
+                   
         )
-        .from(products)
-        .leftJoin(productCategories, eq(productCategories.id, products.categoryId))
-        .leftJoin(transactionProducts, eq(products.id, transactionProducts.productId))
-        .leftJoin(transactions, eq(transactionProducts.transactionId, transactions.id))
-        .leftJoin(user, eq(products.createdBy, user.id))
-          .where(
-            and  
-            (
-              eq(products.branchId, locals?.user?.branch),
-              eq(products.id, id)
-            ))
-    .groupBy(
-                products.id,
-                products.name,
-                products.price,
-                products.cost,
-                products.description,
-                productCategories.name,
-                products.commissionAmount,
-                products.quantity,
-                products.supplier,
-                products.reorderLevel,
-                transactionProducts.id
-            )
-        .then(rows => rows[0]);
+          .groupBy(staff.id, salaries.amount)
+          .then(rows=> rows[0]);
 
-
-      
-
-         const categories = await db
-                .select({
-                  value: productCategories.id,
-                  name: productCategories.name,
-                  description: productCategories.description
-                })
-                .from(productCategories);
+       
 
         return {
-            product,
+            salaryDetail,
            
             form,
-            categories,
+        
    
         }
 }

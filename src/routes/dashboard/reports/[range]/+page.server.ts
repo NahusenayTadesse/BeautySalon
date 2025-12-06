@@ -15,7 +15,7 @@ export const load: PageServerLoad = async({params, locals})=>{
      const [
   y1, m1, d1,
   y2, m2, d2,
-] = range.split("-");
+] = range.split("_");
 
 const start = `${y1}-${m1}-${d1}`;
 const end   = `${y2}-${m2}-${d2}`; 

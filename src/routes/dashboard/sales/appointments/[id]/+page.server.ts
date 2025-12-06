@@ -9,6 +9,8 @@ import {
 	reports,
 	services as srvs,
 	staff,
+	tipsProduct,
+	tipsService,
 	transactionBookingFee,
 	transactionProducts,
 	transactions,
@@ -219,6 +221,16 @@ export const actions: Actions = {
 							createdBy: locals.user?.id
 						}))
 					);
+						await tx.insert(tipsProduct).values(
+											product.map((_, idx) => ({
+												saleItemId: txnPrdId[idx].id,		
+												staffId: product_staff[idx],
+												amount: tip[idx],
+												tipDate: today,
+												branchId: locals.user?.branch,
+												createdBy: locals.user?.id
+											}))
+										);
 
 					await Promise.all(
 						product.map((_, idx) =>
@@ -262,6 +274,16 @@ export const actions: Actions = {
 								createdBy: locals.user?.id
 							}))
 						);
+							await tx.insert(tipsService).values(
+												service.map((_, idx) => ({
+													saleItemId: txnsrvid[idx].id,
+													staffId: service_staff[idx],
+													amount: serviceTip[idx],
+													tipDate: today,
+													branchId: locals.user?.branch,
+													createdBy: locals.user?.id
+												}))
+											);
 					}
 				
 

@@ -2,7 +2,7 @@
 import { drizzle } from 'drizzle-orm/mysql2';
 import mysql from 'mysql2/promise';
 import * as schema from '$lib/server/db/schema/';
-const DB_URL = "mysql://root:@localhost:3306/newsalon";
+const DB_URL = "mysql://root:@localhost:3306/salonmain";
 
 if (!DB_URL) throw new Error('DATABASE_URL is not set');
 
@@ -230,13 +230,6 @@ if (existingPermissions.length === 0) {
     }))
   );
 }  
-
-  
-
-  
-
-
-
      const name = "System Admin";
      const description = "Can do Everything"
 

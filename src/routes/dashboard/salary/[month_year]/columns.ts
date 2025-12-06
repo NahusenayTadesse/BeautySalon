@@ -30,7 +30,7 @@ export const columns = [
         cell: ({ row }) => {
              // Use staffId for the link, but ensure staffName is selected in the query
              return renderComponent(DataTableLinks, { 
-                 id: row.original.staffId, 
+                 id: row.original.id, 
                  name: row.original.name || 'N/A', // Fallback for safety
                  link: '/dashboard/salary/single' 
              });
@@ -70,7 +70,7 @@ export const columns = [
         sortable: true,
         cell: info => {
             const amount = info.getValue();
-            return amount ? `$${amount.toFixed(2)}` : '—';
+            return `ETB ` + amount;
         }
     },
 
@@ -119,22 +119,18 @@ export const columns = [
         sortable: true,
     },
 
-    // 10. Actions (Must be conditionally rendered or disabled if payrollEntry is null)
-    // {
-    //     accessorKey: 'actions', 
-    //     header: 'Actions', 
-    //     cell: ({ row }) => {
-    //         // Check if a payroll entry exists (by checking 'id')
-    //         if (row.original.id) {
-    //             return renderComponent(DataTableActions, { 
-    //                 id: row.original.id, 
-    //                 netAmount: row.original.netAmount,
-    //                 // You might need more props here
-    //             });
-    //         } else {
-    //             // If no payroll entry, you might show a button to 'Create Entry'
-    //             return 'No Entry'; 
-    //         }
-    //     } 
-    // }
+    {
+        accessorKey: 'actions', 
+        header: 'Actions', 
+        cell: ({ row }) => {
+            // Check if a payroll entry exists (by checking 'id')
+    
+                return renderComponent(DataTableActions, { 
+                    id: row.original.id, 
+                    name: row.original.name,
+                    // You might need more props here
+                });
+            
+        } 
+    }
 ];

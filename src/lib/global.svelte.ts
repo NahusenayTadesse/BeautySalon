@@ -78,7 +78,10 @@ export const currentMonthFilter = (
 ) => {
   // If start/end are passed, return BETWEEN condition
   if (start && end) {
-    return sql`${dateField} BETWEEN ${start} AND ${end}`;
+      const endOfDay = new SvelteDate(end);
+endOfDay.setHours(23, 59, 59, 999);
+
+return sql`${dateField} BETWEEN ${start} AND ${endOfDay}`;
   }
 
   // Otherwise fallback to current-month logic

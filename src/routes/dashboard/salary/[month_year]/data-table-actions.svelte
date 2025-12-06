@@ -32,6 +32,6 @@
   </DropdownMenu.Group>
   <DropdownMenu.Separator />
  
-  <DropdownMenu.Item><a href="/dashboard/products/{id}" target="_blank" class={dropdownClass}><ExternalLink /> View {name}'s Details</a></DropdownMenu.Item>
+  <DropdownMenu.Item><a href="/dashboard/salary/single/{id}" target="_blank" class={dropdownClass}><ExternalLink /> View {name}'s Details</a></DropdownMenu.Item>
  </DropdownMenu.Content>
 </DropdownMenu.Root>

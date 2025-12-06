@@ -15,7 +15,7 @@ import {
 } from 'drizzle-orm/mysql-core';
 import { secureFields } from './secureFields';
 import { user } from './user';
-import { paymentMethods, payrollRuns, transactionProducts, transactionServices } from './finance';
+import { paymentMethods, transactionProducts, transactionServices } from './finance';
 import { services } from './services';
 
 
@@ -177,7 +177,6 @@ export const staffServices = mysqlTable('staff_services', {
 export const deductions = mysqlTable('deductions', {
 	id: int('id').autoincrement().primaryKey(),
 	staffId: int('staff_id').references(() => staff.id, {onDelete: 'set null'}),
-	payrollRunId: int('payroll_run_id').references(() => payrollRuns.id), // Link to a specific payroll run
 	type: varchar('type', { length: 100 }).notNull(), // e.g., 'Income Tax', 'Pension', 'Health Insurance'
 	amount: decimal('amount', { precision: 10, scale: 2 }).notNull(),
 	deductionDate: date('deduction_date').notNull(),

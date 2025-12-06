@@ -5,36 +5,8 @@
     {
       "idx": 0,
       "version": "5",
-      "when": 1758925183110,
-      "tag": "0000_fancy_mystique",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "5",
-      "when": 1760017991799,
-      "tag": "0001_free_rockslide",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "5",
-      "when": 1764446390734,
-      "tag": "0002_amusing_wendell_rand",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "5",
-      "when": 1764526111775,
-      "tag": "0003_aromatic_cassandra_nova",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "5",
-      "when": 1764707065031,
-      "tag": "0004_premium_maverick",
+      "when": 1765027313306,
+      "tag": "0000_sudden_maria_hill",
       "breakpoints": true
     }
   ]

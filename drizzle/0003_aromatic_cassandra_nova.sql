@@ -1,2 +1,0 @@
-ALTER TABLE `reports` ADD `branch_id` int;--> statement-breakpoint
-ALTER TABLE `reports` ADD CONSTRAINT `reports_branch_id_branches_id_fk` FOREIGN KEY (`branch_id`) REFERENCES `branches`(`id`) ON DELETE set null ON UPDATE no action;

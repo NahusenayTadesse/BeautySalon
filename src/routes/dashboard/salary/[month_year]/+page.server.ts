@@ -29,7 +29,7 @@ const year   = y;
 const payrollData = await db
     .select({
         // Select all payroll columns (these will be NULL if no matching entry exists)
-        id: payrollEntries.id,
+        id: staff.id,
         staffId: payrollEntries.staffId,
         name: sql<string>`TRIM(CONCAT(${staff.firstName}, ' ', COALESCE(${staff.lastName}, '')))`,
         position: staffTypes.name,

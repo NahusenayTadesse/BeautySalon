@@ -181,6 +181,18 @@ let contractPdf = $state(false);
 		 {/if}
 
     </div>
+
+	{#snippet totals(data, name="Tips")}
+	 <div class="mt-4 p-3 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md flex items-center justify-between shadow-sm">
+				<div class="text-sm text-gray-600 dark:text-gray-300">Total {name}</div>
+				<div class="text-lg font-semibold text-gray-900 dark:text-gray-100">
+					{new Intl.NumberFormat(undefined, { style: 'currency', currency: 'ETB', maximumFractionDigits: 2 }).format(
+						data.reduce((sum, row) => sum + Number(row?.amount ?? 0), 0)
+					)}
+				</div>
+			</div>
+		
+	{/snippet}
 	 
 	<div class="lg:w-1/2 w-4/5 my-8"> 
 
@@ -191,42 +203,58 @@ let contractPdf = $state(false);
 			<h3 class="text-lg font-semibold">Product Tips</h3>
 			<p class="text-sm text-gray-500 dark:text-gray-400 mb-2">Tips earned from product sales by {data?.staffMember?.firstName} {data?.staffMember?.lastName}.</p>
 			<DataTable data={data.productTips} columns={commissionProduct} search={false} />
+		
+			{@render totals(data.productTips, 'Product Tips')}
+			
 		</div>
 
 		<div class="mb-6">
-			<h3 class="text-lg font-semibold">Service Commissions</h3>
+			<h3 class="text-lg font-semibold">Service Tips</h3>
 			<p class="text-sm text-gray-500 dark:text-gray-400 mb-2">Tips earned from services performed by {data?.staffMember?.firstName} {data?.staffMember?.lastName}.</p>
 			<DataTable data={data.serviceTips} columns={commissionService} search={false} />
+
+						{@render totals(data.serviceTips, 'Service Tips')}
+
 		</div>
 
 		<div class="mb-6">
 			<h3 class="text-lg font-semibold">Product Commissions</h3>
 			<p class="text-sm text-gray-500 dark:text-gray-400 mb-2">Commissions earned from product sales by {data?.staffMember?.firstName} {data?.staffMember?.lastName}.</p>
 			<DataTable data={data.productCommissions} columns={commissionProduct} search={false} />
+						{@render totals(data.productCommissions, 'Product Commisions')}
+
 		</div>
 
 		<div class="mb-6">
 			<h3 class="text-lg font-semibold">Service Commissions</h3>
 			<p class="text-sm text-gray-500 dark:text-gray-400 mb-2">Commissions earned from services performed by {data?.staffMember?.firstName} {data?.staffMember?.lastName}.</p>
 			<DataTable data={data.serviceCommissions} columns={commissionService} search={false} />
+			{@render totals(data.serviceCommissions, 'Service Commisions')}
+
 		</div>
 
 		<div class="mb-6">
 			<h3 class="text-lg font-semibold">Overtime Records</h3>
 			<p class="text-sm text-gray-500 dark:text-gray-400 mb-2">Logged overtime shifts and corresponding pay.</p>
 			<DataTable data={data.staffOvertime} columns={overtime} search={false} />
+			{@render totals(data.staffOvertime, 'Overtime')}
+
 		</div>
 
 		<div class="mb-6">
 			<h3 class="text-lg font-semibold">Deductions</h3>
 			<p class="text-sm text-gray-500 dark:text-gray-400 mb-2">Salary deductions applied to {data?.staffMember?.firstName} {data?.staffMember?.lastName}.</p>
 			<DataTable data={data.staffDeductions} columns={overtime} search={false} />
+			{@render totals(data.staffDeductions, 'Deductions')}
+
 		</div>
 
 		<div class="mb-6">
 			<h3 class="text-lg font-semibold">Bonuses</h3>
 			<p class="text-sm text-gray-500 dark:text-gray-400 mb-2">Bonuses awarded to {data?.staffMember?.firstName} {data?.staffMember?.lastName}.</p>
 			<DataTable data={data.staffBonuses} columns={overtime} search={false} />
+			{@render totals(data.staffBonuses, 'Bonuses')}
+
 		</div>
 		
 

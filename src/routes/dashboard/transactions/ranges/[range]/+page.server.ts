@@ -25,7 +25,7 @@ const end   = `${y2}-${m2}-${d2}`;
 
     
 
-    const allReports = await db.select(
+    const allTransactions = await db.select(
         {
             
              id: transactions.id,
@@ -63,7 +63,7 @@ const end   = `${y2}-${m2}-${d2}`;
 
 
     return{
-         allReports,
+         allTransactions,
          start,
          end
     }

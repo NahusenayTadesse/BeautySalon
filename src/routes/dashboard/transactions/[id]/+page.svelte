@@ -8,7 +8,7 @@
 	
 
 	import DataTable from '$lib/components/Table/data-table.svelte';
-	import { soldProduct, soldServices } from './columns.js';
+	import { boughtSupplies, soldProduct, soldServices } from './columns.js';
 	import SingleTable from '$lib/components/SingleTable.svelte';
 
 	import { Button } from '$lib/components/ui/button/index.js';
@@ -71,37 +71,30 @@ let singleTable = $derived([
 	<div class="lg:w-1/2 w-4/5 my-8"> 
 
 
-	
+	   {#if data.soldProducts.length || data.soldServices.length}
 		<div class="mb-6">
 			<h3 class="text-lg font-semibold">Products</h3>
-			<p class="text-sm text-gray-500 dark:text-gray-400 mb-2">Commissions earned from product sales by {data?.staffMember?.firstName} {data?.staffMember?.lastName}.</p>
+			<p class="text-sm text-gray-500 dark:text-gray-400 mb-2">Product sold in this Transactions.</p>
 			<DataTable data={data.soldProducts} columns={soldProduct} search={false} />
 		</div>
 
 		<div class="mb-6">
 			<h3 class="text-lg font-semibold">Services</h3>
-			<p class="text-sm text-gray-500 dark:text-gray-400 mb-2">Commissions earned from services performed by {data?.staffMember?.firstName} {data?.staffMember?.lastName}.</p>
+			<p class="text-sm text-gray-500 dark:text-gray-400 mb-2">Rendered Services in this Transaction.</p>
 			<DataTable data={data.soldServices} columns={soldServices} search={false} />
 			
 		</div>
+		{/if}
+
+		{#if data.boughtSupplies.length}
 
 		<div class="mb-6">
-			<h3 class="text-lg font-semibold">Overtime Records</h3>
-			<p class="text-sm text-gray-500 dark:text-gray-400 mb-2">Logged overtime shifts and corresponding pay.</p>
-			<DataTable data={data.soldProducts} columns={soldProduct} search={false} />
+			<h3 class="text-lg font-semibold">Supplies</h3>
+			<p class="text-sm text-gray-500 dark:text-gray-400 mb-2">Supplies Bought in this Transactions.</p>
+			<DataTable data={data.boughtSupplies} columns={boughtSupplies} search={false} />
 		</div>
+		{/if}
 
-		<div class="mb-6">
-			<h3 class="text-lg font-semibold">Deductions</h3>
-			<p class="text-sm text-gray-500 dark:text-gray-400 mb-2">Salary deductions applied to {data?.staffMember?.firstName} {data?.staffMember?.lastName}.</p>
-			<DataTable data={data.soldProducts} columns={soldProduct} search={false} />
-		</div>
-
-		<div class="mb-6">
-			<h3 class="text-lg font-semibold">Bonuses</h3>
-			<p class="text-sm text-gray-500 dark:text-gray-400 mb-2">Bonuses awarded to {data?.staffMember?.firstName} {data?.staffMember?.lastName}.</p>
-			<DataTable data={data.soldProducts} columns={soldProduct} search={false} />
-		</div>
 		
 
 	</div>
