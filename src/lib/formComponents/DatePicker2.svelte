@@ -15,9 +15,9 @@
 
 		return `${year}-${month}-${day}`;
 	}
-       let { data = $bindable() }: {data: string} = $props();
+       let { data = $bindable(), oldDays = false }: {data: string, oldDays?: boolean} = $props();
 
-    let todayDate = today(getLocalTimeZone());
+    let todayDate = oldDays ? '' : today(getLocalTimeZone());
 
 
 //     function formatDateIntl(dateStr: string): string {

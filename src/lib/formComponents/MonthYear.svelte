@@ -5,29 +5,31 @@
 	import { ChevronLeftIcon, ChevronRightIcon } from "@lucide/svelte";
 	import type { CalendarDate } from "@internationalized/date";
 
-	let { value = $bindable(today(getLocalTimeZone())), mode = "month" }: Props = $props();
+	let { value = $bindable(""), mode = "month" }: Props = $props();
 
 	let isOpen = $state(false);
-	let displayMonth = $state(value.month);
-	let displayYear = $state(value.year);
+	let displayYear = $state(new Date().getFullYear());
 
-	const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-	const years = Array.from({ length: 20 }, (_, i) => displayYear - 10 + i);
+	const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+	const monthsShort = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+	let years = $derived(Array.from({ length: 20 }, (_, i) => displayYear - 10 + i));
 
-	const selectMonth = (month: number) => {
-		displayMonth = month;
+	let displayValue = $derived.by(() => {
 		if (mode === "month") {
-			value = value.set({ month });
-			isOpen = false;
+			return value || "Select month";
+		} else {
+			return value ? String(value) : "Select year";
 		}
+	});
+
+	const selectMonth = (month: string) => {
+		value = month;
+		isOpen = false;
 	};
 
 	const selectYear = (year: number) => {
-		displayYear = year;
-		if (mode === "year") {
-			value = value.set({ year });
-			isOpen = false;
-		}
+		value = year;
+		isOpen = false;
 	};
 
 	const previousYear = () => {
@@ -39,7 +41,7 @@
 	};
 
 	type Props = {
-		value?: CalendarDate;
+		value?: string | number;
 		mode?: "month" | "year";
 	};
 </script>
@@ -47,11 +49,7 @@
 <Popover bind:open={isOpen}>
 	<PopoverTrigger>
 		<Button variant="outline" class="w-full justify-start text-left font-normal">
-			{#if mode === "month"}
-				{months[value.month - 1]} {value.year}
-			{:else}
-				{value.year}
-			{/if}
+			{displayValue}
 		</Button>
 	</PopoverTrigger>
 	<PopoverContent class="w-72 p-0" align="start">
@@ -61,8 +59,8 @@
 					<h3 class="mb-3 text-sm font-semibold text-center">{displayYear}</h3>
 					<div class="grid grid-cols-3 gap-2">
 						{#each months as month, index}
-							<Button variant={displayMonth === index + 1 ? "default" : "outline"} size="sm" class="h-8" onclick={() => selectMonth(index + 1)}>
-								{month}
+							<Button variant={value === month ? "default" : "outline"} size="sm" class="h-8" onclick={() => selectMonth(month)}>
+								{monthsShort[index]}
 							</Button>
 						{/each}
 					</div>
@@ -89,7 +87,7 @@
 					</div>
 					<div class="grid grid-cols-4 gap-2">
 						{#each years as year}
-							<Button variant={value.year === year ? "default" : "outline"} size="sm" class="h-8" onclick={() => selectYear(year)}>
+							<Button variant={value === year ? "default" : "outline"} size="sm" class="h-8" onclick={() => selectYear(year)}>
 								{year}
 							</Button>
 						{/each}

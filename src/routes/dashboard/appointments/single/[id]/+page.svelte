@@ -67,10 +67,10 @@
 	  ];
 
  
- $editForm.customerId = data.appointmentsList.customerId;
+ $editForm.customerId = Number(data.appointmentsList.customerId;)
  $editForm.appointmentDate = data.appointmentsList.date;
  $editForm.appointmentTime = data.appointmentsList.time;
- $editForm.notes = data.appointmentsList.notes;
+ $editForm.notes = data.appointmentsList.notes || undefined;
 
 
 

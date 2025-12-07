@@ -2,12 +2,12 @@
 
 import { superValidate } from 'sveltekit-superforms';
 import { zod4 } from 'sveltekit-superforms/adapters';
-import {  editProduct as schema } from '$lib/ZodSchema';
+import { addLeavePayrollSchema as schema } from './schema';
 
 
 
 import { db } from "$lib/server/db";
-import {  salaries, deductions, commissionProduct, commissionService, staff, transactions, user  } from "$lib/server/db/schema";
+import {  salaries, paymentMethods, overTime, deductions, bonuses, commissionProduct, commissionService, staff, transactions, user  } from "$lib/server/db/schema";
 import { eq, and, sql, count } from "drizzle-orm";
 import type { Actions, PageServerLoad } from "./$types";
 import { fail } from 'sveltekit-superforms';
@@ -37,10 +37,15 @@ export const load: PageServerLoad = async ({ params}) => {
 
           // base salary (assumed single row per staff)
           baseSalary: salaries.amount,
+          overtime: overTime.total,
+          bonus: bonuses.amount
+
         })
           .from(staff)
           .leftJoin(salaries, eq(salaries.staffId, staff.id))
           .leftJoin(deductions, eq(deductions.staffId, staff.id))
+          .leftJoin(overTime, eq(overTime.staffId, staff.id))
+          .leftJoin(bonuses, eq(bonuses.staffId, staff.id))
           .leftJoin(commissionProduct, eq(commissionProduct.staffId, staff.id))
           .leftJoin(commissionService, eq(commissionService.staffId, staff.id))
           .where((eq(staff.id, id)),
@@ -48,21 +53,43 @@ export const load: PageServerLoad = async ({ params}) => {
         )
           .groupBy(staff.id, salaries.amount)
           .then(rows=> rows[0]);
+   
 
+          const allMethods = await db.select({
+                value: paymentMethods.id,
+                name: paymentMethods.name,
+                description: paymentMethods.description
+              })
+              .from(paymentMethods)
+              .where(eq(paymentMethods.isActive, true));
        
 
         return {
             salaryDetail,
-           
+            allMethods,
             form,
         
    
         }
 }
 
+import fs from 'node:fs';
+import path from 'node:path';
+import { generateUserId } from '$lib/global.svelte';
+import { Readable } from 'node:stream';
+import { pipeline } from 'node:stream/promises';
+import { env } from '$env/dynamic/private';
+
+
+const FILES_DIR: string = env.FILES_DIR ?? '.tempFiles';
+
+if (!fs.existsSync(FILES_DIR)) {
+  fs.mkdirSync(FILES_DIR, { recursive: true });
 
 export const actions: Actions = {
-  editProduct: async ({ request, cookies, locals }) => {
+  addSalary: async ({ request, cookies, locals, params }) => {
+
+    const {id} = params;
     const form = await superValidate(request, zod4(schema));
 
     if (!form.valid) {
@@ -72,19 +99,62 @@ export const actions: Actions = {
     }
 
 
-        const { productId, productName, category, description, commission, quantity, price, supplier, reorderLevel, costPerUnit } = form.data;
+        const { month,  year,
+  payPeriodStart,  // ISO date string  YYYY-MM-DD
+  payPeriodEnd,
+  baseSalary, // decimal as string
+  overtime,
+  deductions,
+  commissions,
+  bonus,
+  netAmount,
+  paidAmount,
+  taxAmount,
+  paymentMethod,
+  paymentDate,
+  notes,
+  reciept } = form.data;
 
     
     try{
-     await db.update(products).set({
-        name: productName, commissionAmount: commission.toString(), description, categoryId: category,
-        quantity, price: price.toString(), supplier, reorderLevel, cost: costPerUnit.toString(),
-        updatedBy: locals?.user?.id
-    }).where(eq(products.id, productId));
 
- 
+       const recieptLink = `${generateUserId()}${path.extname(reciept.name)}`;
+      
+      const file_path: string = path.normalize(
+        path.join(FILES_DIR, recieptLink));    		
+      
+          const nodejs_wstream = fs.createWriteStream(file_path);
+          const web_rstream = reciept.stream();
+          const nodejs_rstream = Readable.fromWeb(web_rstream);
+          await pipeline(nodejs_rstream, nodejs_wstream).catch(() => {
+            return fail(500);
+          });
+      
+     await db.update(salaries).set({
+         staffId: id,
+          month,  year,
+  payPeriodStart,  // ISO date string  YYYY-MM-DD
+  payPeriodEnd,
+  baseSalary, // decimal as string
+  overtime,
+  deductions,
+  commissions,
+  bonus,
+  netAmount,
+  paidAmount,
+  taxAmount,
+  paymentMethodId: paymentMethod,
+  paymentDate,
+  notes,
+  recieptLink
+        
+        
+    });
+
+            delete form?.data?.reciept;
+
       // Stay on the same page and set a flash message
-      setFlash({ type: 'success', message: "Product Updated Successuflly Added" }, cookies);
+      setFlash({ type: 'success', message: "Salary Record Successuflly Added" }, cookies);
     return {
       form
     } } catch(err){
@@ -117,4 +187,5 @@ export const actions: Actions = {
     
     
       },
+    }
 };
