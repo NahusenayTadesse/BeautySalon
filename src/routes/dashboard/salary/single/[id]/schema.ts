@@ -3,17 +3,20 @@ import { ACCEPTED_FILE_TYPES, MAX_FILE_SIZE } from "$lib/zodschemas/appointmentS
 
 
 export const addLeavePayrollSchema = z.object({
-  month: z.string('Payment Month is required'),
+ month: z.enum([
+    'January','February','March','April','May','June',
+    'July','August','September','October','November','December'
+  ]),
   year: z.number('Payment Year is required').int().min(2020),
   payPeriodStart: z.string('Pay Start is Requried'),  // ISO date string  YYYY-MM-DD
   payPeriodEnd: z.string('Pay End is Required'),
-  baseSalary: z.string('Salary not found, Please add Salary at the Staff Page').regex(/^\d+(\.\d{1,2})?$/), // decimal as string
-  overtime: z.string().regex(/^\d+(\.\d{1,2})?$/).optional(),
-  deductions: z.string().regex(/^\d+(\.\d{1,2})?$/).optional(),
-  commissions: z.string().regex(/^\d+(\.\d{1,2})?$/).optional(),
-  bonus: z.string().regex(/^\d+(\.\d{1,2})?$/).optional(),
-  netAmount: z.string("Can not calculate Net Amount").regex(/^\d+(\.\d{1,2})?$/),
-  paidAmount: z.string("Paid Amount is Needed").regex(/^\d+(\.\d{1,2})?$/),
+  baseSalary: z.coerce.number('Salary not found, Please add Salary at the Staff Page'), // decimal as string
+  overtime: z.coerce.number().optional(),
+  deductions: z.coerce.number().optional(),
+  commissions: z.coerce.number().optional(),
+  bonus: z.coerce.number().optional(),
+  netAmount: z.coerce.number("Can not calculate Net Amount"),
+  paidAmount: z.coerce.number("Paid Amount is Needed"),
   taxAmount: z.coerce.number().optional(),
   paymentMethod: z.number('Payment Method is Required').int().positive(),
   paymentDate: z.string('Payment Date is required'),

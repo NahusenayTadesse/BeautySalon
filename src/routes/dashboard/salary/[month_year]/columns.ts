@@ -2,6 +2,7 @@ import { renderComponent } from '$lib/components/ui/data-table/index.js';
 import DataTableLinks from '$lib/components/Table/data-table-links.svelte';
 import DataTableActions from './data-table-actions.svelte'; // Assuming a new actions component
 import DataTableSort from '$lib/components/Table/data-table-sort.svelte';
+import Statuses from '$lib/components/Table/statuses.svelte';
 
 // NOTE: You must ensure your backend query includes 'name' and 'position' 
 // from the staff table to display them here!
@@ -80,7 +81,7 @@ export const columns = [
         header: 'Deductions',
         cell: info => {
             const amount = info.getValue();
-            return amount ? `$${amount.toFixed(2)}` : '—';
+            return amount ? 'ETB '+ amount: 'UNPROCEED';
         }
     },
 
@@ -95,16 +96,34 @@ export const columns = [
         sortable: true,
         cell: info => {
             const amount = info.getValue();
-            return amount ? `**$${amount.toFixed(2)}**` : '—';
+            return amount ? 'ETB '+ amount : 'UNPROCESSED';
         }
     },
     
     // 8. Payment Status
+
     {
         accessorKey: 'status',
         header: ({ column }) =>
             renderComponent(DataTableSort, {
                 name: 'Status',
+                onclick: column.getToggleSortingHandler(),
+            }),
+        sortable: true,
+
+        cell: info => {
+            const status = info.getValue() ? info.getValue() : 'unpaid';
+            return renderComponent(Statuses, {
+                status: status,
+            })
+        }
+    },
+
+     {
+        accessorKey: 'paymentMethodName',
+        header: ({ column }) =>
+            renderComponent(DataTableSort, {
+                name: 'Payment Method',
                 onclick: column.getToggleSortingHandler(),
             }),
         sortable: true,

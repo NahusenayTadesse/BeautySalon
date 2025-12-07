@@ -7,8 +7,8 @@ import { addLeavePayrollSchema as schema } from './schema';
 
 
 import { db } from "$lib/server/db";
-import {  salaries, paymentMethods, overTime, deductions, bonuses, commissionProduct, commissionService, staff, transactions, user  } from "$lib/server/db/schema";
-import { eq, and, sql, count } from "drizzle-orm";
+import {  salaries, paymentMethods, overTime, deductions, bonuses, commissionProduct, commissionService, staff, transactions, user, payrollEntries  } from "$lib/server/db/schema";
+import { eq, sql} from "drizzle-orm";
 import type { Actions, PageServerLoad } from "./$types";
 import { fail } from 'sveltekit-superforms';
 import { setFlash } from 'sveltekit-flash-message/server';
@@ -85,9 +85,12 @@ const FILES_DIR: string = env.FILES_DIR ?? '.tempFiles';
 
 if (!fs.existsSync(FILES_DIR)) {
   fs.mkdirSync(FILES_DIR, { recursive: true });
+}
 
 export const actions: Actions = {
-  addSalary: async ({ request, cookies, locals, params }) => {
+  addSalary: async ({ request, cookies, params, locals }) => {
+
+    console.log('Connected')
 
     const {id} = params;
     const form = await superValidate(request, zod4(schema));
@@ -95,6 +98,7 @@ export const actions: Actions = {
     if (!form.valid) {
       // Stay on the same page and set a flash message
       setFlash({ type: 'error', message: "Please check your form data." }, cookies);
+      
       return fail(400, { form });
     }
 
@@ -118,6 +122,8 @@ export const actions: Actions = {
     
     try{
 
+       
+
        const recieptLink = `${generateUserId()}${path.extname(reciept.name)}`;
       
       const file_path: string = path.normalize(
@@ -127,26 +133,32 @@ export const actions: Actions = {
           const web_rstream = reciept.stream();
           const nodejs_rstream = Readable.fromWeb(web_rstream);
           await pipeline(nodejs_rstream, nodejs_wstream).catch(() => {
-            return fail(500);
+            setFlash({ type: 'error', message: "An Error occured while adding Salary " + err.message }, cookies);
+
+         console.error("Error" + err.message)
           });
       
-     await db.update(salaries).set({
-         staffId: id,
-          month,  year,
-  payPeriodStart,  // ISO date string  YYYY-MM-DD
-  payPeriodEnd,
-  baseSalary, // decimal as string
-  overtime,
-  deductions,
-  commissions,
-  bonus,
-  netAmount,
-  paidAmount,
-  taxAmount,
+     await db.insert(payrollEntries).values({
+         staffId: Number(id),
+          month, 
+         year,
+  payPeriodStart: new Date(payPeriodStart),  // ISO date string  YYYY-MM-DD
+  payPeriodEnd: new Date(payPeriodEnd),
+  basicSalary: baseSalary.toString(), // decimal as string
+  overtimeAmount: overtime?.toString(),
+  deductions: deductions?.toString(),
+  commissionAmount: commissions?.toString(),
+  bonusAmount: bonus?.toString(),
+  netAmount: netAmount.toString(),
+  paidAmount: paidAmount.toString(),
+  taxAmount: taxAmount?.toString(),
   paymentMethodId: paymentMethod,
-  paymentDate,
+  paymentDate: new Date(paymentDate),
   notes,
-  recieptLink
+  recieptLink,
+  createdBy: locals.user?.id,
+  branchId: locals.user?.branch,
+  status: 'paid'
         
         
     });
@@ -158,7 +170,9 @@ export const actions: Actions = {
     return {
       form
     } } catch(err){
-         console.error("Error" + err)
+          setFlash({ type: 'errror', message: "An Error occured while adding Salary " + err.message }, cookies);
+
+         console.error("Error" + err.message)
     }
   },
     delete: async({cookies, params })=> {
@@ -187,5 +201,4 @@ export const actions: Actions = {
     
     
       },
-    }
-};
+    };

@@ -1,6 +1,6 @@
 function prevMonthLabel(): string {
   const d = new Date();
-  d.setMonth(d.getMonth() - 1);          // roll back one month
+  d.setMonth(d.getMonth());          // roll back one month
 
   const month = d.toLocaleString('en-US', { month: 'long' }); // "April"
   const year  = d.getFullYear();                              // 2025

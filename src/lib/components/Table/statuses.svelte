@@ -1,23 +1,34 @@
 <script lang="ts">
-    let { status }: { status: string } = $props();
-      import { Badge } from "$lib/components/ui/badge/index.js";
+  import { Badge } from '$lib/components/ui/badge/index.js';
+  import { BadgeCheck, Loader, OctagonMinus } from '@lucide/svelte';
 
-    import { BadgeCheck, Loader, OctagonMinus} from "@lucide/svelte";
+  /* ---------- public prop ---------- */
+  interface Props { status: string }
+  let { status }: Props = $props();
 
-    
-    
-    let Icon = status === 'Confirmed' ?  BadgeCheck : status === 'Cancelled' ? OctagonMinus : Loader
+  /* ---------- lookup tables ---------- */
+  const statusMeta = {
+    /* confirmed / paid */
+    confirmed: { icon: BadgeCheck, colour: 'bg-blue-500' },
+    paid:      { icon: BadgeCheck, colour: 'bg-blue-500' },
 
+    /* cancelled / unpaid */
+    cancelled: { icon: OctagonMinus, colour: 'bg-red-500' },
+    unpaid:    { icon: OctagonMinus, colour: 'bg-red-500' },
 
+    /* pending */
+    pending:   { icon: Loader, colour: 'bg-yellow-500' },
 
+    /* fallback */
+    unknown:   { icon: Loader, colour: 'bg-gray-500' },
+  } as const;
+
+  /* ---------- derived ---------- */
+  const key = status.trim().toLowerCase() as keyof typeof statusMeta;
+  const { icon: Icon, colour } = statusMeta[key] ?? statusMeta.unknown;
 </script>
 
-
-<!-- <span class="px-2 py-1 rounded-full text-white text-sm font-medium" class:bg-red-500={status === 'Cancelled'}>        
-   {status}
-</span> -->
- <Badge variant="secondary" class="{status === 'Confirmed' ?  'bg-blue-500' : ''} {status === 'Cancelled' ? 'bg-red-500' : ''} {status === 'Pending' ? 'bg-yellow-500' : ''} text-white ">
-      <Icon />
-      {status}
-    </Badge>
- 
+<Badge variant="secondary" class="{colour} text-white">
+  <Icon />
+  {status}
+</Badge>

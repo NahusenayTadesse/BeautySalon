@@ -274,7 +274,7 @@
 	 <Input type="file" name="image"
 	 accept="image/*,application/pdf" bind:files={$file} multiple={false} /> <Button type="button" size="icon" variant="outline" title="Clear file input" onclick={() => $file = 0}>  <X /> </Button>
 	 </div>
-	 {#if $errors.image} <span>{$errors.image}</span> {/if}
+	 {#if $errors.image} <span class="text-red-500">{$errors.image}</span> {/if}
 	 </div>	
     <!-- {@render fe('Upload Reciept or Screenshot of Booking Fee', 'image', 'file', 'Enter Name', true)} -->
 

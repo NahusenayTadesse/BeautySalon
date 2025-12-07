@@ -164,7 +164,7 @@ $form.taxAmount = 0;
   </Card.Header>
   <Card.Content>
 
-<form use:enhance action="?/addSalary" id="main" class="flex flex-col gap-4" method="POST" >
+<form use:enhance action="?/addSalary" id="main" class="flex flex-col gap-4" method="POST" enctype="multipart/form-data" >
 
    <div class="flex flex-col gap-0">
   {@render totals($form.baseSalary, "Salary Amount")}
@@ -224,10 +224,10 @@ $form.taxAmount = 0;
 	 <Label for='image' class="capitalize">Upload Reciept or Screenshot of Salary Payment</Label>
 	 <div class="relative flex flex-row gap-2">
 	 <Upload class="h-6 w-6 absolute top-2 bottom-0.5 right-16" />
-	 <Input type="file" name="image"
+	 <Input type="file" name="reciept"
 	 accept="image/*,application/pdf" bind:files={$file} multiple={false} /> <Button type="button" size="icon" variant="outline" title="Clear file input" onclick={() => $file = 0}>  <X /> </Button>
 	 </div>
-	 {#if $errors.reciept} <span>{$errors.reciept}</span> {/if}
+	 {#if $errors.reciept} <span class="text-red-500">{$errors.reciept}</span> {/if}
 	 </div>	
 
 
