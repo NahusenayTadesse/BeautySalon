@@ -9,8 +9,8 @@
   /* ---------- lookup tables ---------- */
   const statusMeta = {
     /* confirmed / paid */
-    confirmed: { icon: BadgeCheck, colour: 'bg-blue-500' },
-    paid:      { icon: BadgeCheck, colour: 'bg-blue-500' },
+    confirmed: { icon: BadgeCheck, colour: 'bg-green-400' },
+    paid:      { icon: BadgeCheck, colour: 'bg-green-400' },
 
     /* cancelled / unpaid */
     cancelled: { icon: OctagonMinus, colour: 'bg-red-500' },
@@ -24,7 +24,7 @@
   } as const;
 
   /* ---------- derived ---------- */
-  const key = status.trim().toLowerCase() as keyof typeof statusMeta;
+  const key = String(status).trim().toLowerCase() as keyof typeof statusMeta;
   const { icon: Icon, colour } = statusMeta[key] ?? statusMeta.unknown;
 </script>
 

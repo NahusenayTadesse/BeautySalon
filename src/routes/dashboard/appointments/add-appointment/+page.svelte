@@ -180,7 +180,7 @@ $effect(()=> {
 <Input
 			type="search"
 			placeholder="Search Customers..."
-			class="mb-4 w-lg max-w-md justify-self-center"
+			class="mb-4 lg:w-lg w-full max-w-md justify-self-center"
 			bind:value={customer}
 		/>
 		<!-- {#if customer.length > 0}
@@ -206,7 +206,7 @@ $effect(()=> {
 			</ul>
 		{/if}
 
-		<Card.Root class="flex w-xl justify-self-center flex-col gap-4">
+		<Card.Root class="flex lg:w-xl w-full justify-self-center flex-col gap-4">
 	<Card.Header class="mb-4">
 		<Card.Title class="text-2xl">Add An Appointment</Card.Title>
 		<Card.Description>Add New Appointments to track the how many have</Card.Description>
@@ -395,7 +395,7 @@ $effect(()=> {
 
 {#if addNew}
 
-<Card.Root class="flex w-xl justify-self-center flex-col gap-4">
+<Card.Root class="flex lg:w-xl w-full justify-self-center flex-col gap-4">
 	<Card.Header>
 		<Card.Title class="text-2xl">Add An Appointment</Card.Title>
 		<Card.Description>Add New Appointments to track the how many have</Card.Description>

@@ -81,7 +81,7 @@
 
 
   <div class="bg-white dark:bg-black shadow-lg dark:shadow-md dark:shadow-gray-900
-   rounded-md min-w-3xl w-md flex flex-col justify-center items-center">
+   rounded-md lg:w-md w-full flex flex-col justify-center items-center">
     <div class="bg-gradient-to-r w-full from-dark to-black text-white py-6 px-8 rounded-lg flex flex-col justify-start items-start">
       <h1 class="text-center w-full">Supply Details</h1>
     </div>

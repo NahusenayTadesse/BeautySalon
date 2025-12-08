@@ -4,7 +4,7 @@
 	// import DialogComp from "$lib/formComponents/DialogComp.svelte";
 	// import AddCustomer from "$lib/forms/AddCustomer.svelte";
 	import { Plus } from "@lucide/svelte";
-  let { data, children } = $props()
+  let { children } = $props()
 
 </script>
 

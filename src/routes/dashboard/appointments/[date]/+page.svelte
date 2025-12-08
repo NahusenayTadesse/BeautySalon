@@ -79,8 +79,8 @@
   {/if}
  </div> -->
   {#if data.appointmentsList.length === 0}
-   <div class="w-5xl h-96 flex justify-center items-center">
-   <p class="text-center flex flex-row gap-4 mt-4 text-4xl justify-self-cente"><Frown class="animate-bounce w-16  h-12" />
+   <div class="lg:w-5xl w-full lg:h-96 h-auto flex-col gap-8 mt-8 flex justify-center items-center">
+   <p class="text-center flex flex-row gap-2 mt-4 text-4xl justify-self-center"><Frown class="animate-bounce w-16  h-12" />
      No appointments for this date, try another date. </p>
      </div>
  {:else}

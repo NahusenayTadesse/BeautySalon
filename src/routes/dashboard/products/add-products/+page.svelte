@@ -71,7 +71,7 @@ import { Input } from "$lib/components/ui/input/index.js";
 	</div>
     
 {/snippet}
-<Card.Root class="w-lg flex flex-col gap-4">
+<Card.Root class="lg:w-lg w-full flex flex-col gap-4">
   <Card.Header>
     <Card.Title class="text-2xl">Add A Product Item</Card.Title>
     <Card.Description>Add New Inventory Items to track the how many have</Card.Description>

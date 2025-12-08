@@ -67,7 +67,7 @@
 	  ];
 
  
- $editForm.customerId = Number(data.appointmentsList.customerId;)
+ $editForm.customerId = Number(data.appointmentsList.customerId)
  $editForm.appointmentDate = data.appointmentsList.date;
  $editForm.appointmentTime = data.appointmentsList.time;
  $editForm.notes = data.appointmentsList.notes || undefined;
@@ -96,11 +96,11 @@
 
  {#if data.appointmentsList.customerName}
 
-
+  
   <div class="bg-white dark:bg-black shadow-lg dark:shadow-md dark:shadow-gray-900
-   rounded-md min-w-3xl w-md flex flex-col justify-center items-center">
-    <div class="bg-gradient-to-r w-full from-dark to-black text-white py-6 px-8 rounded-lg flex flex-col justify-start items-start">
-      <h1 class="text-center w-full">Appointment Details</h1>
+   rounded-md lg:w-md w-full flex flex-col justify-center items-center">
+    <div class="bg-gradient-to-r  from-dark to-black text-white py-6 px-8 rounded-lg flex flex-col justify-start items-start">
+      <h1 class="text-center">Appointment Details</h1>
     </div>
 	<div class="flex flex-row justify-start items-start w-full pl-4 mt-4 gap-2">
 	<Button onclick={()=> edit = !edit}>
@@ -253,7 +253,7 @@
 
 
 
-		<Card.Root class="flex w-xl mt-8 flex-col gap-4">
+		<Card.Root class="flex lg:w-xl w-full mt-8 flex-col gap-4">
 	<Card.Header class="mb-4">
 		<Card.Title class="text-2xl text-center">Confirm Appointment</Card.Title>
 	</Card.Header>

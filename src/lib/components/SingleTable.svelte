@@ -8,7 +8,7 @@
 
      type SingleTable= { name: string; value: string}
 
-    let { singleTable } = $props();
+    let { singleTable }: {singleTable: SingleTable} = $props();
 </script>
 <!-- 
  <div class="fixed right-2 top-24">
@@ -22,7 +22,7 @@
         
       {:then table} 
 
-<table id="table" class="w-full table-auto text-left">
+<table id="table" class="lg:w-full  table-auto text-left">
         <thead class="bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 font-semibold uppercase tracking-wider">
           <tr>
             <th class="py-3 px-4">Detail</th>

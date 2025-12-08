@@ -106,6 +106,7 @@ const end   = `${y2}-${m2}-${d2}`;
 
 
 
+
     // --- Select Bonuses ---
     const staffBonuses =  await db.select({
         staffId: bonuses.staffId,
@@ -295,7 +296,13 @@ export const actions: Actions = {
   },
     delete: async({cookies, params })=> {
      
-        const {id} = params;
+        const { range } = params;
+
+     const [
+  y1, m1, d1,
+  y2, m2, d2,
+  id
+] = range.split("-");
          
     
         try {
@@ -314,9 +321,11 @@ export const actions: Actions = {
         setFlash({ type: 'error', message: `Unexpected Error: ${err?.message}` }, cookies);
         return fail(400)
       }
+
       
         
     
     
       },
+    
 };

@@ -4,7 +4,7 @@
 	import type { ComponentProps } from 'svelte';
 	import { page } from '$app/state';
 	import { bgGradient, selectItem } from '$lib/global.svelte';
-	import { fade } from 'svelte/transition';
+	import { fade, scale } from 'svelte/transition';
 	import { useSidebar } from '$lib/components/ui/sidebar/index.js';
 	const navigation = 	[
   { title: 'Dashboard', url: '/dashboard', icon: LayoutDashboard },
@@ -20,8 +20,10 @@
   { title: 'Transactions', url: '/dashboard/transactions', icon: ScanLine },
   { title: 'Admin Panel', url: '/dashboard/admin-panel', icon: UserRoundCog}
 ]
-
+   
 	let { ...restProps }: ComponentProps<typeof Sidebar.Root> = $props();
+
+
     
 
 	const on = 'bg-sidebar-primary text-sidebar-primary-foreground'

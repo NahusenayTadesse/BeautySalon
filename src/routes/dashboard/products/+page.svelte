@@ -27,7 +27,7 @@
  {:then customerList} 
 
   {#if data.productList.length === 0}
-   <div class="w-5xl h-96 flex flex-col justify-center items-center">
+   <div class="lg:w-5xl w-full h-96 flex flex-col justify-center items-center">
    <p class="text-center flex flex-row gap-4 mt-4 text-4xl justify-self-cente"><Frown class="animate-bounce w-16  h-12" />
      Products List is Empty </p>
      <Button href="/dashboard/products/add-products"><Plus />Add New Products</Button>

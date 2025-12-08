@@ -1,5 +1,7 @@
 import * as auth from '$lib/server/auth';
-import { fail, redirect } from '@sveltejs/kit';
+import { fail } from '@sveltejs/kit';
+import { redirect } from 'sveltekit-flash-message/server';
+
 import type { Actions, PageServerLoad } from './$types';
 import { db } from '$lib/server/db';
 import { appointments, products, reports, supplies } from '$lib/server/db/schema';
@@ -80,7 +82,8 @@ export const actions: Actions = {
         await auth.invalidateSession(event.locals.session.id);
         auth.deleteSessionTokenCookie(event);
 
-        return redirect(302, '/demo/lucia/login');
+            redirect('/login', { type: 'success', message: "Logout Successful" }, event.cookies);
+
     }
 };
 

@@ -2,8 +2,7 @@
 	import AppointmentCard from "$lib/components/dashboard/appointment-card.svelte";
 	import ReorderList from "$lib/components/dashboard/reorder-list.svelte";
 	import { PackageIcon, BoxIcon } from "@lucide/svelte";
-	import { columns } from "./columns";
-	import DataTable from "$lib/components/Table/data-table.svelte";
+	
 	import Reports from "$lib/components/dashboard/reports.svelte";
 
 

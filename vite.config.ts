@@ -3,9 +3,8 @@ import tailwindcss from '@tailwindcss/vite';
 import { sveltekit } from '@sveltejs/kit/vite';
 import { defineConfig } from 'vite';
 
-
 export default defineConfig({
-	plugins: [tailwindcss(), sveltekit(), devtoolsJson(),  ],
+	plugins: [tailwindcss(), sveltekit(), devtoolsJson()],
 	ssr: { noExternal: ['bits-ui', '@lucide/svelte'] },
 	optimizeDeps: { include: ['@lucide/svelte'] }
 });
