@@ -6,28 +6,28 @@ import { fail } from '@sveltejs/kit';
 
 import { positionSchema as schema } from '$lib/ZodSchema';
 import { db } from '$lib/server/db';
-import { positions } from '$lib/server/db/schema/';
+import { expensesType } from '$lib/server/db/schema/';
 import type { PageServerLoad, Actions } from './$types.js';
 
 export const load: PageServerLoad = async () => {
 	const form = await superValidate(zod4(schema));
 
-	const allPositions = await db
+	const allCategories = await db
 		.select({
-			value: positions.id,
-			name: positions.name,
-			description: positions.description
+			value: expensesType.id,
+			name: expensesType.name,
+			description: expensesType.description
 		})
-		.from(positions);
+		.from(expensesType);
 
 	return {
 		form,
-		allPositions
+		allCategories
 	};
 };
 
 export const actions: Actions = {
-	addExpecesCategory: async ({ request, cookies }) => {
+	addExpensesType: async ({ request, cookies }) => {
 		const form = await superValidate(request, zod4(schema));
 
 		if (!form.valid) {
@@ -41,7 +41,7 @@ export const actions: Actions = {
 		const { name, description } = form.data;
 
 		try {
-			await db.insert(positions).values({ name, description });
+			await db.insert(expensesType).values({ name, description });
 
 			setFlash({ type: 'success', message: `Expense Category created successfully!` }, cookies);
 		} catch (err: any) {

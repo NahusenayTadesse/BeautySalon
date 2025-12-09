@@ -28,7 +28,7 @@
 		<div class="w-full p-4">
 			<SingleTable {singleTable} />
 			<div class="flex w-full flex-row justify-end gap-2">
-				<Button href="/dashboard/files/{data.singleTransaction.recieptLink}" target="_blank">
+				<Button href="/dashboard/files/{data.singleTransaction?.recieptLink}" target="_blank">
 					<Eye />
 					View Reciept
 				</Button>
