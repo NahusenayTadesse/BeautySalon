@@ -8,12 +8,13 @@
 	import DatePicker2 from '$lib/formComponents/DatePicker2.svelte';
 
 	import * as Card from '$lib/components/ui/card/index.js';
-	import { Plus } from '@lucide/svelte';
+	import { Plus, X } from '@lucide/svelte';
 	import { Button } from '$lib/components/ui/button/index.js';
 	import { zod4Client } from 'sveltekit-superforms/adapters';
 	import { insertExpenseSchema as expensesSchema } from './expenseSchema';
-	import { superForm } from 'sveltekit-superforms/client';
+	import { superForm, fileProxy } from 'sveltekit-superforms/client';
 	import SelectComp from '$lib/formComponents/SelectComp.svelte';
+	import FileUpload from '$lib/formComponents/FileUpload.svelte';
 
 	let { data } = $props();
 
@@ -26,6 +27,8 @@
 
 		validators: zod4Client(expensesSchema)
 	});
+
+	let file = fileProxy(form, 'reciept');
 
 	export const snapshot: Snapshot = { capture, restore };
 	// 	 function getItemNameById(items: any, value: any) {
@@ -87,7 +90,14 @@
 		<Card.Description>Add a new service you offers</Card.Description>
 	</Card.Header>
 	<Card.Content>
-		<form use:enhance action="?/addExpense" id="main" class="flex flex-col gap-4" method="POST">
+		<form
+			use:enhance
+			action="?/addExpense"
+			id="main"
+			class="flex flex-col gap-4"
+			method="POST"
+			enctype="multipart/form-data"
+		>
 			{@render date('expenseDate', 'Expense Date')}
 			{@render selects('type', data?.categories)}
 
@@ -111,16 +121,41 @@
 				true,
 				'0'
 			)}
+			<div class="my-8 flex w-full flex-col justify-start gap-2">
+				<Label for="reciept" class="capitalize">Upload Reciept or Screenshot of Sale</Label>
+				<div class="flex flex-row">
+					{#if !$file.length}
+						<Input
+							type="file"
+							name="receipt"
+							accept="image/*,application/pdf"
+							bind:files={$file}
+							multiple={false}
+						/>
+					{/if}
 
-			<Button type="submit" class="mt-4" form="main">
-				{#if $delayed}
-					<LoadingBtn name="Adding Expense" />
-				{:else}
-					<Plus class="h-4 w-4" />
+					{#if $file?.length}
+						<img
+							src={URL.createObjectURL($file[0])}
+							class="h-16 w-16 rounded-md object-cover"
+							alt=""
+						/>
+						<Button variant="ghost" size="icon" onclick={() => ($file = undefined)}>
+							<X class="h-4 w-4" />
+						</Button>
+					{/if}
+				</div>
+				\
+				<Button type="submit" class="mt-4" form="main">
+					{#if $delayed}
+						<LoadingBtn name="Adding Expense" />
+					{:else}
+						<Plus class="h-4 w-4" />
 
-					Add Expense
-				{/if}
-			</Button>
+						Add Expense
+					{/if}
+				</Button>
+			</div>
 		</form>
 	</Card.Content>
 </Card.Root>
