@@ -29,7 +29,7 @@
 </script>
 
 <svelte:head>
-	 <title> Add Product Category</title>
+	<title>Add Product Category</title>
 </svelte:head>
 
 {#snippet fe(
@@ -59,12 +59,12 @@
 	</div>
 {/snippet}
 
-<div class="grid grid-cols-2 justify-between gap-16">
+<div class="grid grid-cols-1 justify-between gap-16 lg:grid-cols-2">
 	<div class="my-8 flex flex-col gap-2">
-				<ChildrenTable mainlist = {data.allPositions}  {search} link="positions"/>
+		<ChildrenTable mainlist={data.allPositions} {search} link="positions" />
 	</div>
 
-	<Card.Root class="flex w-lg flex-col gap-4">
+	<Card.Root class="flex w-full flex-col gap-4  lg:w-lg">
 		<Card.Header>
 			<Card.Title class="text-2xl">Add New Category for Products</Card.Title>
 		</Card.Header>
@@ -73,7 +73,7 @@
 				{@render fe('Position Name', 'name', 'text', 'Enter Role Name', true)}
 
 				<div>
-					<Label for="description">Position </Label>
+					<Label for="description">Position</Label>
 
 					<Textarea
 						name="description"

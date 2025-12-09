@@ -1,33 +1,30 @@
 <script lang="ts">
-  import * as Sidebar from "$lib/components/ui/sidebar/index.js";
-  import AppSidebar from "$lib/components/app-sidebar.svelte";
-	import DarkMode from "$lib/components/DarkMode.svelte";
-	import Search from "$lib/components/Search.svelte";
-	import AvatarSettings from "$lib/components/AvatarSettings.svelte";
-	import Logout from "$lib/forms/Logout.svelte";
-	import BottomMenu from "$lib/components/bottomMenu.svelte";
+	import * as Sidebar from '$lib/components/ui/sidebar/index.js';
+	import AppSidebar from '$lib/components/app-sidebar.svelte';
+	import DarkMode from '$lib/components/DarkMode.svelte';
+	import Search from '$lib/components/Search.svelte';
+	import AvatarSettings from '$lib/components/AvatarSettings.svelte';
+	import BottomMenu from '$lib/components/bottomMenu.svelte';
 
-  let { children, data } = $props();
+	let { children, data } = $props();
 </script>
 
-
 <Sidebar.Provider>
-  <AppSidebar />
-  <main class="w-full mx-2 ">
-    <div class="absolute z-100 top-2 left-2 shadow-lg backdrop-blur-md p-2 lg:pr-0 pr-4 rounded-lg lg:sticky align-middle w-full flex flex-row justify-between">
-    <Sidebar.Trigger class="p-4 rounded-lg bg-white dark:bg-black" />
-    <div class="flex flex-row gap-4 items-center">
-    <Search />
-    <DarkMode />
-    <AvatarSettings data={data?.role?.name} />
- 
-</div>
-  
-    </div>
-    <div class="p-4 lg:pb-4 pb-24 lg:pt-4 pt-24">
-      {@render children?.()}
-    </div>
-    
-  </main>
+	<AppSidebar />
+	<main class="w-full px-2">
+		<div
+			class="absolute top-2 left-2 z-100 flex w-full flex-row justify-between rounded-lg p-2 pr-4 align-middle shadow-lg backdrop-blur-md lg:sticky lg:pr-0"
+		>
+			<Sidebar.Trigger class="rounded-lg bg-white p-4 dark:bg-black" />
+			<div class="flex flex-row items-center gap-4">
+				<Search />
+				<DarkMode />
+				<AvatarSettings data={data?.role?.name} />
+			</div>
+		</div>
+		<div class="p-4 pt-24 pb-24 lg:pt-4 lg:pb-4">
+			{@render children?.()}
+			<BottomMenu />
+		</div>
+	</main>
 </Sidebar.Provider>
-<BottomMenu />

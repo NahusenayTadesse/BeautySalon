@@ -21,7 +21,7 @@
 	}
 
 	let arrParts = `flex flex-col justify-start gap-2 w-full`;
-	let singleContainer = `flex flex-row  gap-3 border-1
+	let singleContainer = `flex lg:flex-row flex-col gap-3 border-1
  border-white/20 dark:border-black/20
  backdrop-blur-lg shadow-lg bg-white/10 dark:bg-black/50
   dark:bg-gray-700 p-3 rounded-lg w-full items-end`;
@@ -73,7 +73,6 @@
 		$form.productAmount = checkoutTotal;
 		$form.serviceAmount = checkoutTotalService;
 		$form.total = total - data.bookings.totalBookingFees;
-
 	});
 
 	let submitted = $state(false);
@@ -91,16 +90,16 @@
 
 <h1>Sales for {data.bookings.customerName}</h1>
 
-<h3>Booking Fee Paid <bold>{data.bookings.totalBookingFees}</bold> </h3>
+<h3>Booking Fee Paid <bold>{data.bookings.totalBookingFees}</bold></h3>
 
 {#snippet combo(name, items)}
 	<div class="flex w-full flex-col justify-start gap-2">
-		<Label for={name} class="capitalize">{name.replace(/([a-z])([A-Z])/g, "$1 $2")}:</Label>
+		<Label for={name} class="capitalize">{name.replace(/([a-z])([A-Z])/g, '$1 $2')}:</Label>
 
 		<ComboboxComp {name} bind:value={$form[name]} {items} />
 		{#if $errors[name]}<span class="text-red-500">{$errors[name]}</span>{/if}
 	</div>
-{/snippet} 
+{/snippet}
 <form action="?/addSales" method="post" enctype="multipart/form-data" use:enhance {onsubmit}>
 	<div
 		class="mt-6 w-full max-w-3xl rounded-lg border border-slate-200 bg-white p-4 shadow dark:border-slate-700 dark:bg-slate-800"
@@ -125,8 +124,6 @@
 							<p class={errorsStyle}>{$errors.products[i].staff}</p>
 						{/if}
 					</div>
-
-				
 
 					<div class={arrParts}>
 						<Label for="product">Selling Product</Label>
@@ -249,21 +246,26 @@
 			<div class="my-8 flex w-full flex-col justify-start gap-2">
 				<Label for="receipt" class="capitalize">Upload Reciept or Screenshot of Sale</Label>
 				<div class="flex flex-row">
-				<Input
-					type="file"
-					name="receipt"
-					accept="image/*,application/pdf"
-					bind:files={$file}
-					multiple={false}
-				/> 
-				<Button variant="ghost" onclick={()=> { $file = 0}}><X /></Button>
+					<Input
+						type="file"
+						name="receipt"
+						accept="image/*,application/pdf"
+						bind:files={$file}
+						multiple={false}
+					/>
+					<Button
+						variant="ghost"
+						onclick={() => {
+							$file = 0;
+						}}><X /></Button
+					>
 				</div>
 				{#if $errors.receipt}
 					<span>{$errors.receipt}</span>
 				{/if}
-			</div> 
+			</div>
 
-		   {@render combo("paymentMethod", data.allMethods)}
+			{@render combo('paymentMethod', data.allMethods)}
 		{/if}
 
 		<div
@@ -282,32 +284,28 @@
 		{/if}
 
 		<div class="mt-3 flex gap-2">
-
 			<Button type="submit">
-				
-                  {#if $delayed}
-				<LoadingBtn name="Adding Sale" />
+				{#if $delayed}
+					<LoadingBtn name="Adding Sale" />
 				{:else}
-				<Plus />
-				Add Sale {/if}</Button
+					<Plus />
+					Add Sale
+				{/if}</Button
 			>
 
-			 
 			<Button
 				variant="outline"
 				type="reset"
 				onclick={() => {
 					$form.products.length = 0;
 					$form.services.length = 0;
-					$form.file = "";
+					$form.file = '';
 				}}
 			>
 				<BrushCleaning />
 
 				Reset</Button
-			> 
-
-			
+			>
 		</div>
 	</div>
 </form>

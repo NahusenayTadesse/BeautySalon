@@ -26,14 +26,13 @@
 
 	export const snapshot: Snapshot = { capture, restore };
 
-let	tableHeaders = [{name:'Id', key: 'id'}, 
-   {name:'Name', key: 'name'},
-   {name:'Description', key: 'description'},
-];
-let search = true;
+	let tableHeaders = [
+		{ name: 'Id', key: 'id' },
+		{ name: 'Name', key: 'name' },
+		{ name: 'Description', key: 'description' }
+	];
+	let search = true;
 </script>
-
-
 
 {#snippet fe(
 	label = '',
@@ -62,14 +61,12 @@ let search = true;
 	</div>
 {/snippet}
 
-<div class="grid grid-cols-2 justify-between gap-16">
+<div class="grid grid-cols-1 justify-between gap-16 lg:grid-cols-2">
 	<div class="my-8 flex flex-col gap-2">
-
-		<ChildrenTable mainlist = {data.allPositions}  {tableHeaders} {search} link="positions"/>
-		
+		<ChildrenTable mainlist={data.allPositions} {tableHeaders} {search} link="positions" />
 	</div>
 
-	<Card.Root class="flex w-lg flex-col gap-4">
+	<Card.Root class="flex w-full flex-col gap-4 lg:w-lg">
 		<Card.Header>
 			<Card.Title class="text-2xl">Add New Positions for Staff</Card.Title>
 		</Card.Header>
@@ -83,7 +80,7 @@ let search = true;
 					<Textarea
 						name="description"
 						required
-						placeholder="Enter role description"
+						placeholder="Enter position description"
 						bind:value={$form.description}
 						aria-invalid={$errors.description ? 'true' : undefined}
 					/>
@@ -93,11 +90,11 @@ let search = true;
 
 				<Button type="submit" class="mt-4">
 					{#if $delayed}
-						<LoadingBtn name="Adding Role" />
+						<LoadingBtn name="Adding Position" />
 					{:else}
 						<Plus class="h-4 w-4" />
 
-						Add Role
+						Add Position
 					{/if}
 				</Button>
 			</form>
