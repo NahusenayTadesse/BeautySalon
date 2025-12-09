@@ -1,5 +1,6 @@
 import { z } from 'zod/v4';
 import { MAX_FILE_SIZE, ACCEPTED_FILE_TYPES } from '$lib/zodschemas/appointmentSchema';
+import type { paymentMethods } from '$lib/server/db/schema';
 
 /**
  * Zod schema for inserting a new expense record.
@@ -12,6 +13,10 @@ export const insertExpenseSchema = z.object({
 		.number('Expense Type is Required')
 		.int()
 		.positive({ message: 'Type ID must be positive.' }),
+	paymentMethod: z
+		.number('Payment Method is Required')
+		.int()
+		.positive(),
 
 	description: z
 		.string()

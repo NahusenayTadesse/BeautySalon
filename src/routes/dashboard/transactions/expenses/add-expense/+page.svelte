@@ -12,9 +12,11 @@
 	import { Button } from '$lib/components/ui/button/index.js';
 	import { zod4Client } from 'sveltekit-superforms/adapters';
 	import { insertExpenseSchema as expensesSchema } from './expenseSchema';
-	import { superForm, fileProxy } from 'sveltekit-superforms/client';
+	import { superForm } from 'sveltekit-superforms/client';
 	import SelectComp from '$lib/formComponents/SelectComp.svelte';
 	import FileUpload from '$lib/formComponents/FileUpload.svelte';
+	import ComboboxComp from '$lib/formComponents/ComboboxComp.svelte';
+	import SuperDebug from 'sveltekit-superforms';
 
 	let { data } = $props();
 
@@ -28,17 +30,11 @@
 		validators: zod4Client(expensesSchema)
 	});
 
-	let file = fileProxy(form, 'reciept');
-
 	export const snapshot: Snapshot = { capture, restore };
-	// 	 function getItemNameById(items: any, value: any) {
-	//   const item = items.find(i=> i.value === value);
-	//   return item ? item.name : null; // returns null if not found
-	// }
 </script>
 
 <svelte:head>
-	<title>Add New Service</title>
+	<title>Add New Expense</title>
 </svelte:head>
 
 {#snippet fe(
@@ -47,7 +43,8 @@
 	type = '',
 	placeholder = '',
 	required = false,
-	min = '',
+	min = '', // let file = fileProxy(form, 'reciept');
+
 	max = ''
 )}
 	<div class="flex w-full flex-col justify-start gap-2">
@@ -84,10 +81,19 @@
 	{#if $errors[name]}<span class="text-red-500">{$errors[name]}</span>{/if}
 {/snippet}
 
+{#snippet combo(name, items)}
+	<div class="flex w-full flex-col justify-start gap-2">
+		<Label for={name} class="capitalize">{name.replace(/([a-z])([A-Z])/g, '$1 $2')}:</Label>
+
+		<ComboboxComp {name} bind:value={$form[name]} {items} />
+		{#if $errors[name]}<span class="text-red-500">{$errors[name]}</span>{/if}
+	</div>
+{/snippet}
+<SuperDebug data={form} />
 <Card.Root class="flex w-full flex-col gap-4 lg:w-lg">
 	<Card.Header>
-		<Card.Title class="text-2xl">Add a Service</Card.Title>
-		<Card.Description>Add a new service you offers</Card.Description>
+		<Card.Title class="text-2xl">Add an Expense</Card.Title>
+		<Card.Description>Add a new expense that is not a sale.</Card.Description>
 	</Card.Header>
 	<Card.Content>
 		<form
@@ -100,6 +106,7 @@
 		>
 			{@render date('expenseDate', 'Expense Date')}
 			{@render selects('type', data?.categories)}
+			{@render combo('paymentMethod', data?.paymentMethod)}
 
 			<div class="flex w-full flex-col justify-start gap-2">
 				<Label for="description">Expense Description (optional)</Label>
@@ -121,41 +128,51 @@
 				true,
 				'0'
 			)}
-			<div class="my-8 flex w-full flex-col justify-start gap-2">
-				<Label for="reciept" class="capitalize">Upload Reciept or Screenshot of Sale</Label>
-				<div class="flex flex-row">
-					{#if !$file.length}
+			<!-- <div class="my-8 flex w-full flex-col justify-start gap-2">
+				{#if !$file.length}
+				<Label for="reciept" class="capitalize">Upload Reciept or Screenshot of Sale</Label>{/if}
+
 						<Input
 							type="file"
+							class=" {$file.length ? 'hidden' : ''} "
 							name="receipt"
 							accept="image/*,application/pdf"
 							bind:files={$file}
 							multiple={false}
 						/>
-					{/if}
 
 					{#if $file?.length}
+
+					<Label for="reciept" class="capitalize">{$file?.item(0).name}</Label>
+                  <div class="flex flex-row gap-2">
+
+
+					   {#if $file[0].type === 'application/pdf'}
+					      <iframe src={`${URL.createObjectURL($file[0])}#toolbar=0`} class="w-64 h-64" frameborder="0" title="pdf"></iframe>
+					   {:else}
 						<img
 							src={URL.createObjectURL($file[0])}
-							class="h-16 w-16 rounded-md object-cover"
+							class="h-64 w-64 rounded-md object-cover"
 							alt=""
 						/>
+						{/if}
 						<Button variant="ghost" size="icon" onclick={() => ($file = undefined)}>
 							<X class="h-4 w-4" />
 						</Button>
-					{/if}
-				</div>
-				\
-				<Button type="submit" class="mt-4" form="main">
-					{#if $delayed}
-						<LoadingBtn name="Adding Expense" />
-					{:else}
-						<Plus class="h-4 w-4" />
+						</div>
 
-						Add Expense
-					{/if}
-				</Button>
-			</div>
+					{/if} -->
+
+			<FileUpload name="reciept" {form} />
+
+			<Button type="submit" class="mt-4" form="main">
+				{#if $delayed}
+					<LoadingBtn name="Adding Expense" />
+				{:else}
+					<Plus class="h-4 w-4" />
+					Add Expense
+				{/if}
+			</Button>
 		</form>
 	</Card.Content>
 </Card.Root>
