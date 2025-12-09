@@ -23,7 +23,7 @@ export const load: PageServerLoad = async () => {
 
 
 export const actions: Actions = {
-  addBonus: async ({ request, cookies, params, locals }) => {
+  addOvertime: async ({ request, cookies, params, locals }) => {
 
 
     const {id} = params;
@@ -37,7 +37,7 @@ export const actions: Actions = {
     }
 
 
-        const { reason, date, amountPerHour, hours, total } = form.data;
+        const { reason, date, amountPerHour, hours} = form.data;
 
     
     try{
@@ -50,7 +50,7 @@ export const actions: Actions = {
          staffId: Number(id),
          amountPerHour,
          hours,
-         total,
+         total: Number(hours) * Number(amountPerHour),
          reason,
          date,
   createdBy: locals.user?.id,

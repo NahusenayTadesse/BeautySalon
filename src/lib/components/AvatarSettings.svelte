@@ -24,10 +24,10 @@
   <DropdownMenu.Group>
    <DropdownMenu.Label>My Account</DropdownMenu.Label>
    <DropdownMenu.Separator />
-   <DropdownMenu.Item >
+   <!-- <DropdownMenu.Item >
     <a href="/dashboard/users/change-password">Change Password</a>
 
-</DropdownMenu.Item>
+</DropdownMenu.Item> -->
    <DropdownMenu.Item > <form
   method="post"
   action="/dashboard/?/logout"

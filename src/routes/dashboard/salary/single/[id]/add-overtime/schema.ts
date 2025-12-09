@@ -14,9 +14,6 @@ export const overtimeSchema = z.object({
         .number('Amount is Required')
         .positive({ message: 'Amount must be a positive number.' }),
     hours: z.coerce.number('Hours is Required').int().positive(),
-    total: z.coerce
-        .number('Total is Required')
-        .positive({ message: 'Total must be a positive number.' }),  
 });
 
 // To use this schema for a form, you might extract the type:

@@ -32,9 +32,10 @@
 
 	$form.hours = 1;
 
-	$effect(() => {
-		$form.total = $form.hours * $form.amountPerHour;
-	});
+
+
+
+
 </script>
 
 <svelte:head>
@@ -81,12 +82,12 @@
 
 <Card.Root class="flex w-full flex-col gap-4 lg:w-lg">
 	<Card.Header>
-		<Card.Title class="text-2xl">Add a Bonus on {data.salaryDetail.name}</Card.Title>
+		<Card.Title class="text-2xl">Add an Overtime for {data.salaryDetail.name}</Card.Title>
 	</Card.Header>
 	<Card.Content>
 		<form
 			use:enhance
-			action="?/addBonus"
+			action="?/addOvertime"
 			id="main"
 			class="flex flex-col gap-4"
 			method="post"
@@ -109,14 +110,7 @@
 				true,
 				'0'
 			)}
-			  {@render fe(
-				'Overtime Amount Per Hour',
-				'amountPerHour',
-				'number',
-				'Enter the total amount of the overtime',
-				true,
-				'0'
-			)}
+			 
 
 			<div class="flex w-full flex-col justify-start gap-2">
 				<Label for="reason">Overtime Reason (optional)</Label>
