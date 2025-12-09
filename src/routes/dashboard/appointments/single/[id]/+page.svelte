@@ -23,6 +23,7 @@
 	import Delete from '$lib/forms/Delete.svelte';
 	import Empty from '$lib/components/Empty.svelte';
 	import SingleView from '$lib/components/SingleView.svelte';
+	import FileUpload from '$lib/formComponents/FileUpload.svelte';
 
 	let singleTable = $derived([
 		{ name: 'Name', value: data.appointmentsList.customerName },
@@ -267,7 +268,7 @@
 				<input type="hidden" name="appointmentId" value={data.appointmentsList.id} />
 				{@render combo('paymentMethod', data.allMethods)}
 				{@render selects('paymentStatus', paymentStatus)}
-				<div class="flex w-full flex-col justify-start gap-2">
+				<!-- <div class="flex w-full flex-col justify-start gap-2">
 					<Label for="image" class="capitalize">Upload Reciept or Screenshot of Booking Fee</Label>
 					<div class="relative flex flex-row gap-2">
 						<Upload class="absolute top-2 right-16 bottom-0.5 h-6 w-6" />
@@ -291,7 +292,9 @@
 					{#if $errors.image}
 						<span class="text-red-500">{$errors.image}</span>
 					{/if}
-				</div>
+				</div> -->
+
+				<FileUpload {form} {errors} name="image" />
 				<!-- {@render fe('Upload Reciept or Screenshot of Booking Fee', 'image', 'file', 'Enter Name', true)} -->
 
 				<Button type="submit" class="mt-4">

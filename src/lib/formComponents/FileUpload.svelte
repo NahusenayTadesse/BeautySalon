@@ -4,11 +4,10 @@
 	import {Label} from "$lib/components/ui/label/index.js";
 	import { X } from "@lucide/svelte";
 import {  fileProxy } from 'sveltekit-superforms/client';
-import type { SuperForm } from 'sveltekit-superforms';
 
 
 
-let { form, name } = $props()
+let { form, name, errors } = $props()
 
 const file = fileProxy(form, name);
 
@@ -46,5 +45,9 @@ const file = fileProxy(form, name);
 						</Button>
 						</div>
 						
+					{/if}
+
+					{#if $errors[name]}
+					 <p class="text-red-500">{$errors[name]}</p>
 					{/if}
 		</div>

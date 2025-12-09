@@ -8,11 +8,11 @@
 	import DatePicker2 from '$lib/formComponents/DatePicker2.svelte';
 
 	import * as Card from '$lib/components/ui/card/index.js';
-	import { Plus, X } from '@lucide/svelte';
+	import { Plus, Upload, X } from '@lucide/svelte';
 	import { Button } from '$lib/components/ui/button/index.js';
 	import { zod4Client } from 'sveltekit-superforms/adapters';
 	import { insertExpenseSchema as expensesSchema } from './expenseSchema';
-	import { superForm } from 'sveltekit-superforms/client';
+	import { superForm, fileProxy } from 'sveltekit-superforms/client';
 	import SelectComp from '$lib/formComponents/SelectComp.svelte';
 	import FileUpload from '$lib/formComponents/FileUpload.svelte';
 	import ComboboxComp from '$lib/formComponents/ComboboxComp.svelte';
@@ -30,6 +30,8 @@
 		validators: zod4Client(expensesSchema)
 	});
 
+	const file = fileProxy(form, 'reciept')
+
 	export const snapshot: Snapshot = { capture, restore };
 </script>
 
@@ -43,7 +45,7 @@
 	type = '',
 	placeholder = '',
 	required = false,
-	min = '', // let file = fileProxy(form, 'reciept');
+	min = '', 
 
 	max = ''
 )}
@@ -101,7 +103,7 @@
 			action="?/addExpense"
 			id="main"
 			class="flex flex-col gap-4"
-			method="POST"
+			method="post"
 			enctype="multipart/form-data"
 		>
 			{@render date('expenseDate', 'Expense Date')}
@@ -156,14 +158,44 @@
 							alt=""
 						/>
 						{/if}
-						<Button variant="ghost" size="icon" onclick={() => ($file = undefined)}>
+						<Button variant="ghost" size="icon" onclick={() => (file.set(undefined))}>
 							<X class="h-4 w-4" />
 						</Button>
 						</div>
 
+					{/if}
+            </div> --> 
+			<!-- <div class="flex w-full flex-col justify-start gap-2">
+					<Label for="reciept" class="capitalize">Upload Reciept or Screenshot of Booking Fee</Label>
+					<div class="relative flex flex-row gap-2">
+						<Upload class="absolute top-2 right-16 bottom-0.5 h-6 w-6" />
+						<Input
+							type="file"
+							name="image"
+							accept="image/*,application/pdf"
+							bind:files={$file}
+							multiple={false}
+						/>
+						<Button
+							type="button"
+							size="icon"
+							variant="outline"
+							title="Clear file input"
+							onclick={() => ($file = 0)}
+						>
+							<X />
+						</Button>
+					</div>
+					{#if $errors.reciept}
+						<span class="text-red-500">{$errors.reciept}</span>
+					{/if}
+				</div> -->
+			<FileUpload name="reciept" {form} {errors} />
+			<!-- {#if $errors.reciept}
+						<span class="text-red-500">{$errors.reciept}</span>
 					{/if} -->
 
-			<FileUpload name="reciept" {form} />
+				
 
 			<Button type="submit" class="mt-4" form="main">
 				{#if $delayed}

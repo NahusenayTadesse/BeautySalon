@@ -9,11 +9,11 @@ import type { paymentMethods } from '$lib/server/db/schema';
 export const insertExpenseSchema = z.object({
 	expenseDate: z.string().min(1, { message: 'Expense date is required.' }),
 
-	type: z
+	type: z.coerce
 		.number('Expense Type is Required')
 		.int()
 		.positive({ message: 'Type ID must be positive.' }),
-	paymentMethod: z
+	paymentMethod: z.coerce
 		.number('Payment Method is Required')
 		.int()
 		.positive(),
@@ -23,17 +23,9 @@ export const insertExpenseSchema = z.object({
 		.max(255, { message: 'Description cannot exceed 255 characters.' })
 		.optional(),
 
-	total: z
+	total: z.coerce
 		.number('Amount is Required')
-		.positive({ message: 'Total must be a positive number.' })
-		.transform((val) => parseFloat(val.toFixed(2))) // Ensure only two decimal places
-		.refine(
-			(val) => {
-				const totalDigits = val.toString().replace('.', '').length;
-				return totalDigits <= 10;
-			},
-			{ message: 'Amount value is too large.' }
-		),
+		.positive({ message: 'Total must be a positive number.' }),
 	reciept: z
 		.instanceof(File, { message: 'A file is required.' })
 		.refine((file) => file.size > 0, 'File cannot be empty.')

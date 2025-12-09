@@ -32,6 +32,7 @@
 	import { fileProxy, superForm } from 'sveltekit-superforms/client';
 	import { fly } from 'svelte/transition';
 	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';
+	import FileUpload from '$lib/formComponents/FileUpload.svelte';
 
 	const { form, errors, message, enhance, delayed, capture, restore } = superForm(data.form, {
 		taintedMessage: () => {
@@ -241,7 +242,7 @@
 		</div>
 
 		{#if $form.products.length > 0 || $form.services.length > 0}
-			<div class="my-8 flex w-full flex-col justify-start gap-2">
+			<!-- <div class="my-8 flex w-full flex-col justify-start gap-2">
 				<Label for="receipt" class="capitalize">Upload Reciept or Screenshot of Sale</Label>
 				<div class="flex flex-row">
 					<Input
@@ -261,7 +262,8 @@
 				{#if $errors.receipt}
 					<span>{$errors.receipt}</span>
 				{/if}
-			</div>
+			</div> -->
+			<FileUpload name="receipt" {form} {errors} />
 
 			{@render combo('paymentMethod', data.allMethods)}
 		{/if}
@@ -296,7 +298,6 @@
 				onclick={() => {
 					$form.products.length = 0;
 					$form.services.length = 0;
-					$form.file = '';
 				}}
 			>
 				<BrushCleaning />

@@ -12,10 +12,10 @@
 	import { zod4Client } from 'sveltekit-superforms/adapters';
 	import { addLeavePayrollSchema } from './schema';
 	import { fileProxy, superForm } from 'sveltekit-superforms/client';
-	import SelectComp from '$lib/formComponents/SelectComp.svelte';
 	import DatePicker2 from '$lib/formComponents/DatePicker2.svelte';
 	import ComboboxComp from '$lib/formComponents/ComboboxComp.svelte';
 	import MonthYear from '$lib/formComponents/MonthYear.svelte';
+	import FileUpload from '$lib/formComponents/FileUpload.svelte';
 
 	let { data } = $props();
 
@@ -208,7 +208,7 @@
 				{#if $errors.notes}<span class="text-red-500">{$errors.notes}</span>{/if}
 			</div>
 
-			<div class="flex w-full flex-col justify-start gap-2">
+			<!-- <div class="flex w-full flex-col justify-start gap-2">
 				<Label for="image" class="capitalize">Upload Reciept or Screenshot of Salary Payment</Label>
 				<div class="relative flex flex-row gap-2">
 					<Upload class="absolute top-2 right-16 bottom-0.5 h-6 w-6" />
@@ -232,8 +232,8 @@
 				{#if $errors.reciept}
 					<span class="text-red-500">{$errors.reciept}</span>
 				{/if}
-			</div>
-
+			</div> -->
+            <FileUpload name="reciept" {form} {errors} />
 			<Button type="submit" class="mt-4" form="main">
 				{#if $delayed}
 					<LoadingBtn name="Confirming Salary" />

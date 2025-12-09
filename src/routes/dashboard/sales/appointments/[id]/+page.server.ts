@@ -298,7 +298,6 @@ export const actions: Actions = {
 						.where(
 							and(
 								eq(reports.reportDate, sql`CURDATE()`),
-								eq(reports.branchId, locals?.user?.branch)
 							)
 						)
 						.then((rows) => rows[0]);
@@ -322,7 +321,6 @@ export const actions: Actions = {
 							servicesRendered: service.length,
 							dailyIncome: total,
 							transactions: 1,
-							branchId: locals?.user?.branch
 						});
 					}
 				
