@@ -16,7 +16,6 @@
 	import SelectComp from '$lib/formComponents/SelectComp.svelte';
 	import FileUpload from '$lib/formComponents/FileUpload.svelte';
 	import ComboboxComp from '$lib/formComponents/ComboboxComp.svelte';
-	import SuperDebug from 'sveltekit-superforms';
 
 	let { data } = $props();
 
@@ -91,7 +90,6 @@
 		{#if $errors[name]}<span class="text-red-500">{$errors[name]}</span>{/if}
 	</div>
 {/snippet}
-<SuperDebug data={form} />
 <Card.Root class="flex w-full flex-col gap-4 lg:w-lg">
 	<Card.Header>
 		<Card.Title class="text-2xl">Add an Expense</Card.Title>

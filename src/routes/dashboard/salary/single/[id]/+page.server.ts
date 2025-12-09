@@ -7,71 +7,71 @@ import { addLeavePayrollSchema as schema } from './schema';
 
 
 import { db } from "$lib/server/db";
-import {  salaries, paymentMethods, overTime, deductions, bonuses, commissionProduct, commissionService, staff, transactions, user, payrollEntries  } from "$lib/server/db/schema";
+import {  payrollEntries, reports  } from "$lib/server/db/schema";
 import { eq, sql} from "drizzle-orm";
-import type { Actions, PageServerLoad } from "./$types";
+import type { Actions } from "./$types";
 import { fail } from 'sveltekit-superforms';
 import { setFlash } from 'sveltekit-flash-message/server';
 
 
 
-export const load: PageServerLoad = async ({ params}) => {
+// export const load: PageServerLoad = async ({ params}) => {
 
 
-     const {id} = params;
-       const form = await superValidate(zod4(schema));
+//      const {id} = params;
+//        const form = await superValidate(zod4(schema));
 
 
-        const salaryDetail = await db.select({
-          id: staff.id,
-          name: sql<string>`TRIM(CONCAT(${staff.firstName}, ' ', COALESCE(${staff.lastName}, '')))`,
+//         const salaryDetail = await db.select({
+//           id: staff.id,
+//           name: sql<string>`TRIM(CONCAT(${staff.firstName}, ' ', COALESCE(${staff.lastName}, '')))`,
 
-          // sum of all deductions for the staff
-          deductions: sql<number>`COALESCE(SUM(${deductions.amount}), 0)`,
+//           // sum of all deductions for the staff
+//           deductions: sql<number>`COALESCE(SUM(${deductions.amount}), 0)`,
 
-          // sum of all commissions from commissionProduct AND commissionService
-          commissions: sql<number>`
-           COALESCE(SUM(${commissionProduct.amount}), 0)
-           + COALESCE(SUM(${commissionService.amount}), 0)
-          `,
+//           // sum of all commissions from commissionProduct AND commissionService
+//           commissions: sql<number>`
+//            COALESCE(SUM(${commissionProduct.amount}), 0)
+//            + COALESCE(SUM(${commissionService.amount}), 0)
+//           `,
 
-          // base salary (assumed single row per staff)
-          baseSalary: salaries.amount,
-          overtime: overTime.total,
-          bonus: bonuses.amount
+//           // base salary (assumed single row per staff)
+//           baseSalary: salaries.amount,
+//           overtime: overTime.total,
+//           bonus: bonuses.amount
 
-        })
-          .from(staff)
-          .leftJoin(salaries, eq(salaries.staffId, staff.id))
-          .leftJoin(deductions, eq(deductions.staffId, staff.id))
-          .leftJoin(overTime, eq(overTime.staffId, staff.id))
-          .leftJoin(bonuses, eq(bonuses.staffId, staff.id))
-          .leftJoin(commissionProduct, eq(commissionProduct.staffId, staff.id))
-          .leftJoin(commissionService, eq(commissionService.staffId, staff.id))
-          .where((eq(staff.id, id)),
+//         })
+//           .from(staff)
+//           .leftJoin(salaries, eq(salaries.staffId, staff.id))
+//           .leftJoin(deductions, eq(deductions.staffId, staff.id))
+//           .leftJoin(overTime, eq(overTime.staffId, staff.id))
+//           .leftJoin(bonuses, eq(bonuses.staffId, staff.id))
+//           .leftJoin(commissionProduct, eq(commissionProduct.staffId, staff.id))
+//           .leftJoin(commissionService, eq(commissionService.staffId, staff.id))
+//           .where((eq(staff.id, id)),
                    
-        )
-          .groupBy(staff.id, salaries.amount)
-          .then(rows=> rows[0]);
+//         )
+//           .groupBy(staff.id, salaries.amount)
+//           .then(rows=> rows[0]);
    
 
-          const allMethods = await db.select({
-                value: paymentMethods.id,
-                name: paymentMethods.name,
-                description: paymentMethods.description
-              })
-              .from(paymentMethods)
-              .where(eq(paymentMethods.isActive, true));
+//           const allMethods = await db.select({
+//                 value: paymentMethods.id,
+//                 name: paymentMethods.name,
+//                 description: paymentMethods.description
+//               })
+//               .from(paymentMethods)
+//               .where(eq(paymentMethods.isActive, true));
        
 
-        return {
-            salaryDetail,
-            allMethods,
-            form,
+//         return {
+//             salaryDetail,
+//             allMethods,
+//             form,
         
    
-        }
-}
+//         }
+// }
 
 import fs from 'node:fs';
 import path from 'node:path';
@@ -163,6 +163,31 @@ export const actions: Actions = {
         
     });
 
+      const existingReport = await db.select({
+          id: reports.id
+       }).from(reports).where(
+          (
+          eq(reports.reportDate, sql`CURDATE()`)
+        )
+      
+       ).then(rows => rows[0]);
+
+       if(existingReport){
+          await db.update(reports).set({
+            staffPaid: sql`COALESCE(${reports.staffPaid}, 0) + ${paidAmount}`
+          }).where(
+            
+            eq(reports.id, existingReport.id)
+
+          );
+       } else {
+          await db.insert(reports).values({
+            reportDate: new Date(),
+            staffPaid: paidAmount,
+          });
+       }
+
+
             delete form?.data?.reciept;
 
       // Stay on the same page and set a flash message
@@ -170,35 +195,12 @@ export const actions: Actions = {
     return {
       form
     } } catch(err){
-          setFlash({ type: 'errror', message: "An Error occured while adding Salary " + err.message }, cookies);
+          setFlash({ type: "error", message: "An Error occured while adding Salary " + err.message }, cookies);
 
          console.error("Error" + err.message)
     }
   },
-    delete: async({cookies, params })=> {
-     
-        const {id} = params;
-         
     
-        try {
-        if (!id) {
-        setFlash({ type: 'error', message: `Unexpected Error: ${err?.message}` }, cookies);
-          return fail(400);
-        }
   
-        await db.delete(products).where(eq(products.id, id));
-  
-         
-          setFlash({ type: 'success', message: "Product Deleted Successfully!" }, cookies);
-  
-      } catch (err) {
-        console.error('Error deleting product:', err);
-        setFlash({ type: 'error', message: `Unexpected Error: ${err?.message}` }, cookies);
-        return fail(400)
-      }
-      
-        
-    
-    
-      },
+       
     };
