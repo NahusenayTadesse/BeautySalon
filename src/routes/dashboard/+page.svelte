@@ -7,12 +7,13 @@
 
 
 	let { data} = $props();
-	
-	
+	 
+
 </script>
  <svelte:head>
 	<title>Dashboard</title>
  </svelte:head>
+
 
 
 <div class="min-h-dvh mt-16 rounded-lg w-full bg-gradient-to-br from-background/10 via-background/10 to-muted/30

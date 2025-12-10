@@ -2,6 +2,8 @@
 	import '../app.css';
 	import { getFlash } from 'sveltekit-flash-message';
   import { navigating, page, updated } from '$app/state';
+ import { Toaster } from "$lib/components/ui/sonner/index.js";
+
   import { toastmsg, errormsg } from '$lib/global.svelte';
 
   const flash = getFlash(page, { clearAfterMs: 5000 });
@@ -11,6 +13,7 @@
 	import { fly } from 'svelte/transition';
 	import { CircleCheckBig, CircleX, Loader } from '@lucide/svelte';
 	import { Button } from '$lib/components/ui/button';
+   
 
 
 	let { children } = $props();
@@ -18,9 +21,7 @@
    let iconify = $state("h-6 w-6 animate-ping");
 
 
- 
-
-
+   
 
 
   
@@ -31,6 +32,8 @@
 		<link rel="icon" href="/logo.png" />
 </svelte:head>
 <ModeWatcher /> 
+<Toaster position="bottom-right" richColors closeButton />
+
 
 {#if $flash}
  
