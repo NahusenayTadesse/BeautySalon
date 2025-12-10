@@ -14,21 +14,19 @@
 
   
    
-   let year = $state(new Date().getFullYear());
 let month = $state(
   new Date(new Date().setMonth(new Date().getMonth() + 1))
-    .toLocaleDateString(undefined, { month: 'long' })
+    .toLocaleDateString(undefined, { month: 'long' }) + '_' + new Date().getFullYear()
 );
 
-  let link = $derived(`${month}_${year}`)
+
+  let link = $derived(`${month}`)
 </script>
 
 <svelte:head>
         <title> Salaries List for {data.month} {data.year}</title>
 </svelte:head>
   
-
-
  {#await data}
   
   <Loading  name="Salaries"/>
@@ -55,9 +53,7 @@ let month = $state(
       <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 mt-3 sm:mt-0">
         <div class="flex gap-2 items-center">
           <label class="sr-only" for="month-select">Month</label>
-          <MonthYear bind:value={month} mode="month" id="month-select" />
-          <label class="sr-only" for="year-select">Year</label>
-          <MonthYear bind:value={year} mode="year" id="year-select" />
+          <MonthYear bind:value={month}  />
         </div>
 
         <Button href={`/dashboard/salary/${link}`} aria-label="Go to selected month and year" class="flex items-center gap-2">

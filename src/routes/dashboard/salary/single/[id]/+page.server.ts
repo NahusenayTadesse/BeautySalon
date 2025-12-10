@@ -13,66 +13,6 @@ import type { Actions } from "./$types";
 import { fail } from 'sveltekit-superforms';
 import { setFlash } from 'sveltekit-flash-message/server';
 
-
-
-// export const load: PageServerLoad = async ({ params}) => {
-
-
-//      const {id} = params;
-//        const form = await superValidate(zod4(schema));
-
-
-//         const salaryDetail = await db.select({
-//           id: staff.id,
-//           name: sql<string>`TRIM(CONCAT(${staff.firstName}, ' ', COALESCE(${staff.lastName}, '')))`,
-
-//           // sum of all deductions for the staff
-//           deductions: sql<number>`COALESCE(SUM(${deductions.amount}), 0)`,
-
-//           // sum of all commissions from commissionProduct AND commissionService
-//           commissions: sql<number>`
-//            COALESCE(SUM(${commissionProduct.amount}), 0)
-//            + COALESCE(SUM(${commissionService.amount}), 0)
-//           `,
-
-//           // base salary (assumed single row per staff)
-//           baseSalary: salaries.amount,
-//           overtime: overTime.total,
-//           bonus: bonuses.amount
-
-//         })
-//           .from(staff)
-//           .leftJoin(salaries, eq(salaries.staffId, staff.id))
-//           .leftJoin(deductions, eq(deductions.staffId, staff.id))
-//           .leftJoin(overTime, eq(overTime.staffId, staff.id))
-//           .leftJoin(bonuses, eq(bonuses.staffId, staff.id))
-//           .leftJoin(commissionProduct, eq(commissionProduct.staffId, staff.id))
-//           .leftJoin(commissionService, eq(commissionService.staffId, staff.id))
-//           .where((eq(staff.id, id)),
-                   
-//         )
-//           .groupBy(staff.id, salaries.amount)
-//           .then(rows=> rows[0]);
-   
-
-//           const allMethods = await db.select({
-//                 value: paymentMethods.id,
-//                 name: paymentMethods.name,
-//                 description: paymentMethods.description
-//               })
-//               .from(paymentMethods)
-//               .where(eq(paymentMethods.isActive, true));
-       
-
-//         return {
-//             salaryDetail,
-//             allMethods,
-//             form,
-        
-   
-//         }
-// }
-
 import fs from 'node:fs';
 import path from 'node:path';
 import { generateUserId } from '$lib/global.svelte';
@@ -103,7 +43,7 @@ export const actions: Actions = {
     }
 
 
-        const { month,  year,
+        const { monthYear,
   payPeriodStart,  // ISO date string  YYYY-MM-DD
   payPeriodEnd,
   baseSalary, // decimal as string
@@ -137,6 +77,8 @@ export const actions: Actions = {
 
          console.error("Error" + err.message)
           });
+
+          const [month, year] = monthYear.split("_");
       
      await db.insert(payrollEntries).values({
          staffId: Number(id),
@@ -200,7 +142,7 @@ export const actions: Actions = {
          console.error("Error" + err.message)
     }
   },
-    
+
   
        
     };

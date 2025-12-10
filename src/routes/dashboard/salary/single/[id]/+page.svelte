@@ -16,6 +16,13 @@
 	import ComboboxComp from '$lib/formComponents/ComboboxComp.svelte';
 	import MonthYear from '$lib/formComponents/MonthYear.svelte';
 	import FileUpload from '$lib/formComponents/FileUpload.svelte';
+  import { CalendarDate, type DateValue } from "@internationalized/date";
+	import { CalendarIcon, SlidersHorizontal } from "@lucide/svelte";
+  import type { DateRange } from "bits-ui";
+    import * as Popover from "$lib/components/ui/popover/index.js";
+
+  import { cn } from "$lib/utils.js";
+  import { buttonVariants } from "$lib/components/ui/button/index.js";
 
 	let { data } = $props();
 
@@ -61,15 +68,39 @@
 		$form.paidAmount = paidAmount.toString();
 	});
 
-	$form.year = new Date().getFullYear();
-	$form.month = new Date().toLocaleDateString(undefined, { month: 'long' });
+	const now = new Date();
+	$form.monthYear = `${new Intl.DateTimeFormat(undefined, { month: 'long' }).format(now)}_${now.getFullYear()}`;
 
 	$form.taxAmount = 0;
+
+	import { getLocalTimeZone, today } from "@internationalized/date";
+  import { RangeCalendar } from "$lib/components/ui/range-calendar/index.js";
+ 
+  const start = today(getLocalTimeZone());
+  const end = start.add({ days: 30 });
+ 
+  let value = $state({
+    start,
+    end
+  });
+
+  $effect(()=>{
+	 $form.payPeriodStart = value.start.toString(),
+	 $form.payPeriodEnd = value.end.toString()
+  })
+
+  function formatDate(input: DateValue | string | null | undefined) {
+  if (!input || String(input).includes('Pick')) return 'Pick a date'; }
+
+     let contentRef = $state<HTMLElement | null>(null);
+    let open = $state(false);
+
 </script>
 
 <svelte:head>
 	<title>Add New Salary</title>
 </svelte:head>
+
 
 {#snippet fe(
 	label = '',
@@ -104,7 +135,7 @@
 	<div class="flex w-full flex-col justify-start gap-2">
 		<Label for={name}>{label}</Label>
 
-		<MonthYear bind:value={$form[name]} mode={name} />
+		<MonthYear bind:value={$form[name]} />
 
 		<Input
 			type="hidden"
@@ -183,15 +214,42 @@
 				{@render fe('Commissions Total', 'netAmount', 'hidden', 'Enter tax Amount', true)}
 			</div>
 
-			{@render months('Payment Month', 'month')}
-			{@render months('Payment Year', 'year')}
+			{@render months('Payment Month', 'monthYear')}
 
 			{@render fe('Tax Amount', 'taxAmount', 'number', 'Enter tax Amount', true)}
 
 			{@render fe('Paid Amount', 'paidAmount', 'number', 'Enter paid Amount', true)}
 
-			{@render date('payPeriodStart', 'Start of Salary Payment')}
-			{@render date('payPeriodEnd', 'End of Salary Payment')}
+<Label>Payment Start Date - Payment End Date</Label>
+
+<Popover.Root bind:open>
+  <Popover.Trigger
+	class={cn(
+	  buttonVariants({
+		variant: "outline",
+		class: "w-full justify-start text-start font-normal"
+	  }),
+	  !value && "text-muted-foreground"
+	)}
+  >
+	<CalendarIcon />
+	{#if value && value.start && value.end}
+	  <span>{String(value.start)} - {String(value.end)}</span>
+	{:else if value && value.start}
+	  <span>{String(value.start)} - Pick an end date</span>
+	{:else if value && value.end}
+	  <span>Pick a start date - {String(value.end)}</span>
+	{:else}
+	  <span>Pick a date</span>
+	{/if}
+  </Popover.Trigger>
+    <Popover.Content bind:ref={contentRef} class="w-full p-0">
+
+<RangeCalendar bind:value class="relative rounded-lg pb-16 w-auto border shadow-sm" numberOfMonths={2} />
+  </Popover.Content>
+</Popover.Root>			{@render fe('Pay Period Start', 'payPeriodStart', 'hidden', 'Enter tax Amount', true)}
+			{@render fe('Pay Period End', 'payPeriodEnd', 'hidden', 'Enter tax Amount', true)}
+
 			{@render date('paymentDate', 'Date of Staff Member Payment')}
 			{@render combo('paymentMethod', data.allMethods)}
 

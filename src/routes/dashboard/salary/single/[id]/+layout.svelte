@@ -8,7 +8,7 @@
 
 </script>
 <div class="mb-8 flex flex-row flex-wrap gap-4 justify-start">
-<Button href="/dashboard/salary/single/{data.id}" variant={page.url.pathname.endsWith(data.id) || !page.url.pathname.endsWith(data.id + '/') ? 'default' : 'outline'}><Plus /> Add Salary </Button>
+<Button href="/dashboard/salary/single/{data.id}" variant={page.url.pathname.endsWith(data.id) || page.url.pathname.endsWith(data.id + '/') ? 'default' : 'outline'}><Plus /> Add Salary </Button>
 <Button href="/dashboard/salary/single/{data.id}/add-deductions" variant={page.url.pathname === '/dashboard/salary/single/' + data.id + '/add-deductions' ? 'default' : 'outline'}><Plus />Add Deductions</Button>
 <Button href="/dashboard/salary/single/{data.id}/add-bonus" variant={page.url.pathname === '/dashboard/salary/single/' + data.id + '/add-bonus' ? 'default' : 'outline'}><Plus />Add Bonus</Button>
 <Button href="/dashboard/salary/single/{data.id}/add-overtime" variant={page.url.pathname === '/dashboard/salary/single/' + data.id + '/add-overtime' ? 'default' : 'outline'}><Plus />Add Overtime</Button>

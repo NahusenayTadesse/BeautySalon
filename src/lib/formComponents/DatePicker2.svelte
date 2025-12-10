@@ -57,7 +57,7 @@
 	</Popover.Trigger>
 
 	<Popover.Content class="flex flex-wrap gap-2 border-t p-0 px-2 !pt-4">
-		{#each [{ label: 'Today', value: 0 }, { label: 'Tomorrow', value: 1 }, { label: 'In a week', value: 7 }] as preset (preset.value)}
+		<!-- {#each [{ label: 'Today', value: 0 }, { label: 'Tomorrow', value: 1 }, { label: 'In a week', value: 7 }] as preset (preset.value)}
 			<Button
 				variant="outline"
 				size="sm"
@@ -68,7 +68,7 @@
 			>
 				{preset.label}
 			</Button>
-		{/each}
+		{/each} -->
 
 		<Calendar type="single" minValue={todayDate} bind:value={form} />
 	</Popover.Content>

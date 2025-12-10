@@ -3,11 +3,7 @@ import { ACCEPTED_FILE_TYPES, MAX_FILE_SIZE } from "$lib/zodschemas/appointmentS
 
 
 export const addLeavePayrollSchema = z.object({
- month: z.enum([
-    'January','February','March','April','May','June',
-    'July','August','September','October','November','December'
-  ]),
-  year: z.number('Payment Year is required').int().min(2020),
+  monthYear: z.string('Month and Year are required'),
   payPeriodStart: z.string('Pay Start is Requried'),  // ISO date string  YYYY-MM-DD
   payPeriodEnd: z.string('Pay End is Required'),
   baseSalary: z.coerce.number('Salary not found, Please add Salary at the Staff Page'), // decimal as string
