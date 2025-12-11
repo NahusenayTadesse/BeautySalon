@@ -10,6 +10,7 @@ import { superValidate } from 'sveltekit-superforms';
 import { zod4 } from 'sveltekit-superforms/adapters';
 import { loginSchema } from '$lib/ZodSchema';
 import { redirect, setFlash } from 'sveltekit-flash-message/server';
+import { page } from '$app/state';
 
 
 export const load: PageServerLoad = async (event) => {
@@ -41,6 +42,7 @@ export const actions: Actions = {
 		if (!existingUser) {
 			setFlash({ type: 'error', message: "Incorrect username or password" }, event.cookies);
 
+        
 			return fail(400, { form });
 		}
 
@@ -51,7 +53,8 @@ export const actions: Actions = {
 			parallelism: 1
 		});
 		if (!validPassword) {
-			return fail(400, { message: 'Incorrect username or password' });
+			setFlash({ type: 'error', message: "Incorrect username or password" }, event.cookies);
+			return fail(400, { form });
 		}
 
 		const sessionToken = auth.generateSessionToken();

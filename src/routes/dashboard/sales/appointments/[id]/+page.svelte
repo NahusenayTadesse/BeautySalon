@@ -34,7 +34,7 @@
 	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';
 	import FileUpload from '$lib/formComponents/FileUpload.svelte';
 
-	const { form, errors, message, enhance, delayed, capture, restore } = superForm(data.form, {
+	const { form, errors, message, enhance, delayed, capture, restore, allErrors } = superForm(data.form, {
 		taintedMessage: () => {
 			return new Promise((resolve) => {
 				resolve(window.confirm('Do you want to leave?\nChanges you made may not be saved.'));
@@ -102,6 +102,23 @@
 	</div>
 {/snippet}
 <form action="?/addSales" method="post" enctype="multipart/form-data" use:enhance {onsubmit}>
+	{#if $allErrors.length}
+		<div
+			role="alert"
+			aria-live="assertive"
+			class="mb-4 rounded-md border border-red-200 bg-red-50 p-3 text-red-800"
+		>
+			<div class="flex items-center justify-between">
+				<strong class="text-sm font-semibold">Please fix the following</strong>
+			</div>
+
+			<ul class="mt-2 ml-4 list-disc list-inside space-y-1 text-sm">
+				{#each $allErrors as error}
+					<li>{error.messages}</li>
+				{/each}
+			</ul>
+		</div>
+	{/if}
 	<div
 		class="mt-6 w-full max-w-3xl rounded-lg border border-slate-200 bg-white p-4 shadow dark:border-slate-700 dark:bg-slate-800"
 	>

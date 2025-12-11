@@ -9,19 +9,11 @@
   import type { LoginSchema } from '$lib/ZodSchema';
   	import DarkMode from '$lib/components/DarkMode.svelte';
     import { Eye, EyeOff} from "@lucide/svelte"
-	import { toast } from "svelte-sonner";
 
 
   let { data, action="?/login" } : { data : SuperValidated<Infer<LoginSchema>>, action:string } = $props();
 
-  const { form, errors, enhance, message } = superForm(data, {
-     onResult(event) {
-        toast.success('Login Successful')
-     },
-
-     onError(event) {
-        toast.error('Login Failed')
-     },
+  const { form, errors, enhance} = superForm(data, {
   });
 
   let eye = $state(false);

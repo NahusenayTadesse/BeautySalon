@@ -34,7 +34,7 @@
 	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';
 	import FileUpload from '$lib/formComponents/FileUpload.svelte';
 
-	const { form, errors, message, enhance, delayed, capture, restore } = superForm(data.form, {
+	const { form, errors, enhance, delayed, allErrors } = superForm(data.form, {
 		taintedMessage: () => {
 			return new Promise((resolve) => {
 				resolve(window.confirm('Do you want to leave?\nChanges you made may not be saved.'));
@@ -91,15 +91,35 @@
 
 <h1>Sales</h1>
 
+
+
 {#snippet combo(name, items)}
 	<div class="flex w-full flex-col justify-start gap-2">
 		<Label for={name} class="capitalize">{name.replace(/([a-z])([A-Z])/g, '$1 $2')}:</Label>
 
-		<ComboboxComp {name} bind:value={$form[name]} {items} />
+		<ComboboxComp {name} required={true} bind:value={$form[name]} {items} />
 		{#if $errors[name]}<span class="text-red-500">{$errors[name]}</span>{/if}
 	</div>
 {/snippet}
 <form action="?/addSales" method="post" enctype="multipart/form-data" use:enhance {onsubmit}>
+
+	{#if $allErrors.length}
+		<div
+			role="alert"
+			aria-live="assertive"
+			class="mb-4 rounded-md border border-red-200 bg-red-50 p-3 text-red-800"
+		>
+			<div class="flex items-center justify-between">
+				<strong class="text-sm font-semibold">Please fix the following</strong>
+			</div>
+
+			<ul class="mt-2 ml-4 list-disc list-inside space-y-1 text-sm">
+				{#each $allErrors as error}
+					<li>{error.messages}</li>
+				{/each}
+			</ul>
+		</div>
+	{/if}
 	<div
 		class="mt-6 w-full max-w-3xl rounded-lg border border-slate-200 bg-white p-4 shadow dark:border-slate-700 dark:bg-slate-800"
 	>
@@ -117,7 +137,9 @@
 					{i + 1}
 					<div class={arrParts}>
 						<Label for="staff">Selling Staff Member</Label>
-						<ComboboxComp items={data.staffes} name="product_staff" bind:value={value.staff} />
+						<ComboboxComp items={data.staffes} required={true} name="product_staff" bind:value={value.staff} />
+
+					  
 
 						{#if $errors.products?.[i]?.staff}
 							<p class={errorsStyle}>{$errors.products[i].staff}</p>
@@ -127,7 +149,7 @@
 					<div class={arrParts}>
 						<Label for="product">Selling Product</Label>
 
-						<ComboboxComp items={data.products} name="product" bind:value={value.product} />
+						<ComboboxComp items={data.products} name="product" required={true} bind:value={value.product} />
 
 						{#if $errors.products?.[i]?.product}
 							<p class={errorsStyle}>{$errors.products[i].product}</p>
@@ -136,7 +158,7 @@
 					<div class={arrParts}>
 						<Label for="noofproducts">Number of Product</Label>
 
-						<Input type="number" min="1" name="noofproducts" bind:value={value.noofproducts} />
+						<Input type="number" min="1" name="noofproducts"  bind:value={value.noofproducts} />
 
 						{#if $errors.products?.[i]?.noofproducts}
 							<p class={errorsStyle}>{$errors.products[i].noofproducts}</p>
@@ -175,7 +197,7 @@
 					<div class={arrParts}>
 						<Label for="staff">Service Provider</Label>
 
-						<ComboboxComp items={data.staffes} name="service_staff" bind:value={value.staff} />
+						<ComboboxComp items={data.staffes} required={true} name="service_staff" bind:value={value.staff} />
 						{#if $errors.services?.[i]?.staff}
 							<p class={errorsStyle}>{$errors.services[i].staff}</p>
 						{/if}
@@ -183,7 +205,7 @@
 					<div class={arrParts}>
 						<Label for="staff">Service</Label>
 
-						<ComboboxComp items={data.services} name="service" bind:value={value.service} />
+						<ComboboxComp items={data.services} required={true} name="service" bind:value={value.service} />
 
 						{#if $errors.services?.[i]?.service}
 							<p class={errorsStyle}>{$errors.services[i].service}</p>
@@ -284,7 +306,7 @@
 		{/if}
 
 		<div class="mt-3 flex gap-2">
-			<Button type="submit">
+			<Button type="submit" >
 				{#if $delayed}
 					<LoadingBtn name="Adding Sale" />
 				{:else}
@@ -307,3 +329,5 @@
 		</div>
 	</div>
 </form>
+ 
+{$form?.products?.[0]?.staff}

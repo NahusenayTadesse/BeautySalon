@@ -1,9 +1,10 @@
 <script lang="ts">
 	import Login from '$lib/forms/Login.svelte';
 	
-	import type { ActionData } from './$types';
+	import type { ActionData, PageData } from './$types';
 
-	let { data, form }: { form: ActionData  } = $props();
+	let { data, form }: { data: PageData, form: ActionData  } = $props();
+	
 </script>
 <svelte:head>
 	<title>Login</title>
@@ -11,7 +12,7 @@
 
 
 <div class="flex h-screen w-full items-center justify-center px-4">
-	<p style="color: red">{form?.message ?? ''}</p>
+
 <Login data={data?.form}  action="?/login"/>
 </div>
 

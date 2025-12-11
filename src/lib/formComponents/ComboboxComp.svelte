@@ -9,7 +9,7 @@
 	import { selectItem } from "$lib/global.svelte";
  
 
-  let { items, name, value=$bindable() } = $props();
+  let { items, name, value=$bindable(), required = false } = $props();
  let open = $state(false);
  let triggerRef = $state<HTMLButtonElement>(null!);
  
@@ -44,7 +44,7 @@
    </Button>
   {/snippet}
  </Popover.Trigger>
- <input type="hidden" bind:value {name} /> 
+ <input type="hidden"  bind:value {name} {required} /> 
 
  <Popover.Content class="w-full p-0">
   <Command.Root>

@@ -80,6 +80,7 @@ export const actions: Actions = {
         customerId: customer.id,
         appointmentDate,
         appointmentTime,
+        appointmentStatusId: 1,
         notes,
         createdBy: locals?.user?.id,
         branchId: locals?.user?.branch
@@ -87,12 +88,11 @@ export const actions: Actions = {
 
       const today = new Date();
       
-       const existingReport = await db.select({
+        const existingReport = await db.select({
           id: reports.id
        }).from(reports).where(
           (and(
           eq(reports.reportDate, sql`CURDATE()`),
-          eq(reports.branchId, locals?.user?.branch)
           )
         )
       
@@ -101,11 +101,10 @@ export const actions: Actions = {
        if(existingReport){
           await db.update(reports).set({
             bookedAppointments: sql<number>`${reports.bookedAppointments} + 1`
-          }).where(and(
-            
+          }).where(
+        
             eq(reports.id, existingReport.id)
 
-          )
           );
        } else {
           await db.insert(reports).values({
@@ -160,7 +159,7 @@ export const actions: Actions = {
         customerId,
         appointmentDate,
         appointmentTime,
-        statusId: 4,
+        statusId: 1,
         notes,
         createdBy: locals?.user?.id,
         branchId: locals?.user?.branch
@@ -173,9 +172,7 @@ export const actions: Actions = {
           id: reports.id
        }).from(reports).where(
           (and(
-          eq(reports.reportDate, sql`CURDATE()`),
-          eq(reports.branchId, locals?.user?.branch)
-          )
+          eq(reports.reportDate, sql`CURDATE()`),          )
         )
       
        ).then(rows => rows[0]);

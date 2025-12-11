@@ -20,6 +20,7 @@ import { zod4 } from 'sveltekit-superforms/adapters';
 import { salesSchema as schema } from '$lib/zodschemas/salesSchema';
 import type { Actions } from './$types';
 import { setFlash } from 'sveltekit-flash-message/server';
+import { fail } from '@sveltejs/kit';
 
 export async function load({ locals }) {
 	const fetchedServices = await db
@@ -72,7 +73,6 @@ export async function load({ locals }) {
 		staffes: fetchedStaff,
 		customers: fetchedCustomer,
 		allMethods,
-
 		form
 	};
 }
@@ -97,6 +97,8 @@ export const actions: Actions = {
 
 		const { paymentMethod, total, receipt } = form.data;
 
+	
+
 		const product_staff = formData.getAll('product_staff'); 
 		const product = formData.getAll('product');
 		const noofproducts = formData.getAll('noofproducts');
@@ -105,7 +107,25 @@ export const actions: Actions = {
 		const service_staff = formData.getAll('service_staff');
 		const service = formData.getAll('service');
 		const serviceTip = formData.getAll('serviceTip');
+          
+		const isProductStaffEmpty = product_staff.length === 0;
+        const isProductEmpty = product.length === 0;
 
+const isServiceStaffEmpty = service_staff.length === 0;
+const isServiceEmpty = service.length === 0;
+ 
+ console.log(product.length + ' ' + product_staff.length)
+
+// Validation: both must match (either both empty or both filled)
+if (isProductStaffEmpty !== isProductEmpty) {
+setFlash({ type: 'error', message: "Please check your form data." }, cookies);
+  return fail(400, { form });}
+
+if (isServiceStaffEmpty !== isServiceEmpty) {
+setFlash({ type: 'error', message: "Please check your form data." }, cookies);
+	return fail(400, { form }); 
+}
+		 
 
 		// if (!form.valid) {
 		//    // Stay on the same page and set a flash message
@@ -303,6 +323,10 @@ export const actions: Actions = {
 			return setFlash({ type: 'success', message: 'New Sale Successfully Added' }, cookies);
 		} catch (e) {
 		setFlash({ type: 'error', message: 'Error ' + e }, cookies);
+	      
+		} 
+		return {
+			 form
 		}
 	}
 };

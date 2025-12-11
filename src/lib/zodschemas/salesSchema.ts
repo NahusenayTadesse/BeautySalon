@@ -14,7 +14,9 @@ const money = z
 
 const productLineSchema = z.object({
   staff: z
-    .number("Staff is required"),
+    .number("Staff is required")
+    .int()
+    .positive("Staff is required"),
   product: z
     .number({ message: "Product is required" })
     .int()
@@ -29,7 +31,9 @@ const productLineSchema = z.object({
 
 const serviceLineSchema = z.object({
   staff: z
-    .number("Staff is required"),
+   .number("Staff is required")
+    .int()
+    .positive("Staff is required"),
   service: z
     .number({ message: "Service is required" })
     .int()
@@ -44,12 +48,12 @@ export const salesSchema = z
   .object({
     products: z.array(productLineSchema),
     services: z.array(serviceLineSchema),
-    paymentMethod: z.number('Payment Method is required'),
+    paymentMethod: z.number('Payment Method is required').int().positive('Payment Method is required'),
     productAmount: z.number().nonnegative('Product Amount cannot be less than zero'),
     serviceAmount: z.number().nonnegative('Service Amount cannot be less than zero'),
     total: z.number().nonnegative('Total cannot be less than zero'),
     receipt: z
-    .instanceof(File, { message: 'A file is required.' })
+    .instanceof(File, { message: 'Please upload a valid image (JPG, PNG, WebP, HEIC/HEIF) or PDF.' })
     .refine((file) => file.size > 0, 'File cannot be empty.')
     .refine((file) => file.size <= MAX_FILE_SIZE, `Max file size is 10MB.`)
     .refine((file) => ACCEPTED_FILE_TYPES.includes(file.type), 
