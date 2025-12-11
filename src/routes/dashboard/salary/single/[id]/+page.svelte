@@ -26,7 +26,7 @@
 
 	let { data } = $props();
 
-	const { form, errors, enhance, delayed, capture, restore } = superForm(data.form, {
+	const { form, errors, enhance, delayed, capture, restore, allErrors } = superForm(data.form, {
 		taintedMessage: () => {
 			return new Promise((resolve) => {
 				resolve(window.confirm('Do you want to leave?\nChanges you made may not be saved.'));
@@ -75,6 +75,7 @@
 
 	import { getLocalTimeZone, today } from "@internationalized/date";
   import { RangeCalendar } from "$lib/components/ui/range-calendar/index.js";
+	import Errors from '$lib/formComponents/Errors.svelte';
  
   const start = today(getLocalTimeZone());
   const end = start.add({ days: 30 });
@@ -193,7 +194,8 @@
 			class="flex flex-col gap-4"
 			method="POST"
 			enctype="multipart/form-data"
-		>
+		>  	<Errors allErrors={$allErrors} />
+
 			<div class="flex flex-col gap-0">
 				{@render totals($form.baseSalary, 'Salary Amount')}
 				{@render fe('Salary', 'baseSalary', 'hidden', 'Enter tax Amount', true)}

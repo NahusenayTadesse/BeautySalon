@@ -18,6 +18,7 @@
 	import Delete from '$lib/forms/Delete.svelte';
 	import Empty from '$lib/components/Empty.svelte';
 	import SingleView from '$lib/components/SingleView.svelte';
+	import Errors from '$lib/formComponents/Errors.svelte';
 
 	let count = $derived(
 		(data.customer?.appointmentCount ?? 0) > 1 ? 'Appointments Made' : 'Appointment Made'
@@ -33,7 +34,7 @@
 		{ name: 'Number of Days Since Joined', value: data.customer?.daysSinceJoined + ' Days' }
 	]);
 
-	const { form, errors, enhance, delayed, capture, restore } = superForm(data.form, {
+	const { form, errors, enhance, delayed, capture, restore, allErrors } = superForm(data.form, {
 		validators: zod4Client(editCustomer),
 		resetForm: false
 	});
@@ -116,7 +117,8 @@
 				method="post"
 				id="edit"
 				class="flex w-full flex-col gap-4 p-4"
-			>
+			>  	<Errors allErrors={$allErrors} />
+
 				{@render fe('Customer First Name', 'firstName', 'text', 'Edit Customer First Name', true)}
 				{@render fe('Customer Last Name', 'lastName', 'text', 'Edit Customer Last Name')}
 				{@render fe('Customer Phone', 'phone', 'tel;', 'Edit Customer Phone', true)}

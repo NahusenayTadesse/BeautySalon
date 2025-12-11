@@ -19,11 +19,12 @@
       import { CalendarDate, getLocalTimeZone, today } from "@internationalized/date";
   import { Calendar } from "$lib/components/ui/calendar/index.js";
 	import { cn } from '$lib/utils.js';
+	import Errors from '$lib/formComponents/Errors.svelte';
 
 	let { data } = $props();
 	
 
-	const { form, errors, enhance, delayed,  capture, restore } = superForm(data.form, {
+	const { form, errors, enhance, delayed,  capture, restore, allErrors } = superForm(data.form, {
 		taintedMessage: () => {
 			return new Promise((resolve) => {
 				resolve(window.confirm('Do you want to leave?\nChanges you made may not be saved.'));
@@ -33,7 +34,7 @@
 		validators: zod4Client(appointmentSchema)
 	});
 
-	const { form: existingForm, errors: existingErrors, enhance: existingEnhance, delayed: existingDelayed, capture: existingCapture, restore: existingRestore } = superForm(data.existingForm, {
+	const { form: existingForm, errors: existingErrors, enhance: existingEnhance, delayed: existingDelayed, capture: existingCapture, restore: existingRestore, allErrors: existingAllErrors } = superForm(data.existingForm, {
 		taintedMessage: () => {
 			return new Promise((resolve) => {
 				resolve(window.confirm('Do you want to leave?\nChanges you made may not be saved.'));
@@ -221,6 +222,9 @@ $effect(()=> {
 
 
 		<form use:existingEnhance onsubmit={() => selectedCustomer=null} action="?/addExistingCustomerAppointment" id='existing'  class="flex flex-col gap-4" method="post" >
+
+				<Errors allErrors={$existingAllErrors} />
+
 			<div class="flex flex-col gap-4">
 		
 			<!-- {@render fe('Customer Gender', 'gender', 'text', 'Select Customer Gender', true)} -->
@@ -410,6 +414,9 @@ $effect(()=> {
 
 
 		<form use:enhance action="?/addAppointment" id="new" class="flex flex-col gap-4" method="post" >
+
+				<Errors allErrors={$allErrors} />
+
 			<div class="grid lg:grid-cols-2 grid-col-1 gap-4">
 			{@render fe('Customer First Name', 'firstName', 'text', 'Enter Customer First Name', true)}
 			{@render fe('Customer Last Name', 'lastName', 'text', 'Enter Customer Last Name', false)}

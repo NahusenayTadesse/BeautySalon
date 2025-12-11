@@ -14,11 +14,12 @@ import { Input } from "$lib/components/ui/input/index.js";
 	import { inventoryItemSchema } from "$lib/ZodSchema";
 	import { superForm } from "sveltekit-superforms/client";
 	import SelectComp from "$lib/formComponents/SelectComp.svelte";
+	import Errors from "$lib/formComponents/Errors.svelte";
 
 
 	let { data } = $props();
 
-	const { form, errors, enhance, delayed, capture, restore } = superForm(
+	const { form, errors, enhance, delayed, capture, restore, allErrors } = superForm(
 		data.form,
 		{
 			taintedMessage: () => {
@@ -79,6 +80,8 @@ import { Input } from "$lib/components/ui/input/index.js";
   <Card.Content>
 
 <form use:enhance action="?/addProduct" id="main" class="flex flex-col gap-4" method="POST" >
+		<Errors allErrors={$allErrors} />
+
   {@render fe('Product Name', 'productName', 'text', "Enter Product Name", true)}
     {@render selects('category', data.allCategories)}
 

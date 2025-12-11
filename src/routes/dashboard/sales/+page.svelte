@@ -33,6 +33,7 @@
 	import { fly } from 'svelte/transition';
 	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';
 	import FileUpload from '$lib/formComponents/FileUpload.svelte';
+	import Errors from '$lib/formComponents/Errors.svelte';
 
 	const { form, errors, enhance, delayed, allErrors } = superForm(data.form, {
 		taintedMessage: () => {
@@ -103,23 +104,8 @@
 {/snippet}
 <form action="?/addSales" method="post" enctype="multipart/form-data" use:enhance {onsubmit}>
 
-	{#if $allErrors.length}
-		<div
-			role="alert"
-			aria-live="assertive"
-			class="mb-4 rounded-md border border-red-200 bg-red-50 p-3 text-red-800"
-		>
-			<div class="flex items-center justify-between">
-				<strong class="text-sm font-semibold">Please fix the following</strong>
-			</div>
-
-			<ul class="mt-2 ml-4 list-disc list-inside space-y-1 text-sm">
-				{#each $allErrors as error}
-					<li>{error.messages}</li>
-				{/each}
-			</ul>
-		</div>
-	{/if}
+	
+	<Errors allErrors={$allErrors} />
 	<div
 		class="mt-6 w-full max-w-3xl rounded-lg border border-slate-200 bg-white p-4 shadow dark:border-slate-700 dark:bg-slate-800"
 	>

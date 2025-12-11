@@ -13,11 +13,12 @@
 	import { zod4Client } from 'sveltekit-superforms/adapters';
 	import { deductionSchema as expensesSchema } from './deductions';
 	import { superForm, fileProxy } from 'sveltekit-superforms/client';
+	import Errors from '$lib/formComponents/Errors.svelte';
 	;
 
 	let { data } = $props();
 
-	const { form, errors, enhance, delayed, message, capture, restore } = superForm(data.form, {
+	const { form, errors, enhance, delayed, message, capture, restore, allErrors } = superForm(data.form, {
 		taintedMessage: () => {
 			return new Promise((resolve) => {
 				resolve(window.confirm('Do you want to leave?\nChanges you made may not be saved.'));
@@ -27,7 +28,6 @@
 		validators: zod4Client(expensesSchema)
 	});
 
-	const file = fileProxy(form, 'reciept')
 
 	export const snapshot: Snapshot = { capture, restore };
 </script>
@@ -86,7 +86,9 @@
 			class="flex flex-col gap-4"
 			method="post"
 			enctype="multipart/form-data"
-		>
+		> 
+			<Errors allErrors={$allErrors} />
+
 			{@render date('deductionDate', 'Deduction Date')}
 {@render fe(
 				'Deduction Type',

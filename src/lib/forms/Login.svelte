@@ -9,11 +9,12 @@
   import type { LoginSchema } from '$lib/ZodSchema';
   	import DarkMode from '$lib/components/DarkMode.svelte';
     import { Eye, EyeOff} from "@lucide/svelte"
+	import Errors from "$lib/formComponents/Errors.svelte";
 
 
   let { data, action="?/login" } : { data : SuperValidated<Infer<LoginSchema>>, action:string } = $props();
 
-  const { form, errors, enhance} = superForm(data, {
+  const { form, errors, enhance, allErrors} = superForm(data, {
   });
 
   let eye = $state(false);
@@ -31,6 +32,7 @@
   </Card.Header>
   <Card.Content>
     <form method="POST" {action} use:enhance>
+    	<Errors allErrors={$allErrors} />
 
     <div class="grid gap-4">
       <div class="grid gap-2">

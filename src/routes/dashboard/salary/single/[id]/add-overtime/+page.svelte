@@ -13,11 +13,12 @@
 	import { zod4Client } from 'sveltekit-superforms/adapters';
 	import { overtimeSchema as expensesSchema } from './schema'
 	import { superForm } from 'sveltekit-superforms/client';
+	import Errors from '$lib/formComponents/Errors.svelte';
 	;
 
 	let { data } = $props();
 
-	const { form, errors, enhance, delayed, message, capture, restore } = superForm(data.form, {
+	const { form, errors, enhance, delayed, message, capture, restore, allErrors } = superForm(data.form, {
 		taintedMessage: () => {
 			return new Promise((resolve) => {
 				resolve(window.confirm('Do you want to leave?\nChanges you made may not be saved.'));
@@ -91,7 +92,9 @@
 			id="main"
 			class="flex flex-col gap-4"
 			method="post"
-		>
+		>   
+		 	<Errors allErrors={$allErrors} />
+
 			{@render date('date', 'Overtime Date')}
 
             {@render fe(

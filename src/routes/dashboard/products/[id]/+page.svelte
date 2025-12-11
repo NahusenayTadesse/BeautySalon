@@ -2,8 +2,7 @@
 	import { Input } from '$lib/components/ui/input/index.js';
 	import { Label } from '$lib/components/ui/label/index.js';
 	import { zod4Client } from 'sveltekit-superforms/adapters';
-	import { bookingFeeSchema } from '$lib/zodschemas/appointmentSchema';
-	import { editAppointment, editProduct } from '$lib/ZodSchema';
+	import { editProduct } from '$lib/ZodSchema';
 
 	let { data } = $props();
 
@@ -19,6 +18,7 @@
 	import { Textarea } from '$lib/components/ui/textarea/index.js';
 	import Delete from '$lib/forms/Delete.svelte';
 	import SingleView from '$lib/components/SingleView.svelte';
+	import Errors from '$lib/formComponents/Errors.svelte';
 
 	let singleTable = $derived([
 		{ name: 'Name', value: data.product?.name },
@@ -42,7 +42,7 @@
 		{ name: 'Sales in Money', value: data.product?.paidAmount + ' Birr in Transactions' }
 	]);
 
-	const { form, errors, enhance, delayed, capture, restore } = superForm(data.form, {
+	const { form, errors, enhance, delayed, capture, restore, allErrors } = superForm(data.form, {
 		validators: zod4Client(editProduct),
 		resetForm: false
 	});
@@ -64,7 +64,6 @@
 
 	let edit = $state(false);
 
-	let search = false;
 </script>
 
 <svelte:head>
@@ -91,6 +90,8 @@
 	{#if edit}
 		<div class="w-full p-4">
 			<form action="?/editProduct" use:enhance class="flex flex-col gap-4" id="edit" method="post">
+				<Errors allErrors={$allErrors} />
+
 				{@render fe('Product Name', 'productName', 'text', 'Add Product Name', true)}
 
 				{@render selects('category', data.categories)}
