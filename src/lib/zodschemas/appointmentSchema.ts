@@ -122,11 +122,6 @@ export const editStaff = z.object({
     .string({ message: 'Hired At date is required' })
     .min(1, "Hired At date is required"),
 
-  salary: z
-    .coerce
-    .number({ message: "Salary is required" })
-    .nonnegative({ message: "Salary must be a non-negative number" }),
-
    govId: z
     .instanceof(File, { message: 'A file is required.' })
     .refine((file) => file.size > 0, 'File cannot be empty.')

@@ -28,10 +28,6 @@
 		{ name: 'Position', value: data.staffMember.category },
 		{ name: 'Hired On', value: data.staffMember?.hireDate },
 		{ name: 'Added By', value: data.staffMember?.addedBy },
-		{
-			name: 'Current Salary',
-			value: data.staffMember?.salary === null ? 'Not Added Yet' : data.staffMember?.salary + ' ETB'
-		},
 		{ name: 'Goverment Id', value: data.staffMember?.govId },
 		{ name: 'Contract', value: data.staffMember?.contract }
 	]);
@@ -107,7 +103,6 @@
 				{@render fe('Phone', 'phone', 'tel', 'Enter Phone Number', true)}
 
 				{@render fe('Email', 'email', 'email', 'Enter Email', true)}
-				{@render fe('Salary', 'salary', 'number', 'Enter Salary', true)}
 
 				<div class="flex w-full flex-col justify-start gap-2">
 					<Label for="hiredAt" class="capitalize">Hired On</Label>
@@ -250,6 +245,29 @@
 		</div>
 	</div>
 {/snippet}
+<div class="my-8 w-full lg:w-1/2">
+<div class="mb-6">
+		<h3 class="text-lg font-semibold">Product Tips Today</h3>
+		<p class="mb-2 text-sm text-gray-500 dark:text-gray-400">
+			Tips earned from product sales by {data?.staffMember?.firstName}
+			{data?.staffMember?.lastName}.
+		</p>
+		<DataTable data={data.productTipsToday} columns={commissionProduct} search={false} />
+
+		{@render totals(data.productTipsToday, 'Product Tips')}
+	</div>
+
+	<div class="mb-6">
+		<h3 class="text-lg font-semibold">Service Tips Today</h3>
+		<p class="mb-2 text-sm text-gray-500 dark:text-gray-400">
+			Tips earned from services performed by {data?.staffMember?.firstName} Today
+			{data?.staffMember?.lastName}.
+		</p>
+		<DataTable data={data.serviceTipsToday} columns={commissionService} search={false} />
+
+		{@render totals(data.serviceTipsToday, 'Service Tips')}
+	</div>
+</div>
 
 <div class="my-8 w-full lg:w-1/2">
 	<DateMonth

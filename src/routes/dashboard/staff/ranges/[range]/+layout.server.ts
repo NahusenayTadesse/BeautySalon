@@ -6,9 +6,10 @@ import {  editStaff as schema } from '$lib/zodschemas/appointmentSchema';
 
 
 import { db } from "$lib/server/db";
-import {  staff, staffTypes, salaries, user  } from "$lib/server/db/schema";
+import {  products, services, staff, staffTypes, tipsProduct, transactionProducts, transactionServices, user  } from "$lib/server/db/schema";
 import { eq, and, sql } from "drizzle-orm";
 import type { LayoutServerLoad } from "./$types";
+import { tipsService } from '$lib/server/db/schema';
 
 export const load: LayoutServerLoad = async ({ params, locals }) => {
 
@@ -30,7 +31,6 @@ export const load: LayoutServerLoad = async ({ params, locals }) => {
              phone: staff.phone,
              email: staff.email,
              status: staff.employmentStatus,
-             salary: salaries.amount,
              hireDate: sql<string>`DATE_FORMAT(${staff.hireDate}, '%Y-%m-%d')`,
              govId: staff.govtId,
               contract: staff.contract,
@@ -42,7 +42,6 @@ export const load: LayoutServerLoad = async ({ params, locals }) => {
          )
          .from(staff)
          .leftJoin(staffTypes, eq(staff.type, staffTypes.id))
-         .leftJoin(salaries, eq(staff.id, salaries.staffId))
          .leftJoin(user, eq(staff.createdBy, user.id))
            .where(
              and  
@@ -50,7 +49,44 @@ export const load: LayoutServerLoad = async ({ params, locals }) => {
                eq(staff.branchId, locals?.user?.branch),
                eq(staff.id, id)
              ))
-         .then(rows => rows[0]);
+         .then(rows => rows[0]); 
+
+const today = new Date().toISOString().split('T')[0];
+          const serviceTipsToday = await db.select({
+                 staffId: tipsService.staffId,
+                 service: services.name,
+                 amount: tipsService.amount,
+                 date: tipsService.tipDate,
+             })
+             .from(tipsService)
+            .leftJoin(transactionServices, eq(tipsService.saleItemId, transactionServices.id))
+           .leftJoin(services, eq(transactionServices.serviceId, services.id))
+         
+             .where(and(
+               
+                 eq(tipsService.staffId, id),
+                 eq(tipsService.tipDate, today)
+             )
+             );
+         
+         
+              const productTipsToday = await db  
+           .select({
+             staffId: tipsProduct.staffId,
+             product: products.name,
+             amount: tipsProduct.amount,
+             date: tipsProduct.tipDate,
+           })
+           .from(tipsProduct)
+           .leftJoin(transactionProducts, eq(tipsProduct.saleItemId, transactionProducts.id))
+           .leftJoin(products, eq(transactionProducts.productId, products.id))
+         
+           .where(
+             and(
+             eq(tipsProduct.staffId, id),
+             eq(tipsProduct.tipDate, today)
+             )
+           );
 
     const categories = await db
                 .select({
@@ -63,6 +99,8 @@ export const load: LayoutServerLoad = async ({ params, locals }) => {
      return {
             staffMember,
             form,
-            categories
+            categories,
+            productTipsToday,
+            serviceTipsToday
      }
 } 

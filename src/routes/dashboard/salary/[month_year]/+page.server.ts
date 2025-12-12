@@ -1,6 +1,6 @@
 import { db } from "$lib/server/db";
 import { paymentMethods, payrollEntries,  salaries,  staff, staffTypes } from "$lib/server/db/schema";
-import { and, desc, eq, sql } from "drizzle-orm";
+import { and, desc, eq, isNull, sql } from "drizzle-orm";
 
 
 import type { PageServerLoad } from "../$types";
@@ -62,7 +62,7 @@ const payrollData = await db
         )
     )
     .leftJoin(paymentMethods, eq(payrollEntries.paymentMethodId, paymentMethods.id))
-    .leftJoin(salaries, eq(salaries.staffId, staff.id))
+    .leftJoin(salaries, and(eq(salaries.staffId, staff.id), isNull(salaries.endDate)))
     .leftJoin(staffTypes, eq(staffTypes.id, staff.type))
     .orderBy(desc(payrollEntries.paymentDate));
 

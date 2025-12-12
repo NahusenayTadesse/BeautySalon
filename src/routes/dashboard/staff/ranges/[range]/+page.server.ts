@@ -7,7 +7,7 @@ import {  editStaff as schema } from '$lib/zodschemas/appointmentSchema';
 
 
 import { db } from "$lib/server/db";
-import {  staff, salaries, deductions, commissionService, commissionProduct, bonuses, overTime, products, services, transactionProducts, transactionServices, tipsProduct, tipsService  } from "$lib/server/db/schema";
+import {  staff, deductions, commissionService, commissionProduct, bonuses, overTime, products, services, transactionProducts, transactionServices, tipsProduct, tipsService  } from "$lib/server/db/schema";
 import { eq, and, sql } from "drizzle-orm";
 import type { Actions, PageServerLoad } from "./$types";
 import { fail } from 'sveltekit-superforms';
@@ -205,9 +205,9 @@ export const actions: Actions = {
       setFlash({ type: 'error', message: "Please check your form data." }, cookies);
       return fail(400, { form });
     }
-    
+        
 
-        const { staffId, firstName, lastName, position, phone, email, salary, hiredAt, govId, contract } = form.data; 
+        const { staffId, firstName, lastName, position, phone, email, hiredAt, govId, contract } = form.data; 
 
 
 
@@ -278,13 +278,6 @@ export const actions: Actions = {
         updatedBy: locals?.user?.id
     }).where(eq(staff.id, staffId));
 
-    await db.update(salaries).set({
-           amount: salary,
-           staffId,
-           updatedBy: locals.user?.id,
-       })
- delete form.data.govId;
-   delete form.data.contract;
  
       // Stay on the same page and set a flash message
       setFlash({ type: 'success', message: "Service Updated Successuflly" }, cookies);
@@ -298,12 +291,7 @@ export const actions: Actions = {
      
         const { range } = params;
 
-     const [
-  y1, m1, d1,
-  y2, m2, d2,
-  id
-] = range.split("-");
-         
+    const id = range.split("-").pop()!;    
     
         try {
         if (!id) {

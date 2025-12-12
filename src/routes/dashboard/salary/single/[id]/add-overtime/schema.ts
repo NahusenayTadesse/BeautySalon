@@ -17,4 +17,4 @@ export const overtimeSchema = z.object({
 });
 
 // To use this schema for a form, you might extract the type:
-export type InsertExpenseForm = z.infer<typeof deductionSchema>;
+export type InsertExpenseForm = z.infer<typeof overtimeSchema>;
