@@ -1,10 +1,10 @@
     {
-    "name": "NSS Salon Manager",
-    "short_name": "NSS Salon",
+    "name": "Suna Marketing Salon Management System",
+    "short_name": "Suna Marketing",
     "start_url": "/dashboard",
     "display": "standalone",
     "background_color": "#ffffff",
-    "theme_color": "#ff0000",
+    "theme_color": "#020618",
     "orientation": "portrait-primary",
     "icons": [
         {
