@@ -6,7 +6,7 @@ import { addLeavePayrollSchema as schema } from './schema';
 
 import { db } from "$lib/server/db";
 import {  salaries, paymentMethods, overTime, deductions, bonuses, commissionProduct, commissionService, staff  } from "$lib/server/db/schema";
-import { eq, sql} from "drizzle-orm";
+import { eq, isNull, sql, and} from "drizzle-orm";
 import type { LayoutServerLoad } from "./$types";
 export const load: LayoutServerLoad = async ({ params }) => {
 
@@ -35,7 +35,7 @@ export const load: LayoutServerLoad = async ({ params }) => {
 
         })
           .from(staff)
-          .leftJoin(salaries, eq(salaries.staffId, staff.id))
+          .leftJoin(salaries, and(eq(salaries.staffId, staff.id), isNull(salaries.endDate)))
           .leftJoin(deductions, eq(deductions.staffId, staff.id))
           .leftJoin(overTime, eq(overTime.staffId, staff.id))
           .leftJoin(bonuses, eq(bonuses.staffId, staff.id))
