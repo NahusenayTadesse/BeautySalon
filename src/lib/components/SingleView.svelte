@@ -7,7 +7,7 @@
  bg-white shadow-lg lg:w-md lg:min-w-3xl dark:bg-black dark:shadow-md dark:shadow-gray-900"
 >
 	<div
-		class="from-dark flex flex-col items-start justify-start rounded-lg bg-gradient-to-r to-black px-8 py-6 text-white"
+		class="from-dark flex flex-col items-center justify-start rounded-lg bg-gradient-to-r to-black px-8 py-6 text-white w-full"
 	>
 		<h1 class="text-center">{title}</h1>
 	</div>
