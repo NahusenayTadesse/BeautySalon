@@ -36,7 +36,7 @@
  {:else}
      <h2 class="text-2xl my-4">No of Products {data.productList?.length} </h2>
 
- <div class="lg:w-full w-[350px] lg:p-0 p-2 mt-8 mb-4 pt-4">
+ <div class="lg:w-full w-[350px] lg:p-0 p-0 mt-8 mb-4 pt-4">
 
    <DataTable data={data.productList} {columns} filterBlacklist={['id', 'description', 'name']} />
  </div>

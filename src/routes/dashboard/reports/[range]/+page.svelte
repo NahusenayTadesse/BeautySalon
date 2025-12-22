@@ -30,10 +30,11 @@
 		<h2 class="my-4 text-2xl">No of Reports {data.allReports?.length}</h2>
 
 		<DateMonth start={data?.start} end={data?.end} link="/dashboard/reports" />
-
+		<!--
 		<div class="mt-8 mb-4 w-[350px] p-2 px-2 pt-4 lg:w-[1250px] lg:p-0">
 			<DataTable data={data.allReports} {columns} />
-		</div>
+		</div> -->
+		<DataTable data={data.allReports} {columns} />
 	{/if}
 {:catch}
 	<div class="flex h-screen w-screen flex-col items-center justify-center">
