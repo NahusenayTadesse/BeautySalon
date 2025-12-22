@@ -116,7 +116,7 @@
 				</div>
 				<div class="flex flex-row items-center gap-4 py-4">
 					<Input
-						type="text"
+						type="search"
 						placeholder="Search Table..."
 						class="w-2/3"
 						bind:value={globalFilter}

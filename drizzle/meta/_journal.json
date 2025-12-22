@@ -8,6 +8,20 @@
       "when": 1765027313306,
       "tag": "0000_sudden_maria_hill",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "5",
+      "when": 1766432444421,
+      "tag": "0001_lowly_silver_sable",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1766432742523,
+      "tag": "0002_powerful_onslaught",
+      "breakpoints": true
     }
   ]
 }

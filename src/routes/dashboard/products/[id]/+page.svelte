@@ -19,6 +19,7 @@
 	import Delete from '$lib/forms/Delete.svelte';
 	import SingleView from '$lib/components/SingleView.svelte';
 	import Errors from '$lib/formComponents/Errors.svelte';
+	import Adjustment from '$lib/forms/Adjustment.svelte';
 
 	let singleTable = $derived([
 		{ name: 'Name', value: data.product?.name },
@@ -63,7 +64,6 @@
 	//   let date = $derived(dateProxy(editForm, 'appointmentDate', { format: 'date'}));
 
 	let edit = $state(false);
-
 </script>
 
 <svelte:head>
@@ -83,6 +83,7 @@
 			{/if}
 		</Button>
 		<Delete redirect="/dashboard/products" />
+		<Adjustment data={data.adjustForm} name={data.product?.name} />
 	</div>
 	{#if edit === false}
 		<div class="w-full p-4"><SingleTable {singleTable} /></div>

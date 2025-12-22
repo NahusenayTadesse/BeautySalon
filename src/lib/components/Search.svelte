@@ -42,7 +42,7 @@
 		<ScrollArea class="h-auto rounded-md border p-2">
 			<h5 class="text-center">Search Anything</h5>
 			<Command.Root class="rounded-lg shadow-md md:min-w-[450px]">
-				<Command.Input placeholder="Type a command or search..." />
+				<Command.Input placeholder="Type a command or search..." type="search" />
 				<Command.List>
 					<Command.Empty>No results found.</Command.Empty>
 					<Command.Group heading="Suggestions">

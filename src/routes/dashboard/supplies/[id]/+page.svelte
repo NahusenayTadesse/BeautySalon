@@ -17,6 +17,7 @@
 
 	import { Textarea } from '$lib/components/ui/textarea/index.js';
 	import SingleView from '$lib/components/SingleView.svelte';
+	import Delete from '$lib/forms/Delete.svelte';
 
 	let singleTable = $derived([
 		{ name: 'Name', value: data.supply?.name },
@@ -50,8 +51,6 @@
 	//   let date = $derived(dateProxy(editForm, 'appointmentDate', { format: 'date'}));
 
 	let edit = $state(false);
-
-	let search = false;
 </script>
 
 <svelte:head>
@@ -59,7 +58,7 @@
 </svelte:head>
 
 <SingleView title="Supply Details">
-	<div class="mt-4 flex w-full flex-row items-start justify-start pl-4">
+	<div class="mt-4 flex w-full flex-row items-start justify-start gap-2 pl-4">
 		<Button onclick={() => (edit = !edit)}>
 			{#if !edit}
 				<Pencil class="h-4 w-4" />
@@ -70,6 +69,7 @@
 				Back
 			{/if}
 		</Button>
+		<Delete redirect="/dashboard/supplies" />
 	</div>
 	{#if edit === false}
 		<div class="w-full p-4"><SingleTable {singleTable} /></div>
