@@ -102,18 +102,19 @@ export async function load({ locals, params }) {
 		form
 	};
 }
-import fs from 'node:fs';
-import path from 'node:path';
-import { generateUserId } from '$lib/global.svelte';
-import { Readable } from 'node:stream';
-import { pipeline } from 'node:stream/promises';
-import { env } from '$env/dynamic/private';
+// import fs from 'node:fs';
+// import path from 'node:path';
+// import { generateUserId } from '$lib/global.svelte';
+// import { Readable } from 'node:stream';
+// import { pipeline } from 'node:stream/promises';
+// import { env } from '$env/dynamic/private';
 import type { Actions } from '../../$types';
-const FILES_DIR: string = env.FILES_DIR ?? '.tempFiles';
+import { saveUploadedFile } from '$lib/server/upload';
+// const FILES_DIR: string = env.FILES_DIR ?? '.tempFiles';
 
-if (!fs.existsSync(FILES_DIR)) {
-	fs.mkdirSync(FILES_DIR, { recursive: true });
-}
+// if (!fs.existsSync(FILES_DIR)) {
+// 	fs.mkdirSync(FILES_DIR, { recursive: true });
+// }
 
 export const actions: Actions = {
 	addSales: async ({ request, cookies, locals, params }) => {
@@ -133,7 +134,7 @@ export const actions: Actions = {
 		const service = formData.getAll('service');
 		const serviceTip = formData.getAll('serviceTip');
 
-		console.log('Received form data:',  service, service.length);
+		console.log('Received form data:', service, service.length);
 
 		// if (!form.valid) {
 		//    // Stay on the same page and set a flash message
@@ -144,16 +145,8 @@ export const actions: Actions = {
 		//  console.log(products[0].product, products[0].staff, products[0].noofproducts, products[0].tip)
 		try {
 			await db.transaction(async (tx) => {
-				const imageName = `${generateUserId()}${path.extname(receipt.name)}`;
-
-				const file_path: string = path.normalize(path.join(FILES_DIR, imageName));
-
-				const nodejs_wstream = fs.createWriteStream(file_path);
-				const web_rstream = receipt.stream();
-				const nodejs_rstream = Readable.fromWeb(web_rstream);
-				await pipeline(nodejs_rstream, nodejs_wstream).catch(() => {
-					setFlash({ type: 'error', message: 'Upload Failed' }, cookies);
-				});
+				const recieptLink = await saveUploadedFile(receipt);
+				delete form.data.receipt;
 
 				//  if (!form.valid) {
 				//        // Stay on the same page and set a flash message
@@ -168,7 +161,7 @@ export const actions: Actions = {
 						amount: total,
 						paymentStatus: 'paid', // or map from UI if you add the field
 						paymentMethodId: paymentMethod,
-						recieptLink: imageName,
+						recieptLink,
 						branchId: locals.user?.branch,
 						createdBy: locals.user?.id
 					})
@@ -221,16 +214,16 @@ export const actions: Actions = {
 							createdBy: locals.user?.id
 						}))
 					);
-						await tx.insert(tipsProduct).values(
-											product.map((_, idx) => ({
-												saleItemId: txnPrdId[idx].id,		
-												staffId: product_staff[idx],
-												amount: tip[idx],
-												tipDate: today,
-												branchId: locals.user?.branch,
-												createdBy: locals.user?.id
-											}))
-										);
+					await tx.insert(tipsProduct).values(
+						product.map((_, idx) => ({
+							saleItemId: txnPrdId[idx].id,
+							staffId: product_staff[idx],
+							amount: tip[idx],
+							tipDate: today,
+							branchId: locals.user?.branch,
+							createdBy: locals.user?.id
+						}))
+					);
 
 					await Promise.all(
 						product.map((_, idx) =>
@@ -242,88 +235,81 @@ export const actions: Actions = {
 								.where(eq(prds.id, product[idx]))
 						)
 					);
-
 				}
 
-					// 4. service lines
-					if (service.length) {
-						const txnsrvid = await tx
-							.insert(transactionServices)
-							.values(
-								service.map((_, idx) => ({
-									appointmentId: id,
-									transactionId: txn.id,
-									staffId: service_staff[idx] || null,
-									serviceId: service[idx] || null,
-									price: Number(getPrice(fetchedServices, Number(service[idx]))),
-									tip: serviceTip[idx],
-									total:
-										Number(getPrice(fetchedServices, Number(service[idx]))) +
-										Number(serviceTip[idx] || 0)
-								}))
-							)
-							.$returningId();
-						const today = new Date();
-						await tx.insert(commissionService).values(
+				// 4. service lines
+				if (service.length) {
+					const txnsrvid = await tx
+						.insert(transactionServices)
+						.values(
 							service.map((_, idx) => ({
-								saleItemId: txnsrvid[idx].id,
-								staffId: service_staff[idx],
-								amount: Number(getCommission(fetchedServices, Number(service[idx]))),
-								commissionDate: today,
-								branchId: locals.user?.branch,
-								createdBy: locals.user?.id
+								appointmentId: id,
+								transactionId: txn.id,
+								staffId: service_staff[idx] || null,
+								serviceId: service[idx] || null,
+								price: Number(getPrice(fetchedServices, Number(service[idx]))),
+								tip: serviceTip[idx],
+								total:
+									Number(getPrice(fetchedServices, Number(service[idx]))) +
+									Number(serviceTip[idx] || 0)
 							}))
-						);
-							await tx.insert(tipsService).values(
-												service.map((_, idx) => ({
-													saleItemId: txnsrvid[idx].id,
-													staffId: service_staff[idx],
-													amount: serviceTip[idx],
-													tipDate: today,
-													branchId: locals.user?.branch,
-													createdBy: locals.user?.id
-												}))
-											);
-					}
-				
-
-					const sumProduct = noofproducts.reduce((acc, n) => acc + Number(n), 0);
-					console.log("Service Length: " + service.length);
-
-					const existingReport = await tx
-						.select({
-							id: reports.id
-						})
-						.from(reports)
-						.where(
-							and(
-								eq(reports.reportDate, sql`CURDATE()`),
-							)
 						)
-						.then((rows) => rows[0]);
+						.$returningId();
+					const today = new Date();
+					await tx.insert(commissionService).values(
+						service.map((_, idx) => ({
+							saleItemId: txnsrvid[idx].id,
+							staffId: service_staff[idx],
+							amount: Number(getCommission(fetchedServices, Number(service[idx]))),
+							commissionDate: today,
+							branchId: locals.user?.branch,
+							createdBy: locals.user?.id
+						}))
+					);
+					await tx.insert(tipsService).values(
+						service.map((_, idx) => ({
+							saleItemId: txnsrvid[idx].id,
+							staffId: service_staff[idx],
+							amount: serviceTip[idx],
+							tipDate: today,
+							branchId: locals.user?.branch,
+							createdBy: locals.user?.id
+						}))
+					);
+				}
 
-           console.log("Service Length: " + service.length);
+				const sumProduct = noofproducts.reduce((acc, n) => acc + Number(n), 0);
+				console.log('Service Length: ' + service.length);
 
-					if (existingReport) {
-						await tx
-							.update(reports)
-							.set({
-								productsSold: sql<number>`${reports.productsSold} + ${sumProduct}`,
-								servicesRendered: sql<number>`${reports.servicesRendered} + ${service.length}`,
-								dailyIncome: sql`${sql`IFNULL(${reports.dailyIncome}, 0)`} + ${total}`,
-								transactions: sql<number>`${reports.transactions} + 1`
-							})
-							.where(and(eq(reports.id, existingReport.id)));
-					} else {
-						await tx.insert(reports).values({
-							reportDate: sql`CURDATE()`,
-							productsSold: sumProduct,
-							servicesRendered: service.length,
-							dailyIncome: total,
-							transactions: 1,
-						});
-					}
-				
+				const existingReport = await tx
+					.select({
+						id: reports.id
+					})
+					.from(reports)
+					.where(and(eq(reports.reportDate, sql`CURDATE()`)))
+					.then((rows) => rows[0]);
+
+				console.log('Service Length: ' + service.length);
+
+				if (existingReport) {
+					await tx
+						.update(reports)
+						.set({
+							productsSold: sql<number>`${reports.productsSold} + ${sumProduct}`,
+							servicesRendered: sql<number>`${reports.servicesRendered} + ${service.length}`,
+							dailyIncome: sql`${sql`IFNULL(${reports.dailyIncome}, 0)`} + ${total}`,
+							transactions: sql<number>`${reports.transactions} + 1`
+						})
+						.where(and(eq(reports.id, existingReport.id)));
+				} else {
+					await tx.insert(reports).values({
+						reportDate: sql`CURDATE()`,
+						productsSold: sumProduct,
+						servicesRendered: service.length,
+						dailyIncome: total,
+						transactions: 1
+					});
+				}
 			});
 
 			return setFlash({ type: 'success', message: 'New Sale Successfully Added' }, cookies);

@@ -76,18 +76,19 @@ export async function load({ locals }) {
 		form
 	};
 }
-import fs from 'node:fs';
-import path from 'node:path';
-import { generateUserId } from '$lib/global.svelte';
-import { Readable } from 'node:stream';
-import { pipeline } from 'node:stream/promises';
-import { env } from '$env/dynamic/private';
+// import fs from 'node:fs';
+// import path from 'node:path';
+// import { generateUserId } from '$lib/global.svelte';
+// import { Readable } from 'node:stream';
+// import { pipeline } from 'node:stream/promises';
+// import { env } from '$env/dynamic/private';
 
-const FILES_DIR: string = env.FILES_DIR ?? '.tempFiles';
+// const FILES_DIR: string = env.FILES_DIR ?? '.tempFiles';
 
-if (!fs.existsSync(FILES_DIR)) {
-	fs.mkdirSync(FILES_DIR, { recursive: true });
-}
+// if (!fs.existsSync(FILES_DIR)) {
+// 	fs.mkdirSync(FILES_DIR, { recursive: true });
+// }
+import { saveUploadedFile } from '$lib/server/upload';
 
 export const actions: Actions = {
 	addSales: async ({ request, cookies, locals }) => {
@@ -97,9 +98,7 @@ export const actions: Actions = {
 
 		const { paymentMethod, total, receipt } = form.data;
 
-	
-
-		const product_staff = formData.getAll('product_staff'); 
+		const product_staff = formData.getAll('product_staff');
 		const product = formData.getAll('product');
 		const noofproducts = formData.getAll('noofproducts');
 		const tip = formData.getAll('tip');
@@ -107,25 +106,25 @@ export const actions: Actions = {
 		const service_staff = formData.getAll('service_staff');
 		const service = formData.getAll('service');
 		const serviceTip = formData.getAll('serviceTip');
-          
+
 		const isProductStaffEmpty = product_staff.length === 0;
-        const isProductEmpty = product.length === 0;
+		const isProductEmpty = product.length === 0;
 
-const isServiceStaffEmpty = service_staff.length === 0;
-const isServiceEmpty = service.length === 0;
- 
- console.log(product.length + ' ' + product_staff.length)
+		const isServiceStaffEmpty = service_staff.length === 0;
+		const isServiceEmpty = service.length === 0;
 
-// Validation: both must match (either both empty or both filled)
-if (isProductStaffEmpty !== isProductEmpty) {
-setFlash({ type: 'error', message: "Please check your form data." }, cookies);
-  return fail(400, { form });}
+		console.log(product.length + ' ' + product_staff.length);
 
-if (isServiceStaffEmpty !== isServiceEmpty) {
-setFlash({ type: 'error', message: "Please check your form data." }, cookies);
-	return fail(400, { form }); 
-}
-		 
+		// Validation: both must match (either both empty or both filled)
+		if (isProductStaffEmpty !== isProductEmpty) {
+			setFlash({ type: 'error', message: 'Please check your form data.' }, cookies);
+			return fail(400, { form });
+		}
+
+		if (isServiceStaffEmpty !== isServiceEmpty) {
+			setFlash({ type: 'error', message: 'Please check your form data.' }, cookies);
+			return fail(400, { form });
+		}
 
 		// if (!form.valid) {
 		//    // Stay on the same page and set a flash message
@@ -135,24 +134,25 @@ setFlash({ type: 'error', message: "Please check your form data." }, cookies);
 
 		//  console.log(products[0].product, products[0].staff, products[0].noofproducts, products[0].tip)
 
-		const imageName = `${generateUserId()}${path.extname(receipt.name)}`;
+		// const imageName = `${generateUserId()}${path.extname(receipt.name)}`;
 
-		const file_path: string = path.normalize(path.join(FILES_DIR, imageName));
+		// const file_path: string = path.normalize(path.join(FILES_DIR, imageName));
 
-		const nodejs_wstream = fs.createWriteStream(file_path);
-		const web_rstream = receipt.stream();
-		const nodejs_rstream = Readable.fromWeb(web_rstream);
-		await pipeline(nodejs_rstream, nodejs_wstream).catch(() => {
-			setFlash({ type: 'error', message: 'Upload Failed' }, cookies);
-		});
+		// const nodejs_wstream = fs.createWriteStream(file_path);
+		// const web_rstream = receipt.stream();
+		// const nodejs_rstream = Readable.fromWeb(web_rstream);
+		// await pipeline(nodejs_rstream, nodejs_wstream).catch(() => {
+		// 	setFlash({ type: 'error', message: 'Upload Failed' }, cookies);
+		// });
 
 		//  if (!form.valid) {
 		//        // Stay on the same page and set a flash message
 		//        setFlash({ type: 'error', message: "Please check your form data." }, cookies);
 		//        return fail(400, { form });
 		//      }
-
 		try {
+			const recieptLink = await saveUploadedFile(receipt);
+			delete form.data.receipt;
 			await db.transaction(async (tx) => {
 				// 1. master transaction row
 				const [txn] = await tx
@@ -161,7 +161,7 @@ setFlash({ type: 'error', message: "Please check your form data." }, cookies);
 						amount: total,
 						paymentStatus: 'paid', // or map from UI if you add the field
 						paymentMethodId: paymentMethod,
-						recieptLink: imageName,
+						recieptLink,
 						branchId: locals.user?.branch,
 						createdBy: locals.user?.id
 					})
@@ -177,9 +177,6 @@ setFlash({ type: 'error', message: "Please check your form data." }, cookies);
 					.from(srvs)
 					.where(eq(srvs.branchId, locals.user?.branch));
 
-			
-
-
 				// 2. product lines
 				if (product.length) {
 					const txnPrdId = await tx
@@ -193,22 +190,24 @@ setFlash({ type: 'error', message: "Please check your form data." }, cookies);
 								unitPrice: getPrice(fetchedProducts, Number(product[idx])),
 								tip: tip[idx],
 								total:
-									Number(getPrice(fetchedProducts, Number(product[idx]))) * Number(noofproducts[idx]) +
+									Number(getPrice(fetchedProducts, Number(product[idx]))) *
+										Number(noofproducts[idx]) +
 									Number(tip[idx] || 0),
 								branchId: locals.user?.branch,
 								createdBy: locals.user?.id
 							}))
 						)
 						.$returningId();
- 
-					const today = new Date();
 
+					const today = new Date();
 
 					await tx.insert(commissionProduct).values(
 						product.map((_, idx) => ({
-							saleItemId: txnPrdId[idx].id,		
+							saleItemId: txnPrdId[idx].id,
 							staffId: product_staff[idx],
-							amount: Number(getCommission(fetchedProducts, Number(product[idx]))) * Number(noofproducts[idx]),
+							amount:
+								Number(getCommission(fetchedProducts, Number(product[idx]))) *
+								Number(noofproducts[idx]),
 							commissionDate: today,
 							branchId: locals.user?.branch,
 							createdBy: locals.user?.id
@@ -217,7 +216,7 @@ setFlash({ type: 'error', message: "Please check your form data." }, cookies);
 
 					await tx.insert(tipsProduct).values(
 						product.map((_, idx) => ({
-							saleItemId: txnPrdId[idx].id,		
+							saleItemId: txnPrdId[idx].id,
 							staffId: product_staff[idx],
 							amount: tip[idx],
 							tipDate: today,
@@ -249,7 +248,9 @@ setFlash({ type: 'error', message: "Please check your form data." }, cookies);
 								serviceId: service[idx] || null,
 								price: Number(getPrice(fetchedServices, Number(service[idx]))),
 								tip: serviceTip[idx],
-								total: Number(getPrice(fetchedServices, Number(service[idx]))) + Number(serviceTip[idx] || 0)
+								total:
+									Number(getPrice(fetchedServices, Number(service[idx]))) +
+									Number(serviceTip[idx] || 0)
 							}))
 						)
 						.$returningId();
@@ -265,7 +266,7 @@ setFlash({ type: 'error', message: "Please check your form data." }, cookies);
 						}))
 					);
 
-						await tx.insert(tipsService).values(
+					await tx.insert(tipsService).values(
 						service.map((_, idx) => ({
 							saleItemId: txnsrvid[idx].id,
 							staffId: service_staff[idx],
@@ -275,59 +276,49 @@ setFlash({ type: 'error', message: "Please check your form data." }, cookies);
 							createdBy: locals.user?.id
 						}))
 					);
-
-					  
-
-
-				} 
+				}
 
 				const today = new Date();
 
 				const sumProduct = noofproducts.reduce((acc, n) => acc + Number(n), 0);
-				
 
-      
-       const existingReport = await tx.select({
-          id: reports.id
-       }).from(reports).where(
-          (and(
-          eq(reports.reportDate, sql`CURDATE()`),
-          )
-        )
-      
-       ).then(rows => rows[0]);
+				const existingReport = await tx
+					.select({
+						id: reports.id
+					})
+					.from(reports)
+					.where(and(eq(reports.reportDate, sql`CURDATE()`)))
+					.then((rows) => rows[0]);
 
-       if(existingReport){
-          await tx.update(reports).set({
-            productsSold: sql<number>`${reports.productsSold} + ${sumProduct}`,
-            servicesRendered: sql<number>`${reports.servicesRendered} + ${service.length}`,
-            dailyIncome: sql`${sql`IFNULL(${reports.dailyIncome}, 0)`} + ${total}`,
-			transactions: sql<number>`${reports.transactions} + 1`
-          }).where(and(
-            
-            eq(reports.id, existingReport.id)
-
-          )
-          );
-       } else {
-          await tx.insert(reports).values({
-            reportDate: today,
-            productsSold: sumProduct,
-			servicesRendered: service.length,
-			dailyIncome: total,
-			transactions: 1,
-          });
-       }
+				if (existingReport) {
+					await tx
+						.update(reports)
+						.set({
+							productsSold: sql<number>`${reports.productsSold} + ${sumProduct}`,
+							servicesRendered: sql<number>`${reports.servicesRendered} + ${service.length}`,
+							dailyIncome: sql`${sql`IFNULL(${reports.dailyIncome}, 0)`} + ${total}`,
+							transactions: sql<number>`${reports.transactions} + 1`
+						})
+						.where(and(eq(reports.id, existingReport.id)));
+				} else {
+					await tx.insert(reports).values({
+						reportDate: today,
+						productsSold: sumProduct,
+						servicesRendered: service.length,
+						dailyIncome: total,
+						transactions: 1
+					});
+				}
 			});
 
 			return setFlash({ type: 'success', message: 'New Sale Successfully Added' }, cookies);
 		} catch (e) {
-		setFlash({ type: 'error', message: 'Error ' + e }, cookies);
-	      
-		} 
-		return {
-			 form
+			console.error(e);
+			setFlash({ type: 'error', message: 'Error ' + e }, cookies);
 		}
+		return {
+			form
+		};
 	}
 };
 
@@ -337,11 +328,12 @@ function getPrice(list: Array<{ value: number; price: string }>, value: number):
 }
 
 function getCommission(
- list: Array<{ value: number; price: string; commissionPct: string | null }>, value: number
+	list: Array<{ value: number; price: string; commissionPct: string | null }>,
+	value: number
 ): number {
-	 const item = list.find((i) => i.value === value);
- if (!item) return 0;
+	const item = list.find((i) => i.value === value);
+	if (!item) return 0;
 
- const fixedCommissionAmount = Number(item.commissionPct ?? 0); 
- return fixedCommissionAmount; 
+	const fixedCommissionAmount = Number(item.commissionPct ?? 0);
+	return fixedCommissionAmount;
 }

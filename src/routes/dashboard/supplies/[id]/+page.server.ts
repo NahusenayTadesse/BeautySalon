@@ -1,18 +1,29 @@
 import { superValidate } from 'sveltekit-superforms';
 import { zod4 } from 'sveltekit-superforms/adapters';
-import { editSupply as schema } from '$lib/ZodSchema';
+import {
+	editSupply as schema,
+	inventoryAdjustmentFormSchema as adjustSchema
+} from '$lib/ZodSchema';
 import { error } from '@sveltejs/kit';
 
 import { db } from '$lib/server/db';
-import { supplies, transactionSupplies, transactions, user } from '$lib/server/db/schema';
+import {
+	supplies,
+	transactionSupplies,
+	transactions,
+	user,
+	suppliesAdjustments
+} from '$lib/server/db/schema';
 import { eq, and, sql } from 'drizzle-orm';
 import type { Actions, PageServerLoad } from './$types';
 import { fail } from 'sveltekit-superforms';
 import { setFlash } from 'sveltekit-flash-message/server';
+import { saveUploadedFile } from '$lib/server/upload';
 
 export const load: PageServerLoad = async ({ params, locals }) => {
 	const { id } = params;
 	const form = await superValidate(zod4(schema));
+	const adjustForm = await superValidate(zod4(adjustSchema));
 
 	const supply = await db
 		.select({
@@ -100,6 +111,75 @@ export const actions: Actions = {
 			};
 		} catch (err) {
 			console.error('Error' + err);
+		}
+	},
+	adjust: async ({ request, cookies, params, locals }) => {
+		const { id } = params;
+		const form = await superValidate(request, zod4(adjustSchema));
+
+		const { intent, quantity, reason, notes, reciept } = form.data;
+
+		try {
+			if (!id) {
+				setFlash({ type: 'error', message: `Unexpected Error: ${err?.message}` }, cookies);
+				return fail(400);
+			}
+			const adjustment = intent === 'add' ? Number(quantity) : -Number(quantity);
+
+			if (reciept) {
+				const recieptLink = await saveUploadedFile(reciept);
+
+				const [transactionId] = await db
+					.insert(transactions)
+					.values({
+						amount: adjustment,
+						recieptLink,
+						createdBy: locals.user?.id,
+						branchId: locals.user?.branch
+					})
+					.$returningId();
+				const [supTrans] = await db.insert(transactionSupplies).values({
+					transactionId: transactionId.id,
+					supplyId: id,
+					quantity: adjustment
+				});
+
+				await db.insert(suppliesAdjustments).values({
+					suppliesId: id,
+					adjustment,
+					reason,
+					notes,
+					transactionId: transactionId.id,
+					createdBy: locals.user?.id
+				});
+				await db
+					.update(supplies)
+					.set({
+						quantity: sql`quantity + ${adjustment}`,
+						updatedBy: locals.user?.id
+					})
+					.where(eq(products.id, id));
+			} else {
+				await db.insert(suppliesAdjustments).values({
+					productsId: id,
+					adjustment,
+					reason,
+					notes,
+					createdBy: locals.user?.id
+				});
+
+				await db
+					.update(supplies)
+					.set({
+						quantity: sql`quantity + ${adjustment}`,
+						updatedBy: locals.user?.id
+					})
+					.where(eq(supplies.id, id));
+			}
+		} catch (err) {
+			console.error('Error adjusting product:', err);
+			setFlash({ type: 'error', message: `Unexpected Error: ${err?.message}` }, cookies);
+			return fail(400);
 		}
 	},
 	delete: async ({ cookies, params }) => {

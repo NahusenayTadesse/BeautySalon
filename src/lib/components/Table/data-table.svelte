@@ -103,113 +103,112 @@
 	});
 </script>
 
-<ScrollArea class="h-96 lg:h-130">
-	<div class="w-full rounded-lg bg-white p-2 lg:w-full dark:bg-gray-950">
-		<div class="min-w-full rounded-md border-0">
-			{#if search}
-				<div class="py-4">
-					<!-- <Filters
+<!-- min-h-0 is required for flex-child overflow -->
+<ScrollArea class="w-full rounded-lg bg-white p-2 lg:w-auto lg:max-w-5xl dark:bg-gray-950">
+	<div class="flex min-w-full flex-col gap-2 rounded-md border-0 px-1">
+		{#if search}
+			<div class="py-4">
+				<!-- <Filters
       schema={filterSchema}
       filters={columnFilters}
       onChange={f => (columnFilters = f)}
     /> -->
-				</div>
-				<div class="flex flex-row items-center gap-4 py-4">
-					<Input
-						type="search"
-						placeholder="Search Table..."
-						class="w-2/3"
-						bind:value={globalFilter}
-						oninput={() => table.setGlobalFilter(globalFilter)}
-					/>
-
-					<DropdownMenu.Root>
-						<DropdownMenu.Trigger>
-							{#snippet child({ props })}
-								<Button {...props} variant="outline" class="ml-auto"
-									>Columns <ChevronDownIcon class="size-5" />
-								</Button>
-							{/snippet}
-						</DropdownMenu.Trigger>
-						<DropdownMenu.Content align="end">
-							{#each table.getAllColumns().filter((col) => col.getCanHide()) as column (column)}
-								<DropdownMenu.CheckboxItem
-									class="capitalize"
-									bind:checked={() => column.getIsVisible(), (v) => column.toggleVisibility(!!v)}
-								>
-									{column.id.replace(/([a-z])([A-Z])/g, '$1 $2')}
-								</DropdownMenu.CheckboxItem>
-							{/each}
-						</DropdownMenu.Content>
-					</DropdownMenu.Root>
-				</div>
-			{/if}
-			<div class="rounded-md border">
-				<Table.Root>
-					<Table.Header>
-						{#each table.getHeaderGroups() as headerGroup (headerGroup.id)}
-							<Table.Row>
-								{#each headerGroup.headers as header, index}
-									<Table.Head
-										colspan={header.colSpan}
-										class="{index === 1
-											? 'sticky left-0 z-10 bg-background'
-											: ''} p-0 pr-2 text-start"
-									>
-										{#if !header.isPlaceholder}
-											<FlexRender
-												content={header.column.columnDef.header}
-												context={header.getContext()}
-											/>
-										{/if}
-									</Table.Head>
-								{/each}
-							</Table.Row>
-						{/each}
-					</Table.Header>
-					<Table.Body>
-						{#each table.getRowModel().rows as row (row.id)}
-							<Table.Row data-state={row.getIsSelected() && 'selected'}>
-								{#each row.getVisibleCells() as cell, index}
-									<Table.Cell
-										class="capitalize {index === 1 ? 'sticky left-0 z-20 bg-background' : ''}"
-									>
-										<FlexRender content={cell.column.columnDef.cell} context={cell.getContext()} />
-									</Table.Cell>
-								{/each}
-							</Table.Row>
-						{:else}
-							<Table.Row>
-								<Table.Cell colspan={columns.length} class="text-center font-2xl">
-									<div class="flex flex-row items-center justify-center gap-2">
-										<Frown class="animate-bounce" /> Nothing found here.
-									</div>
-								</Table.Cell>
-							</Table.Row>
-						{/each}
-					</Table.Body>
-				</Table.Root>
 			</div>
-			{#if table.getPageCount() > 1}
-				<div class="flex items-center justify-end space-x-2 py-4">
-					<Button
-						variant="outline"
-						size="sm"
-						onclick={() => table.previousPage()}
-						disabled={!table.getCanPreviousPage()}
-					>
-						Previous
-					</Button>
-					<Button
-						variant="outline"
-						size="sm"
-						onclick={() => table.nextPage()}
-						disabled={!table.getCanNextPage()}
-					>
-						Next
-					</Button>
-				</div>
-			{/if}
+			<div class="sticky top-0 z-100 flex flex-row items-center gap-4 bg-background">
+				<Input
+					type="search"
+					placeholder="Search Table..."
+					class="w-2/3"
+					bind:value={globalFilter}
+					oninput={() => table.setGlobalFilter(globalFilter)}
+				/>
+
+				<DropdownMenu.Root>
+					<DropdownMenu.Trigger>
+						{#snippet child({ props })}
+							<Button {...props} variant="outline" class="ml-auto"
+								>Columns <ChevronDownIcon class="size-5" />
+							</Button>
+						{/snippet}
+					</DropdownMenu.Trigger>
+					<DropdownMenu.Content align="end">
+						{#each table.getAllColumns().filter((col) => col.getCanHide()) as column (column)}
+							<DropdownMenu.CheckboxItem
+								class="capitalize"
+								bind:checked={() => column.getIsVisible(), (v) => column.toggleVisibility(!!v)}
+							>
+								{column.id.replace(/([a-z])([A-Z])/g, '$1 $2')}
+							</DropdownMenu.CheckboxItem>
+						{/each}
+					</DropdownMenu.Content>
+				</DropdownMenu.Root>
+			</div>
+		{/if}
+		<div class="max-h-96 rounded-md border">
+			<Table.Root class="max-h-96">
+				<Table.Header>
+					{#each table.getHeaderGroups() as headerGroup (headerGroup.id)}
+						<Table.Row>
+							{#each headerGroup.headers as header, index}
+								<Table.Head
+									colspan={header.colSpan}
+									class="{index === 1
+										? 'sticky left-0 z-10 bg-background'
+										: ''} p-0 pr-2 text-start"
+								>
+									{#if !header.isPlaceholder}
+										<FlexRender
+											content={header.column.columnDef.header}
+											context={header.getContext()}
+										/>
+									{/if}
+								</Table.Head>
+							{/each}
+						</Table.Row>
+					{/each}
+				</Table.Header>
+				<Table.Body>
+					{#each table.getRowModel().rows as row (row.id)}
+						<Table.Row data-state={row.getIsSelected() && 'selected'}>
+							{#each row.getVisibleCells() as cell, index}
+								<Table.Cell
+									class="capitalize {index === 1 ? 'sticky left-0 z-20 bg-background' : ''}"
+								>
+									<FlexRender content={cell.column.columnDef.cell} context={cell.getContext()} />
+								</Table.Cell>
+							{/each}
+						</Table.Row>
+					{:else}
+						<Table.Row>
+							<Table.Cell colspan={columns.length} class="text-center font-2xl">
+								<div class="flex flex-row items-center justify-center gap-2">
+									<Frown class="animate-bounce" /> Nothing found here.
+								</div>
+							</Table.Cell>
+						</Table.Row>
+					{/each}
+				</Table.Body>
+			</Table.Root>
 		</div>
+		{#if table.getPageCount() > 1}
+			<div class="flex items-center justify-end space-x-2 py-4">
+				<Button
+					variant="outline"
+					size="sm"
+					onclick={() => table.previousPage()}
+					disabled={!table.getCanPreviousPage()}
+				>
+					Previous
+				</Button>
+				<Button
+					variant="outline"
+					size="sm"
+					onclick={() => table.nextPage()}
+					disabled={!table.getCanNextPage()}
+				>
+					Next
+				</Button>
+			</div>
+		{/if}
 	</div>
 </ScrollArea>
