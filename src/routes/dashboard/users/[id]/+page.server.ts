@@ -1,0 +1,174 @@
+import { superValidate } from 'sveltekit-superforms';
+import { zod4 } from 'sveltekit-superforms/adapters';
+import {
+	editProduct as schema,
+	inventoryAdjustmentFormSchema as adjustSchema
+} from '$lib/ZodSchema';
+
+import { db } from '$lib/server/db';
+import { roles, user } from '$lib/server/db/schema';
+import { eq, and, sql } from 'drizzle-orm';
+import type { Actions, PageServerLoad } from './$types';
+import { fail } from 'sveltekit-superforms';
+import { setFlash } from 'sveltekit-flash-message/server';
+
+export const load: PageServerLoad = async ({ params }) => {
+	const { id } = params;
+	const form = await superValidate(zod4(schema));
+
+	const singleUser = await db
+		.select({
+			id: user.id,
+			name: user.name,
+			email: user.email,
+			role: roles.name,
+			status: user.isActive,
+			createdAt: user.createdAt,
+			updatedAt: user.updatedAt
+		})
+		.from(user)
+		.leftJoin(roles, eq(user.roleId, roles.id))
+		.where(eq(user.id, id))
+		.then((rows) => rows[0]);
+
+	return {
+		singleUser,
+		id,
+		form
+	};
+};
+
+// import { saveUploadedFile } from '$lib/server/upload';
+
+// export const actions: Actions = {
+// 	editProduct: async ({ request, cookies, locals }) => {
+// 		const form = await superValidate(request, zod4(schema));
+
+// 		if (!form.valid) {
+// 			// Stay on the same page and set a flash message
+// 			setFlash({ type: 'error', message: 'Please check your form data.' }, cookies);
+// 			return fail(400, { form });
+// 		}
+
+// 		const {
+// 			productId,
+// 			productName,
+// 			category,
+// 			description,
+// 			commission,
+// 			quantity,
+// 			price,
+// 			supplier,
+// 			reorderLevel,
+// 			costPerUnit
+// 		} = form.data;
+
+// 		try {
+// 			await db
+// 				.update(products)
+// 				.set({
+// 					name: productName,
+// 					commissionAmount: commission.toString(),
+// 					description,
+// 					categoryId: category,
+// 					quantity,
+// 					price: price.toString(),
+// 					supplier,
+// 					reorderLevel,
+// 					cost: costPerUnit.toString(),
+// 					updatedBy: locals?.user?.id
+// 				})
+// 				.where(eq(products.id, productId));
+
+// 			// Stay on the same page and set a flash message
+// 			setFlash({ type: 'success', message: 'Product Updated Successuflly Added' }, cookies);
+// 			return {
+// 				form
+// 			};
+// 		} catch (err) {
+// 			console.error('Error' + err);
+// 		}
+// 	},
+// 	adjust: async ({ request, cookies, params, locals }) => {
+// 		const { id } = params;
+// 		const form = await superValidate(request, zod4(adjustSchema));
+
+// 		const { intent, quantity, reason, notes, reciept } = form.data;
+
+// 		try {
+// 			if (!id) {
+// 				setFlash({ type: 'error', message: `Unexpected Error: ${err?.message}` }, cookies);
+// 				return fail(400);
+// 			}
+// 			const adjustment = intent === 'add' ? Number(quantity) : -Number(quantity);
+
+// 			if (reciept) {
+// 				const recieptLink = await saveUploadedFile(reciept);
+
+// 				const [transactionId] = await db
+// 					.insert(transactions)
+// 					.values({
+// 						amount: adjustment,
+// 						recieptLink,
+// 						createdBy: locals.user?.id,
+// 						branchId: locals.user?.branch
+// 					})
+// 					.$returningId();
+
+// 				await db.insert(productAdjustments).values({
+// 					productsId: id,
+// 					adjustment,
+// 					reason,
+// 					notes,
+// 					transactionId: transactionId.id,
+// 					createdBy: locals.user?.id
+// 				});
+// 				await db
+// 					.update(products)
+// 					.set({
+// 						quantity: sql`quantity + ${adjustment}`,
+// 						updatedBy: locals.user?.id
+// 					})
+// 					.where(eq(products.id, id));
+// 			} else {
+// 				await db.insert(productAdjustments).values({
+// 					productsId: id,
+// 					adjustment,
+// 					reason,
+// 					notes,
+// 					createdBy: locals.user?.id
+// 				});
+
+// 				await db
+// 					.update(products)
+// 					.set({
+// 						quantity: sql`quantity + ${adjustment}`,
+// 						updatedBy: locals.user.id
+// 					})
+// 					.where(eq(products.id, id));
+// 			}
+// 		} catch (err) {
+// 			console.error('Error adjusting product:', err);
+// 			setFlash({ type: 'error', message: `Unexpected Error: ${err?.message}` }, cookies);
+// 			return fail(400);
+// 		}
+// 	},
+// 	delete: async ({ cookies, params }) => {
+// 		const { id } = params;
+
+// 		try {
+// 			if (!id) {
+// 				setFlash({ type: 'error', message: `Unexpected Error: ${err?.message}` }, cookies);
+// 				return fail(400);
+// 			}
+
+// 			await db.delete(products).where(eq(products.id, id));
+
+// 			setFlash({ type: 'success', message: 'Product Deleted Successfully!' }, cookies);
+// 		} catch (err) {
+// 			console.error('Error deleting product:', err);
+// 			setFlash({ type: 'error', message: `Unexpected Error: ${err?.message}` }, cookies);
+// 			return fail(400);
+// 		}
+// 	}
+// };
