@@ -78,6 +78,12 @@
 		<Card.Description>Add a new service you offers</Card.Description>
 	</Card.Header>
 	<Card.Content>
+		{#if $message}
+			<div class="flex flex-col gap-4">
+				<p class="text-lg font-bold">Success!</p>
+				<p>{$message}</p>
+			</div>
+		{/if}
 		<form use:enhance action="?/addProduct" id="main" class="flex flex-col gap-4" method="POST">
 			{@render fe('Service Name', 'serviceName', 'text', 'Enter Service Name', true)}
 			{@render selects('category', data?.categories)}

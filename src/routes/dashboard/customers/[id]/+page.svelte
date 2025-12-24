@@ -117,7 +117,8 @@
 				method="post"
 				id="edit"
 				class="flex w-full flex-col gap-4 p-4"
-			>  	<Errors allErrors={$allErrors} />
+			>
+				<Errors allErrors={$allErrors} />
 
 				{@render fe('Customer First Name', 'firstName', 'text', 'Edit Customer First Name', true)}
 				{@render fe('Customer Last Name', 'lastName', 'text', 'Edit Customer Last Name')}
@@ -136,7 +137,7 @@
 			</form>
 		{/if}
 	</SingleView>
-	{#if data.reciepts?.length}
+	<!-- {#if data.reciepts?.length}
 		<div
 			class="mt-4 flex w-full flex-col items-center justify-center
    rounded-md bg-white shadow-lg lg:w-full dark:bg-black dark:shadow-md dark:shadow-gray-900"
@@ -147,12 +148,12 @@
 				<h1 class="text-center">Booking Fee Paids</h1>
 			</div>
 
-			<!-- <div class="flex flex-col mt-4 w-full">
+			<div class="flex flex-col mt-4 w-full">
 		<DataTable data={data.reciepts} {columns} {search}  />
 
-	 </div> -->
+	 </div>
 		</div>
-	{/if}
+	{/if} -->
 {:else}
 	<Empty title="customer" />
 {/if}

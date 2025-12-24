@@ -2,7 +2,7 @@
 	import { Input } from '$lib/components/ui/input/index.js';
 	import { Label } from '$lib/components/ui/label/index.js';
 	import { zod4Client } from 'sveltekit-superforms/adapters';
-	import { editProduct } from '$lib/ZodSchema';
+	import { editUserSchema } from './schema';
 
 	let { data } = $props();
 
@@ -15,10 +15,11 @@
 	import SelectComp from '$lib/formComponents/SelectComp.svelte';
 	import type { Snapshot } from '@sveltejs/kit';
 
-	import { Textarea } from '$lib/components/ui/textarea/index.js';
 	import Delete from '$lib/forms/Delete.svelte';
 	import SingleView from '$lib/components/SingleView.svelte';
 	import Errors from '$lib/formComponents/Errors.svelte';
+	import DataTable from '$lib/components/Table/data-table.svelte';
+	import { columns } from './columns.js';
 
 	let singleTable = $derived([
 		{ name: 'Name', value: data.singleUser?.name },
@@ -31,7 +32,7 @@
 	]);
 
 	const { form, errors, enhance, delayed, capture, restore, allErrors } = superForm(data.form, {
-		validators: zod4Client(editProduct),
+		validators: zod4Client(editUserSchema),
 		resetForm: false
 	});
 
@@ -40,12 +41,16 @@
 	//   let date = $derived(dateProxy(editForm, 'appointmentDate', { format: 'date'}));
 
 	let edit = $state(false);
+
+	$form.name = data.singleUser?.name;
+	$form.email = data.singleUser?.email;
+	$form.role = data.singleUser?.roleId;
+	$form.status = data.singleUser?.status;
 </script>
 
 <svelte:head>
 	<title>User Details</title>
 </svelte:head>
-
 <SingleView title="User Details">
 	<div class="mt-4 flex w-full flex-row items-start justify-start gap-2 pl-4">
 		<Button onclick={() => (edit = !edit)}>
@@ -68,40 +73,15 @@
 			<form action="?/editProduct" use:enhance class="flex flex-col gap-4" id="edit" method="post">
 				<Errors allErrors={$allErrors} />
 
-				{@render fe('Product Name', 'productName', 'text', 'Add Product Name', true)}
+				{@render fe('Name', 'name', 'text', 'Change Name', true)}
+				{@render fe('Email', 'email', 'email', 'Change email', true)}
 
-				{@render selects('category', data.categories)}
-				{@render fe(
-					'Cost per unit',
-					'costPerUnit',
-					'number',
-					'Add the cost per unit of the product'
-				)}
+				{@render selects('role', data?.roleList)}
+				{@render selects('status', [
+					{ value: true, name: 'Active' },
+					{ value: false, name: 'Inactive' }
+				])}
 
-				{@render fe('Price', 'price', 'number', 'Add Product Price', true)}
-				{@render fe('Quantity', 'quantity', 'number', 'Add Product Quantity', true)}
-				{@render fe('Commission', 'commission', 'number', 'Add Product Commision', true)}
-				<div class="flex w-full flex-col justify-start gap-2">
-					<Label for="notes">Product Description</Label>
-
-					<Textarea
-						name="description"
-						placeholder="Enter product description"
-						bind:value={$form.description}
-						aria-invalid={$errors.description ? 'true' : undefined}
-					/>
-
-					{#if $errors.description}<span class="text-red-500">{$errors.description}</span>{/if}
-				</div>
-				{@render fe(
-					'Reorder Notify Level',
-					'reorderLevel',
-					'number',
-					'Enter when you want to be notified'
-				)}
-
-				{@render fe('Supplier', 'supplier', 'text', 'Enter the supplier of the product')}
-				<input hidden name="productId" value={data.product.id} />
 				<Button form="edit" type="submit" class="mt-4">
 					{#if $delayed}
 						<LoadingBtn name="Saving Changes" />
@@ -114,6 +94,10 @@
 		</div>
 	{/if}
 </SingleView>
+
+<br />
+
+<DataTable data={data?.permissionList} {columns} />
 
 {#snippet fe(
 	label = '',

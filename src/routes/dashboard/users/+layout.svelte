@@ -9,7 +9,7 @@
 
 <div class="mb-8 flex flex-row items-center justify-start gap-2">
 	<Button
-		href="/dashboard/products/add-products"
+		href="/dashboard/users/add-users"
 		variant={page.url.pathname === '/dashboard/users/add-users' ? 'default' : 'outline'}
 		><Plus /> Add Users</Button
 	>

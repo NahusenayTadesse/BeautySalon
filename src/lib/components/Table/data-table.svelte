@@ -145,7 +145,7 @@
 			</div>
 		{/if}
 		<div class="max-h-96 rounded-md border">
-			<Table.Root class="max-h-96">
+			<Table.Root class="relative max-h-96">
 				<Table.Header>
 					{#each table.getHeaderGroups() as headerGroup (headerGroup.id)}
 						<Table.Row>
@@ -189,26 +189,28 @@
 					{/each}
 				</Table.Body>
 			</Table.Root>
+			{#if table.getPageCount() > 1}
+				<div
+					class="absolute -bottom-5 flex w-full items-end justify-end space-x-2 justify-self-center py-4"
+				>
+					<Button
+						variant="outline"
+						size="sm"
+						onclick={() => table.previousPage()}
+						disabled={!table.getCanPreviousPage()}
+					>
+						Previous
+					</Button>
+					<Button
+						variant="outline"
+						size="sm"
+						onclick={() => table.nextPage()}
+						disabled={!table.getCanNextPage()}
+					>
+						Next
+					</Button>
+				</div>
+			{/if}
 		</div>
-		{#if table.getPageCount() > 1}
-			<div class="flex items-center justify-end space-x-2 py-4">
-				<Button
-					variant="outline"
-					size="sm"
-					onclick={() => table.previousPage()}
-					disabled={!table.getCanPreviousPage()}
-				>
-					Previous
-				</Button>
-				<Button
-					variant="outline"
-					size="sm"
-					onclick={() => table.nextPage()}
-					disabled={!table.getCanNextPage()}
-				>
-					Next
-				</Button>
-			</div>
-		{/if}
 	</div>
 </ScrollArea>

@@ -1,12 +1,9 @@
 import { superValidate } from 'sveltekit-superforms';
 import { zod4 } from 'sveltekit-superforms/adapters';
-import {
-	editProduct as schema,
-	inventoryAdjustmentFormSchema as adjustSchema
-} from '$lib/ZodSchema';
+import { editUserSchema as schema } from './schema';
 
 import { db } from '$lib/server/db';
-import { roles, user } from '$lib/server/db/schema';
+import { roles, user, permissions, rolePermissions } from '$lib/server/db/schema';
 import { eq, and, sql } from 'drizzle-orm';
 import type { Actions, PageServerLoad } from './$types';
 import { fail } from 'sveltekit-superforms';
@@ -14,6 +11,7 @@ import { setFlash } from 'sveltekit-flash-message/server';
 
 export const load: PageServerLoad = async ({ params }) => {
 	const { id } = params;
+
 	const form = await superValidate(zod4(schema));
 
 	const singleUser = await db
@@ -21,6 +19,7 @@ export const load: PageServerLoad = async ({ params }) => {
 			id: user.id,
 			name: user.name,
 			email: user.email,
+			roleId: user.roleId,
 			role: roles.name,
 			status: user.isActive,
 			createdAt: user.createdAt,
@@ -31,10 +30,33 @@ export const load: PageServerLoad = async ({ params }) => {
 		.where(eq(user.id, id))
 		.then((rows) => rows[0]);
 
+	if (!singleUser) {
+		return fail(404, { message: 'User not found' });
+	}
+
+	const roleList = await db
+		.select({
+			value: roles.id,
+			name: roles.name
+		})
+		.from(roles);
+
+	const permissionList = await db
+		.select({
+			id: permissions.id,
+			name: permissions.name,
+			description: permissions.description
+		})
+		.from(permissions)
+		.innerJoin(rolePermissions, eq(permissions.id, rolePermissions.permissionId))
+		.where(eq(rolePermissions.roleId, singleUser.roleId));
+
 	return {
 		singleUser,
 		id,
-		form
+		form,
+		roleList,
+		permissionList
 	};
 };
 
