@@ -1,7 +1,7 @@
-import {  verify } from '@node-rs/argon2';
+import { verify } from '@node-rs/argon2';
 // import { encodeBase32LowerCase } from '@oslojs/encoding';
 import { fail } from '@sveltejs/kit';
-import { eq } from 'drizzle-orm';
+import { eq, and } from 'drizzle-orm';
 import * as auth from '$lib/server/auth';
 import { db } from '$lib/server/db';
 import * as table from '$lib/server/db/schema/';
@@ -10,60 +10,53 @@ import { superValidate } from 'sveltekit-superforms';
 import { zod4 } from 'sveltekit-superforms/adapters';
 import { loginSchema } from '$lib/ZodSchema';
 import { redirect, setFlash } from 'sveltekit-flash-message/server';
-import { page } from '$app/state';
-
 
 export const load: PageServerLoad = async (event) => {
-	
 	if (event.locals.user) {
 		return redirect(302, '/dashboard');
 	}
-	 const form = await superValidate(zod4(loginSchema));
+	const form = await superValidate(zod4(loginSchema));
 
-  return { form };
+	return { form };
 };
 
 export const actions: Actions = {
 	login: async (event) => {
-
 		const form = await superValidate(event.request, zod4(loginSchema));
 		if (!form.valid) {
-      return fail(400, { form });
-    }
-		const { 
-  email, 
-  password,  
-} = form.data;
-		
+			return fail(400, { form });
+		}
+		const { email, password } = form.data;
 
-		const results = await db.select().from(table.user).where(eq(table.user.email, email));
+		const result = await db
+			.select()
+			.from(table.user)
+			.where(and(eq(table.user.email, email), eq(table.user.isActive, true)))
+			.then((rows) => rows[0]);
 
-		const existingUser = results.at(0);
-		if (!existingUser) {
-			setFlash({ type: 'error', message: "Incorrect username or password" }, event.cookies);
+		if (!result) {
+			setFlash({ type: 'error', message: 'Incorrect username or password' }, event.cookies);
 
-        
 			return fail(400, { form });
 		}
 
-		const validPassword = await verify(existingUser.passwordHash, password, {
+		const validPassword = await verify(result.passwordHash, password, {
 			memoryCost: 19456,
 			timeCost: 2,
 			outputLen: 32,
 			parallelism: 1
 		});
 		if (!validPassword) {
-			setFlash({ type: 'error', message: "Incorrect username or password" }, event.cookies);
+			setFlash({ type: 'error', message: 'Incorrect username or password' }, event.cookies);
 			return fail(400, { form });
 		}
 
 		const sessionToken = auth.generateSessionToken();
-		const session = await auth.createSession(sessionToken, existingUser.id);
+		const session = await auth.createSession(sessionToken, result.id);
 		auth.setSessionTokenCookie(event, sessionToken, session.expiresAt);
 
-		    redirect('/dashboard', { type: 'success', message: "Login Successful!" }, event.cookies);
-
-	},
+		redirect('/dashboard', { type: 'success', message: 'Login Successful!' }, event.cookies);
+	}
 	// register: async (event) => {
 	// 	const formData = await event.request.formData();
 	// 	const username = formData.get('username');
@@ -125,7 +118,7 @@ export const actions: Actions = {
 
 //   // Find the part before the '@'
 //   const atIndex = email.indexOf("@");
-  
+
 //   if (atIndex === -1) {
 //     throw new Error("Invalid email address: missing '@'");
 //   }

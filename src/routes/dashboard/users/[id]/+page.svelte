@@ -70,7 +70,10 @@
 	{/if}
 	{#if edit}
 		<div class="w-full p-4">
-			<form action="?/editProduct" use:enhance class="flex flex-col gap-4" id="edit" method="post">
+			<form action="?/editUser" use:enhance class="flex flex-col gap-4" id="edit" method="post">
+				<h3 class="text-center text-red-500">
+					Any changes made here will signout the user from every device they are logged in on.
+				</h3>
 				<Errors allErrors={$allErrors} />
 
 				{@render fe('Name', 'name', 'text', 'Change Name', true)}
