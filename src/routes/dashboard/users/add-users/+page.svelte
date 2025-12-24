@@ -12,7 +12,8 @@
 	import SelectComp from '$lib/formComponents/SelectComp.svelte';
 
 	let { data } = $props();
-
+	import { updateFlash } from 'sveltekit-flash-message';
+	import { page } from '$app/state';
 	const { form, errors, enhance, delayed, capture, restore } = superForm(data.form, {
 		taintedMessage: () => {
 			return new Promise((resolve) => {
@@ -20,7 +21,15 @@
 			});
 		},
 
-		validators: zod4Client(addUserSchema)
+		validators: zod4Client(addUserSchema),
+
+		onResult() {
+			updateFlash(page);
+		},
+
+		onError() {
+			updateFlash(page);
+		}
 	});
 
 	export const snapshot: Snapshot = { capture, restore };

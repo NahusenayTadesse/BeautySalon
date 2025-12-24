@@ -5,6 +5,7 @@
 
 	import ComboboxComp from '$lib/formComponents/ComboboxComp.svelte';
 	import { Plus, X, BrushCleaning } from '@lucide/svelte';
+	import type { Snapshot } from '@sveltejs/kit';
 
 	let { data } = $props();
 
@@ -34,16 +35,27 @@
 	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';
 	import FileUpload from '$lib/formComponents/FileUpload.svelte';
 	import Errors from '$lib/formComponents/Errors.svelte';
+	import { updateFlash } from 'sveltekit-flash-message';
+	import { page } from '$app/state';
 
-	const { form, errors, enhance, delayed, allErrors } = superForm(data.form, {
+	const { form, errors, enhance, delayed, allErrors, capture, restore } = superForm(data.form, {
 		taintedMessage: () => {
 			return new Promise((resolve) => {
 				resolve(window.confirm('Do you want to leave?\nChanges you made may not be saved.'));
 			});
 		},
+		validators: zod4Client(salesSchema),
 
-		validators: zod4Client(salesSchema)
+		onResult() {
+			updateFlash(page);
+		},
+
+		onError() {
+			updateFlash(page);
+		}
 	});
+
+	export const snapshot: Snapshot = { capture, restore };
 
 	function addProduct() {
 		$form.products = [...$form.products, { staff: 0, product: 0, noofproducts: 1, tip: 0 }];
@@ -92,8 +104,6 @@
 
 <h1>Sales</h1>
 
-
-
 {#snippet combo(name, items)}
 	<div class="flex w-full flex-col justify-start gap-2">
 		<Label for={name} class="capitalize">{name.replace(/([a-z])([A-Z])/g, '$1 $2')}:</Label>
@@ -103,8 +113,6 @@
 	</div>
 {/snippet}
 <form action="?/addSales" method="post" enctype="multipart/form-data" use:enhance {onsubmit}>
-
-	
 	<Errors allErrors={$allErrors} />
 	<div
 		class="mt-6 w-full max-w-3xl rounded-lg border border-slate-200 bg-white p-4 shadow dark:border-slate-700 dark:bg-slate-800"
@@ -123,9 +131,12 @@
 					{i + 1}
 					<div class={arrParts}>
 						<Label for="staff">Selling Staff Member</Label>
-						<ComboboxComp items={data.staffes} required={true} name="product_staff" bind:value={value.staff} />
-
-					  
+						<ComboboxComp
+							items={data.staffes}
+							required={true}
+							name="product_staff"
+							bind:value={value.staff}
+						/>
 
 						{#if $errors.products?.[i]?.staff}
 							<p class={errorsStyle}>{$errors.products[i].staff}</p>
@@ -135,7 +146,12 @@
 					<div class={arrParts}>
 						<Label for="product">Selling Product</Label>
 
-						<ComboboxComp items={data.products} name="product" required={true} bind:value={value.product} />
+						<ComboboxComp
+							items={data.products}
+							name="product"
+							required={true}
+							bind:value={value.product}
+						/>
 
 						{#if $errors.products?.[i]?.product}
 							<p class={errorsStyle}>{$errors.products[i].product}</p>
@@ -144,7 +160,7 @@
 					<div class={arrParts}>
 						<Label for="noofproducts">Number of Product</Label>
 
-						<Input type="number" min="1" name="noofproducts"  bind:value={value.noofproducts} />
+						<Input type="number" min="1" name="noofproducts" bind:value={value.noofproducts} />
 
 						{#if $errors.products?.[i]?.noofproducts}
 							<p class={errorsStyle}>{$errors.products[i].noofproducts}</p>
@@ -183,7 +199,12 @@
 					<div class={arrParts}>
 						<Label for="staff">Service Provider</Label>
 
-						<ComboboxComp items={data.staffes} required={true} name="service_staff" bind:value={value.staff} />
+						<ComboboxComp
+							items={data.staffes}
+							required={true}
+							name="service_staff"
+							bind:value={value.staff}
+						/>
 						{#if $errors.services?.[i]?.staff}
 							<p class={errorsStyle}>{$errors.services[i].staff}</p>
 						{/if}
@@ -191,7 +212,12 @@
 					<div class={arrParts}>
 						<Label for="staff">Service</Label>
 
-						<ComboboxComp items={data.services} required={true} name="service" bind:value={value.service} />
+						<ComboboxComp
+							items={data.services}
+							required={true}
+							name="service"
+							bind:value={value.service}
+						/>
 
 						{#if $errors.services?.[i]?.service}
 							<p class={errorsStyle}>{$errors.services[i].service}</p>
@@ -292,7 +318,7 @@
 		{/if}
 
 		<div class="mt-3 flex gap-2">
-			<Button type="submit" >
+			<Button type="submit">
 				{#if $delayed}
 					<LoadingBtn name="Adding Sale" />
 				{:else}
@@ -315,5 +341,3 @@
 		</div>
 	</div>
 </form>
- 
-{$form?.products?.[0]?.staff}

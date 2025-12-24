@@ -7,33 +7,37 @@
 	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';
 
 	import * as Card from '$lib/components/ui/card/index.js';
-	import { Plus, Upload, X } from '@lucide/svelte';
+	import { Plus } from '@lucide/svelte';
 	import { Button } from '$lib/components/ui/button/index.js';
 	import { zod4Client } from 'sveltekit-superforms/adapters';
-	import { addLeavePayrollSchema } from './schema';
+	import { addLeavePayrollSchema as schema } from './schema';
 	import { fileProxy, superForm } from 'sveltekit-superforms/client';
 	import DatePicker2 from '$lib/formComponents/DatePicker2.svelte';
 	import ComboboxComp from '$lib/formComponents/ComboboxComp.svelte';
 	import MonthYear from '$lib/formComponents/MonthYear.svelte';
 	import FileUpload from '$lib/formComponents/FileUpload.svelte';
-  import { CalendarDate, type DateValue } from "@internationalized/date";
-	import { CalendarIcon, SlidersHorizontal } from "@lucide/svelte";
-  import type { DateRange } from "bits-ui";
-    import * as Popover from "$lib/components/ui/popover/index.js";
+	import { type DateValue } from '@internationalized/date';
+	import { CalendarIcon } from '@lucide/svelte';
+	import * as Popover from '$lib/components/ui/popover/index.js';
 
-  import { cn } from "$lib/utils.js";
-  import { buttonVariants } from "$lib/components/ui/button/index.js";
+	import { cn } from '$lib/utils.js';
+	import { buttonVariants } from '$lib/components/ui/button/index.js';
 
 	let { data } = $props();
 
-	const { form, errors, enhance, delayed, capture, restore, allErrors } = superForm(data.form, {
-		taintedMessage: () => {
-			return new Promise((resolve) => {
-				resolve(window.confirm('Do you want to leave?\nChanges you made may not be saved.'));
-			});
+	import { updateFlash } from 'sveltekit-flash-message';
+	import { page } from '$app/state';
+
+	const { form, errors, enhance, delayed, allErrors, capture, restore } = superForm(data.form, {
+		validators: zod4Client(schema),
+
+		onResult() {
+			updateFlash(page);
 		},
 
-		validators: zod4Client(addLeavePayrollSchema)
+		onError() {
+			updateFlash(page);
+		}
 	});
 
 	export const snapshot: Snapshot = { capture, restore };
@@ -73,35 +77,33 @@
 
 	$form.taxAmount = 0;
 
-	import { getLocalTimeZone, today } from "@internationalized/date";
-  import { RangeCalendar } from "$lib/components/ui/range-calendar/index.js";
+	import { getLocalTimeZone, today } from '@internationalized/date';
+	import { RangeCalendar } from '$lib/components/ui/range-calendar/index.js';
 	import Errors from '$lib/formComponents/Errors.svelte';
- 
-  const start = today(getLocalTimeZone());
-  const end = start.add({ days: 30 });
- 
-  let value = $state({
-    start,
-    end
-  });
 
-  $effect(()=>{
-	 $form.payPeriodStart = value.start.toString(),
-	 $form.payPeriodEnd = value.end.toString()
-  })
+	const start = today(getLocalTimeZone());
+	const end = start.add({ days: 30 });
 
-  function formatDate(input: DateValue | string | null | undefined) {
-  if (!input || String(input).includes('Pick')) return 'Pick a date'; }
+	let value = $state({
+		start,
+		end
+	});
 
-     let contentRef = $state<HTMLElement | null>(null);
-    let open = $state(false);
+	$effect(() => {
+		(($form.payPeriodStart = value.start.toString()), ($form.payPeriodEnd = value.end.toString()));
+	});
 
+	function formatDate(input: DateValue | string | null | undefined) {
+		if (!input || String(input).includes('Pick')) return 'Pick a date';
+	}
+
+	let contentRef = $state<HTMLElement | null>(null);
+	let open = $state(false);
 </script>
 
 <svelte:head>
 	<title>Add New Salary</title>
 </svelte:head>
-
 
 {#snippet fe(
 	label = '',
@@ -194,7 +196,8 @@
 			class="flex flex-col gap-4"
 			method="POST"
 			enctype="multipart/form-data"
-		>  	<Errors allErrors={$allErrors} />
+		>
+			<Errors allErrors={$allErrors} />
 
 			<div class="flex flex-col gap-0">
 				{@render totals($form.baseSalary, 'Salary Amount')}
@@ -222,34 +225,38 @@
 
 			{@render fe('Paid Amount', 'paidAmount', 'number', 'Enter paid Amount', true)}
 
-<Label>Payment Start Date - Payment End Date</Label>
+			<Label>Payment Start Date - Payment End Date</Label>
 
-<Popover.Root bind:open>
-  <Popover.Trigger
-	class={cn(
-	  buttonVariants({
-		variant: "outline",
-		class: "w-full justify-start text-start font-normal"
-	  }),
-	  !value && "text-muted-foreground"
-	)}
-  >
-	<CalendarIcon />
-	{#if value && value.start && value.end}
-	  <span>{String(value.start)} - {String(value.end)}</span>
-	{:else if value && value.start}
-	  <span>{String(value.start)} - Pick an end date</span>
-	{:else if value && value.end}
-	  <span>Pick a start date - {String(value.end)}</span>
-	{:else}
-	  <span>Pick a date</span>
-	{/if}
-  </Popover.Trigger>
-    <Popover.Content bind:ref={contentRef} class="w-full p-0">
-
-<RangeCalendar bind:value class="relative rounded-lg pb-16 w-auto border shadow-sm" numberOfMonths={2} />
-  </Popover.Content>
-</Popover.Root>			{@render fe('Pay Period Start', 'payPeriodStart', 'hidden', 'Enter tax Amount', true)}
+			<Popover.Root bind:open>
+				<Popover.Trigger
+					class={cn(
+						buttonVariants({
+							variant: 'outline',
+							class: 'w-full justify-start text-start font-normal'
+						}),
+						!value && 'text-muted-foreground'
+					)}
+				>
+					<CalendarIcon />
+					{#if value && value.start && value.end}
+						<span>{String(value.start)} - {String(value.end)}</span>
+					{:else if value && value.start}
+						<span>{String(value.start)} - Pick an end date</span>
+					{:else if value && value.end}
+						<span>Pick a start date - {String(value.end)}</span>
+					{:else}
+						<span>Pick a date</span>
+					{/if}
+				</Popover.Trigger>
+				<Popover.Content bind:ref={contentRef} class="w-full p-0">
+					<RangeCalendar
+						bind:value
+						class="relative w-auto rounded-lg border pb-16 shadow-sm"
+						numberOfMonths={2}
+					/>
+				</Popover.Content>
+			</Popover.Root>
+			{@render fe('Pay Period Start', 'payPeriodStart', 'hidden', 'Enter tax Amount', true)}
 			{@render fe('Pay Period End', 'payPeriodEnd', 'hidden', 'Enter tax Amount', true)}
 
 			{@render date('paymentDate', 'Date of Staff Member Payment')}
@@ -293,7 +300,7 @@
 					<span class="text-red-500">{$errors.reciept}</span>
 				{/if}
 			</div> -->
-            <FileUpload name="reciept" {form} {errors} />
+			<FileUpload name="reciept" {form} {errors} />
 			<Button type="submit" class="mt-4" form="main">
 				{#if $delayed}
 					<LoadingBtn name="Confirming Salary" />

@@ -14,11 +14,18 @@
 	import { superForm } from 'sveltekit-superforms/client';
 	import Errors from '$lib/formComponents/Errors.svelte';
 	let { data } = $props();
+	import { updateFlash } from 'sveltekit-flash-message';
+	import { page } from '$app/state';
+
 	const { form, errors, enhance, delayed, capture, restore, allErrors } = superForm(data.form, {
 		onResult({ result }) {
 			if (result.type === 'success') {
 				goto('/login');
 			}
+			updateFlash(page);
+		},
+		onError() {
+			updateFlash(page);
 		},
 
 		validators: zod4Client(changePasswordSchema)

@@ -30,10 +30,18 @@
 		{ name: 'Created At', value: data.singleUser?.createdAt.toLocaleString() },
 		{ name: 'Updated At', value: data.singleUser?.updatedAt.toLocaleString() }
 	]);
-
+	import { updateFlash } from 'sveltekit-flash-message';
+	import { page } from '$app/state';
 	const { form, errors, enhance, delayed, capture, restore, allErrors } = superForm(data.form, {
 		validators: zod4Client(editUserSchema),
-		resetForm: false
+		resetForm: false,
+		onResult() {
+			updateFlash(page);
+		},
+
+		onError() {
+			updateFlash(page);
+		}
 	});
 
 	export const snapshot: Snapshot = { capture, restore };

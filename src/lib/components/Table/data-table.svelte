@@ -114,7 +114,7 @@
       onChange={f => (columnFilters = f)}
     /> -->
 			</div>
-			<div class="sticky top-0 z-100 flex flex-row items-center gap-4 bg-background">
+			<div class="sticky top-0 z-10 flex flex-row items-center gap-4 bg-background">
 				<Input
 					type="search"
 					placeholder="Search Table..."

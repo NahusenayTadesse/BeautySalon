@@ -31,10 +31,18 @@
 		{ name: 'Goverment Id', value: data.staffMember?.govId },
 		{ name: 'Contract', value: data.staffMember?.contract }
 	]);
-
+	import { updateFlash } from 'sveltekit-flash-message';
+	import { page } from '$app/state';
 	const { form, errors, enhance, delayed, capture, restore } = superForm(data.form, {
 		validators: zod4Client(editStaff),
-		resetForm: false
+		resetForm: false,
+		onResult() {
+			updateFlash(page);
+		},
+
+		onError() {
+			updateFlash(page);
+		}
 	});
 
 	$form.staffId = data.staffMember.id;
@@ -246,7 +254,7 @@
 	</div>
 {/snippet}
 <div class="my-8 w-full lg:w-1/2">
-<div class="mb-6">
+	<div class="mb-6">
 		<h3 class="text-lg font-semibold">Product Tips Today</h3>
 		<p class="mb-2 text-sm text-gray-500 dark:text-gray-400">
 			Tips earned from product sales by {data?.staffMember?.firstName}

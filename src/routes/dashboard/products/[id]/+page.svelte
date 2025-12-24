@@ -43,9 +43,18 @@
 		{ name: 'Sales in Money', value: data.product?.paidAmount + ' Birr in Transactions' }
 	]);
 
+	import { updateFlash } from 'sveltekit-flash-message';
+	import { page } from '$app/state';
 	const { form, errors, enhance, delayed, capture, restore, allErrors } = superForm(data.form, {
 		validators: zod4Client(editProduct),
-		resetForm: false
+		resetForm: false,
+		onResult() {
+			updateFlash(page);
+		},
+
+		onError() {
+			updateFlash(page);
+		}
 	});
 
 	(($form.productName = data.product.name),

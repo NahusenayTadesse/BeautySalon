@@ -14,7 +14,8 @@
 	import { columns } from '$lib/components/CategoryColumns.js';
 
 	let { data } = $props();
-
+	import { updateFlash } from 'sveltekit-flash-message';
+	import { page } from '$app/state';
 	const { form, errors, delayed, enhance, capture, restore } = superForm(data.form, {
 		taintedMessage: () => {
 			return new Promise((resolve) => {
@@ -22,7 +23,14 @@
 			});
 		},
 
-		validators: zod4Client(positionSchema)
+		validators: zod4Client(positionSchema),
+		onResult() {
+			updateFlash(page);
+		},
+
+		onError() {
+			updateFlash(page);
+		}
 	});
 
 	export const snapshot: Snapshot = { capture, restore };

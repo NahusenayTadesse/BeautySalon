@@ -16,11 +16,21 @@
 
 	let { data } = $props();
 
+	import { updateFlash } from 'sveltekit-flash-message';
+	import { page } from '$app/state';
+
 	const { form, errors, enhance, delayed, message, capture, restore } = superForm(data.form, {
 		taintedMessage: () => {
 			return new Promise((resolve) => {
 				resolve(window.confirm('Do you want to leave?\nChanges you made may not be saved.'));
 			});
+		},
+		onResult() {
+			updateFlash(page);
+		},
+
+		onError() {
+			updateFlash(page);
 		},
 
 		validators: zod4Client(serviceSchema)

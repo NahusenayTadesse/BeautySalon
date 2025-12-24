@@ -8,26 +8,33 @@
 	import DatePicker2 from '$lib/formComponents/DatePicker2.svelte';
 
 	import * as Card from '$lib/components/ui/card/index.js';
-	import { Plus} from '@lucide/svelte';
+	import { Plus } from '@lucide/svelte';
 	import { Button } from '$lib/components/ui/button/index.js';
 	import { zod4Client } from 'sveltekit-superforms/adapters';
-	import { deductionSchema as expensesSchema } from './deductions';
+	import { deductionSchema as schema } from './deductions';
 	import { superForm, fileProxy } from 'sveltekit-superforms/client';
 	import Errors from '$lib/formComponents/Errors.svelte';
-	;
-
 	let { data } = $props();
 
-	const { form, errors, enhance, delayed, message, capture, restore, allErrors } = superForm(data.form, {
+	import { updateFlash } from 'sveltekit-flash-message';
+	import { page } from '$app/state';
+
+	const { form, errors, enhance, delayed, allErrors, capture, restore } = superForm(data.form, {
 		taintedMessage: () => {
 			return new Promise((resolve) => {
 				resolve(window.confirm('Do you want to leave?\nChanges you made may not be saved.'));
 			});
 		},
+		validators: zod4Client(schema),
 
-		validators: zod4Client(expensesSchema)
+		onResult() {
+			updateFlash(page);
+		},
+
+		onError() {
+			updateFlash(page);
+		}
 	});
-
 
 	export const snapshot: Snapshot = { capture, restore };
 </script>
@@ -42,7 +49,7 @@
 	type = '',
 	placeholder = '',
 	required = false,
-	min = '', 
+	min = '',
 
 	max = ''
 )}
@@ -64,7 +71,6 @@
 	</div>
 {/snippet}
 
-
 {#snippet date(name, title)}
 	<Label for={name} class="capitalize">{title}</Label>
 
@@ -72,7 +78,6 @@
 	<input type="hidden" {name} bind:value={$form[name]} />
 	{#if $errors[name]}<span class="text-red-500">{$errors[name]}</span>{/if}
 {/snippet}
-
 
 <Card.Root class="flex w-full flex-col gap-4 lg:w-lg">
 	<Card.Header>
@@ -86,18 +91,12 @@
 			class="flex flex-col gap-4"
 			method="post"
 			enctype="multipart/form-data"
-		> 
+		>
 			<Errors allErrors={$allErrors} />
 
 			{@render date('deductionDate', 'Deduction Date')}
-{@render fe(
-				'Deduction Type',
-				'type',
-				'text',
-				'Enter the type of Deduction',
-				true,
-			)}
-            {@render fe(
+			{@render fe('Deduction Type', 'type', 'text', 'Enter the type of Deduction', true)}
+			{@render fe(
 				'Amount Deducted',
 				'amount',
 				'number',
@@ -118,10 +117,6 @@
 
 				{#if $errors.description}<span class="text-red-500">{$errors.description}</span>{/if}
 			</div>
-			
-	
-
-				
 
 			<Button type="submit" class="mt-4" form="main">
 				{#if $delayed}

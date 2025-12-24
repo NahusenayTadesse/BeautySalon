@@ -13,12 +13,21 @@
 	import SelectComp from '$lib/formComponents/SelectComp.svelte';
 	import FileUpload from '$lib/formComponents/FileUpload.svelte';
 	let isOpen = $state(false);
-
+	import { updateFlash } from 'sveltekit-flash-message';
+	import { page } from '$app/state';
 	let {
 		data,
 		name = 'product'
 	}: { data: SuperValidated<Infer<InventoryAdjustmentForm>>; name: string } = $props();
-	const { form, errors, enhance, delayed } = superForm(data);
+	const { form, errors, enhance, delayed } = superForm(data, {
+		onResult() {
+			updateFlash(page);
+		},
+
+		onError() {
+			updateFlash(page);
+		}
+	});
 </script>
 
 {#snippet fe(

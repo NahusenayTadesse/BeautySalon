@@ -4,24 +4,43 @@
 	import { navigating, page, updated } from '$app/state';
 	import { Toaster } from '$lib/components/ui/sonner/index.js';
 
-	import { toastmsg, errormsg } from '$lib/global.svelte';
+	import { toastmsg } from '$lib/global.svelte';
 
 	const flash = getFlash(page, { clearAfterMs: 5000 });
 
 	import { ModeWatcher } from 'mode-watcher';
 	import { fly } from 'svelte/transition';
-	import { CircleCheckBig, CircleX, Loader } from '@lucide/svelte';
+	import { Loader } from '@lucide/svelte';
 	import { Button } from '$lib/components/ui/button';
 	import { toast } from 'svelte-sonner';
 
+	async function notifyBrowser(title: string, body: string) {
+		if (!('Notification' in window)) return; // Safari iOS etc.
+		if (Notification.permission === 'granted') {
+			new Notification(title, { body, icon: '/logo.png' });
+		} else if (Notification.permission !== 'denied') {
+			const perm = await Notification.requestPermission();
+			if (perm === 'granted') new Notification(title, { body, icon: '/logo.png' });
+		}
+	}
+
 	let { children } = $props();
 
-	let iconify = $state('h-6 w-6 animate-ping');
+	// let iconify = $state('h-6 w-6 animate-ping');
 
 	$effect(() => {
 		if (!$flash) return;
 		if (page.data.flash?.type === 'success') toast.success($flash.message);
 		if (page.data.flash?.type === 'error') toast.error($flash?.message);
+
+		notifyBrowser(
+			page.data.flash?.type === 'success'
+				? 'Success'
+				: page.data.flash?.type === 'error'
+					? 'Error'
+					: 'Message',
+			$flash.message
+		);
 		$flash = undefined;
 	});
 </script>
@@ -31,23 +50,6 @@
 </svelte:head>
 <ModeWatcher />
 <Toaster position="bottom-right" richColors closeButton />
-
-<!-- {#if $flash}
-
-  <div class="flex flex-row gap-2
-  {$flash.type==='success' ? toastmsg: errormsg}"
-  transition:fly={{x:20, duration: 300  }}>
-  {#if $flash.type==='success'}
-    <CircleCheckBig class={iconify} />
-   {:else}
-   <CircleX class={iconify} />
-  {/if}
-    {$flash.message}
-
-  </div>
-
-
-{/if} -->
 
 {#if navigating.to}
 	<div

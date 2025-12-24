@@ -3,64 +3,55 @@
 	import { Label } from '$lib/components/ui/label/index.js';
 	import type { Snapshot } from '@sveltejs/kit';
 
-	import { Textarea } from '$lib/components/ui/textarea/index.js';
 	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';
-	import DatePicker2 from '$lib/formComponents/DatePicker2.svelte';
 
 	import * as Card from '$lib/components/ui/card/index.js';
-	import { Pen, Percent, Plus} from '@lucide/svelte';
+	import { Pen, Percent, Plus } from '@lucide/svelte';
 	import { Button } from '$lib/components/ui/button/index.js';
 	import { zod4Client } from 'sveltekit-superforms/adapters';
-	import { salaryChangeSchema as expensesSchema } from './schema'
+	import { salaryChangeSchema as schema } from './schema';
 	import { superForm } from 'sveltekit-superforms/client';
 	import Errors from '$lib/formComponents/Errors.svelte';
-	;
-
 	let { data } = $props();
 
-	const { form, errors, enhance, delayed, message, capture, restore, allErrors } = superForm(data.form, {
+	import { updateFlash } from 'sveltekit-flash-message';
+	import { page } from '$app/state';
+
+	const { form, errors, enhance, delayed, allErrors, capture, restore } = superForm(data.form, {
 		taintedMessage: () => {
 			return new Promise((resolve) => {
 				resolve(window.confirm('Do you want to leave?\nChanges you made may not be saved.'));
 			});
 		},
+		validators: zod4Client(schema),
 
-		validators: zod4Client(expensesSchema)
+		onResult() {
+			updateFlash(page);
+		},
+
+		onError() {
+			updateFlash(page);
+		}
 	});
 
-
 	export const snapshot: Snapshot = { capture, restore };
-   
 
+	let current = data?.salaryDetail?.baseSalary;
+	let percentage = $state(0);
+	let amount = $state(0);
 
+	let byPercent = $state(true);
 
-  let current =  data?.salaryDetail?.baseSalary;
-  let percentage = $state(0);
-  let amount = $state(0)
+	//   let newPercetage =
+	function onclick() {
+		byPercent = !byPercent;
+		$form.amount = String(current);
+	}
 
-
-  let byPercent = $state(true)
-  
-
-//   let newPercetage = 
-   function onclick(){
-	  byPercent = !byPercent
-	  $form.amount = current
-   }
-
-  function oninput(){
-
-	
-     if(byPercent)
-	 $form.amount =  (percentage/100 * Number(current)) + Number(current);
-	else
-      $form.amount =  amount + Number(current);
-
-  };
-   
-  
-
-
+	function oninput() {
+		if (byPercent) $form.amount = (percentage / 100) * Number(current) + Number(current);
+		else $form.amount = amount + Number(current);
+	}
 </script>
 
 <svelte:head>
@@ -73,12 +64,11 @@
 	type = '',
 	placeholder = '',
 	required = false,
-	min = '', 
+	min = '',
 
 	max = ''
 )}
 	<div class="flex w-full flex-col justify-start gap-2">
-		
 		<Label for={name}>{label}</Label>
 		<Input
 			{type}
@@ -95,85 +85,60 @@
 		{/if}
 	</div>
 {/snippet}
- 
-
-
-
 
 <Card.Root class="flex w-full flex-col gap-4 lg:w-lg">
 	<Card.Header>
 		<Card.Title class="text-2xl">Change Salary for {data.salaryDetail.name}</Card.Title>
 	</Card.Header>
 	<Card.Content>
-		<div
-			class="flex flex-col gap-4"
-			
-		>   
+		<div class="flex flex-col gap-4">
+			<div class="flex flex-row gap-2">
+				<Button variant={byPercent ? 'default' : 'outline'} {onclick}
+					><Percent /> Increase By Percentage</Button
+				>
+				<Button variant={!byPercent ? 'default' : 'outline'} {onclick}
+					><Plus /> Increase By Amount</Button
+				>
+			</div>
 
-		 <div class="flex flex-row gap-2">
-			<Button variant={byPercent ? 'default' : 'outline'} {onclick}><Percent /> Increase By Percentage</Button>
-			<Button variant={!byPercent ? 'default' : 'outline'} {onclick}><Plus /> Increase By Amount</Button>
-		 </div>
+			<div class="flex flex-col gap-4">
+				{#if byPercent}
+					<Label>Increase By Percentage</Label>
 
-		  <div class="flex flex-col gap-4"> 
-			 {#if byPercent}
-			<Label>
-				Increase By Percentage
-			</Label>
-			
-    
-			<Input type="number" {oninput} bind:value={percentage}>
-			  
-			</Input>
-          {:else}
-			<Label>
-				Increase By Amount
-			</Label>
-			
-
-			<Input type="number" {oninput} step="100" bind:value={amount}>
-			  
-			</Input>
-
-			 {/if}
-		  </div>
-		  <!-- Amount field with built-in calculator -->
-
-		   <form use:enhance
-			action="?/changeSalary"
-			id="main"
-			class="flex flex-col gap-4"
-			method="post" 
-			>
-		 	<Errors allErrors={$allErrors} />
-
-			<h4>Current Salary <bold class="font-bold!">ETB {Number(data.salaryDetail.baseSalary).toFixed(2)}</bold> </h4>
-			<h5>Calculating New Salary By <bold class="text-red-500 font-bold!"> {byPercent ? 'Percentage': 'Amount'}</bold> </h5>
-   
-
-            {@render fe(
-				'New Salary Amount',
-				'amount',
-				'number',
-				'Enter the amount ',
-				true,
-				'0'
-			)}
-			
-			 			
-	
-
-				
-
-			<Button type="submit" class="mt-4" form="main">
-				{#if $delayed}
-					<LoadingBtn name="Updating Salary" />
+					<Input type="number" {oninput} bind:value={percentage}></Input>
 				{:else}
-					<Pen class="h-4 w-4" />
-					Change Salary
+					<Label>Increase By Amount</Label>
+
+					<Input type="number" {oninput} step="100" bind:value={amount}></Input>
 				{/if}
-			</Button>
-		</form>
+			</div>
+			<!-- Amount field with built-in calculator -->
+
+			<form use:enhance action="?/changeSalary" id="main" class="flex flex-col gap-4" method="post">
+				<Errors allErrors={$allErrors} />
+
+				<h4>
+					Current Salary <bold class="font-bold!"
+						>ETB {Number(data.salaryDetail.baseSalary).toFixed(2)}</bold
+					>
+				</h4>
+				<h5>
+					Calculating New Salary By <bold class="font-bold! text-red-500">
+						{byPercent ? 'Percentage' : 'Amount'}</bold
+					>
+				</h5>
+
+				{@render fe('New Salary Amount', 'amount', 'number', 'Enter the amount ', true, '0')}
+
+				<Button type="submit" class="mt-4" form="main">
+					{#if $delayed}
+						<LoadingBtn name="Updating Salary" />
+					{:else}
+						<Pen class="h-4 w-4" />
+						Change Salary
+					{/if}
+				</Button>
+			</form>
 		</div>
 	</Card.Content>
 </Card.Root>

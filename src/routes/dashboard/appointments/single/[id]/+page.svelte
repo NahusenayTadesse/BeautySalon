@@ -36,6 +36,8 @@
 		{ name: 'Booked At', value: data.appointmentsList.bookedAt },
 		{ name: 'Paid Amount', value: data.appointmentsList.paidAmount }
 	]);
+	import { updateFlash } from 'sveltekit-flash-message';
+	import { page } from '$app/state';
 
 	const { form, errors, enhance, delayed, capture, restore } = superForm(data.form, {
 		taintedMessage: () => {
@@ -43,7 +45,14 @@
 				resolve(window.confirm('Do you want to leave?\nChanges you made may not be saved.'));
 			});
 		},
-		validators: zod4Client(bookingFeeSchema)
+		validators: zod4Client(bookingFeeSchema),
+		onResult() {
+			updateFlash(page);
+		},
+
+		onError() {
+			updateFlash(page);
+		}
 	});
 
 	const {

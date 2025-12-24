@@ -33,10 +33,19 @@
 		{ name: 'Number of Appointments', value: data.customer?.appointmentCount + ' ' + count },
 		{ name: 'Number of Days Since Joined', value: data.customer?.daysSinceJoined + ' Days' }
 	]);
+	import { updateFlash } from 'sveltekit-flash-message';
+	import { page } from '$app/state';
 
 	const { form, errors, enhance, delayed, capture, restore, allErrors } = superForm(data.form, {
 		validators: zod4Client(editCustomer),
-		resetForm: false
+		resetForm: false,
+		onResult() {
+			updateFlash(page);
+		},
+
+		onError() {
+			updateFlash(page);
+		}
 	});
 
 	export const snapshot: Snapshot = { capture, restore };

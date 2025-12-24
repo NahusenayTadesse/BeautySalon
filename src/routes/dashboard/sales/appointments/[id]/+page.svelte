@@ -35,15 +35,27 @@
 	import FileUpload from '$lib/formComponents/FileUpload.svelte';
 	import Errors from '$lib/formComponents/Errors.svelte';
 
-	const { form, errors, message, enhance, delayed, capture, restore, allErrors } = superForm(data.form, {
+	import { updateFlash } from 'sveltekit-flash-message';
+	import { page } from '$app/state';
+
+	const { form, errors, enhance, delayed, allErrors, capture, restore } = superForm(data.form, {
 		taintedMessage: () => {
 			return new Promise((resolve) => {
 				resolve(window.confirm('Do you want to leave?\nChanges you made may not be saved.'));
 			});
 		},
+		validators: zod4Client(salesSchema),
 
-		validators: zod4Client(salesSchema)
+		onResult() {
+			updateFlash(page);
+		},
+
+		onError() {
+			updateFlash(page);
+		}
 	});
+
+	export const snapshot: Snapshot = { capture, restore };
 
 	function addProduct() {
 		$form.products = [...$form.products, { staff: 0, product: 0, noofproducts: 1, tip: 0 }];
@@ -103,8 +115,6 @@
 	</div>
 {/snippet}
 <form action="?/addSales" method="post" enctype="multipart/form-data" use:enhance {onsubmit}>
-
-
 	<Errors allErrors={$allErrors} />
 	<div
 		class="mt-6 w-full max-w-3xl rounded-lg border border-slate-200 bg-white p-4 shadow dark:border-slate-700 dark:bg-slate-800"
@@ -248,8 +258,7 @@
 		</div>
 
 		{#if $form.products.length > 0 || $form.services.length > 0}
-			
-              			<FileUpload name="receipt" {form} {errors} />
+			<FileUpload name="receipt" {form} {errors} />
 
 			{@render combo('paymentMethod', data.allMethods)}
 		{/if}

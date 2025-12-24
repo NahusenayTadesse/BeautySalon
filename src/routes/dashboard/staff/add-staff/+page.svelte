@@ -13,7 +13,8 @@
 	import DatePicker2 from '$lib/formComponents/DatePicker2.svelte';
 
 	let { data } = $props();
-
+	import { updateFlash } from 'sveltekit-flash-message';
+	import { page } from '$app/state';
 	const { form, errors, enhance, delayed, capture, restore } = superForm(data.form, {
 		taintedMessage: () => {
 			return new Promise((resolve) => {
@@ -21,7 +22,14 @@
 			});
 		},
 
-		validators: zod4Client(staffSchema)
+		validators: zod4Client(staffSchema),
+		onResult() {
+			updateFlash(page);
+		},
+
+		onError() {
+			updateFlash(page);
+		}
 	});
 	const govId = fileProxy(form, 'govId');
 	const contract = fileProxy(form, 'contract');

@@ -34,10 +34,18 @@
 			value: data.service?.saleCount === null ? '0 ETB in Transactions' : ' ETB in Transactions'
 		}
 	]);
-
+	import { updateFlash } from 'sveltekit-flash-message';
+	import { page } from '$app/state';
 	const { form, errors, enhance, delayed, capture, restore } = superForm(data.form, {
 		validators: zod4Client(editService),
-		resetForm: false
+		resetForm: false,
+		onResult() {
+			updateFlash(page);
+		},
+
+		onError() {
+			updateFlash(page);
+		}
 	});
 
 	(($form.serviceName = data.service.name),

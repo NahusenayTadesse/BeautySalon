@@ -18,7 +18,8 @@
 	import ComboboxComp from '$lib/formComponents/ComboboxComp.svelte';
 
 	let { data } = $props();
-
+	import { updateFlash } from 'sveltekit-flash-message';
+	import { page } from '$app/state';
 	const { form, errors, enhance, delayed, message, capture, restore } = superForm(data.form, {
 		taintedMessage: () => {
 			return new Promise((resolve) => {
@@ -26,10 +27,17 @@
 			});
 		},
 
-		validators: zod4Client(expensesSchema)
+		validators: zod4Client(expensesSchema),
+		onResult() {
+			updateFlash(page);
+		},
+
+		onError() {
+			updateFlash(page);
+		}
 	});
 
-	const file = fileProxy(form, 'reciept')
+	const file = fileProxy(form, 'reciept');
 
 	export const snapshot: Snapshot = { capture, restore };
 </script>
@@ -44,7 +52,7 @@
 	type = '',
 	placeholder = '',
 	required = false,
-	min = '', 
+	min = '',
 
 	max = ''
 )}
@@ -162,7 +170,7 @@
 						</div>
 
 					{/if}
-            </div> --> 
+            </div> -->
 			<!-- <div class="flex w-full flex-col justify-start gap-2">
 					<Label for="reciept" class="capitalize">Upload Reciept or Screenshot of Booking Fee</Label>
 					<div class="relative flex flex-row gap-2">
@@ -192,8 +200,6 @@
 			<!-- {#if $errors.reciept}
 						<span class="text-red-500">{$errors.reciept}</span>
 					{/if} -->
-
-				
 
 			<Button type="submit" class="mt-4" form="main">
 				{#if $delayed}
