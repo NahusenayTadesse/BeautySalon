@@ -315,9 +315,7 @@ export const inventoryAdjustmentFormSchema = z.object({
 
 	quantity: z.coerce.string('Quantity must be greater than 0'),
 
-	notes: z.string().max(255).optional(),
-
-	reason: z.string('Reason is required').max(255),
+	reason: z.string().max(255).optional(),
 
 	// Move .optional() inside the field definition
 	reciept: z

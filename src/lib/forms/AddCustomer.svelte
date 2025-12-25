@@ -16,21 +16,23 @@
 		data,
 		action = '/dashboard/cusotmers?/addCustomer'
 	}: { data: SuperValidated<Infer<AddCustomerSchema>>; action: string } = $props();
-	import { updateFlash } from 'sveltekit-flash-message';
-	import { page } from '$app/state';
-	const { form, errors, enhance, delayed } = superForm(data, {
+
+	const { form, errors, enhance, delayed, message } = superForm(data, {
 		taintedMessage: () => {
 			return new Promise((resolve) => {
 				resolve(window.confirm('Do you want to leave?\nChanges you made may not be saved.'));
 			});
-		},
+		}
+	});
 
-		onResult() {
-			updateFlash(page);
-		},
-
-		onError() {
-			updateFlash(page);
+	import { toast } from 'svelte-sonner';
+	$effect(() => {
+		if ($message) {
+			if ($message.type === 'error') {
+				toast.error($message.text);
+			} else {
+				toast.success($message.text);
+			}
 		}
 	});
 </script>

@@ -11,7 +11,7 @@
 	import { superForm } from 'sveltekit-superforms/client';
 
 	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';
-	import { ArrowLeft, Pencil, Save } from '@lucide/svelte';
+	import { ArrowLeft, Pencil, Save, History } from '@lucide/svelte';
 	import SelectComp from '$lib/formComponents/SelectComp.svelte';
 	import type { Snapshot } from '@sveltejs/kit';
 
@@ -60,6 +60,8 @@
 	export const snapshot: Snapshot = { capture, restore };
 
 	//   let date = $derived(dateProxy(editForm, 'appointmentDate', { format: 'date'}));
+	import Adjustment from '$lib/forms/Adjustment.svelte';
+	import { getCurrentMonthRange } from '$lib/global.svelte.js';
 
 	let edit = $state(false);
 </script>
@@ -81,6 +83,10 @@
 			{/if}
 		</Button>
 		<Delete redirect="/dashboard/supplies" />
+		<Adjustment data={data.adjustForm} name={data.supply?.name} />
+		<Button href="/dashboard/supplies/{data.supply.id}/ranges/{getCurrentMonthRange()}">
+			<History /> See Change History
+		</Button>
 	</div>
 	{#if edit === false}
 		<div class="w-full p-4"><SingleTable {singleTable} /></div>

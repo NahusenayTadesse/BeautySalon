@@ -3,7 +3,7 @@
 	import { Label } from '$lib/components/ui/label/index.js';
 	import { Textarea } from '$lib/components/ui/textarea/index.js';
 	import { Button, buttonVariants } from '$lib/components/ui/button/index.js';
-	import { Pen, Trash } from '@lucide/svelte';
+	import { Pen } from '@lucide/svelte';
 	import * as Dialog from '$lib/components/ui/dialog/index.js';
 	import { ScrollArea } from '$lib/components/ui/scroll-area/index.js';
 	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';
@@ -13,19 +13,20 @@
 	import SelectComp from '$lib/formComponents/SelectComp.svelte';
 	import FileUpload from '$lib/formComponents/FileUpload.svelte';
 	let isOpen = $state(false);
-	import { updateFlash } from 'sveltekit-flash-message';
-	import { page } from '$app/state';
+
 	let {
 		data,
 		name = 'product'
 	}: { data: SuperValidated<Infer<InventoryAdjustmentForm>>; name: string } = $props();
-	const { form, errors, enhance, delayed } = superForm(data, {
-		onResult() {
-			updateFlash(page);
-		},
-
-		onError() {
-			updateFlash(page);
+	const { form, errors, enhance, delayed, message } = superForm(data, {});
+	import { toast } from 'svelte-sonner';
+	$effect(() => {
+		if ($message) {
+			if ($message.type === 'error') {
+				toast.error($message.text);
+			} else {
+				toast.success($message.text);
+			}
 		}
 	});
 </script>
@@ -78,15 +79,18 @@
 {/snippet}
 
 <Dialog.Root bind:open={isOpen}>
-	<Dialog.Trigger class={buttonVariants({ variant: 'default' })}
-		><Pen /> Change Quantity
+	<Dialog.Trigger
+		class={buttonVariants({ variant: 'default' })}
+		title="Change the quantity of {name}"
+	>
+		<Pen /> Change Quantity
 	</Dialog.Trigger>
 	<Dialog.Content class="w-full">
 		<Dialog.Header>
 			<Dialog.Title>Change Quantity of {name}</Dialog.Title>
 		</Dialog.Header>
 		<ScrollArea class="h-auto rounded-md border p-2">
-			<h5 class="text-center">Are you sure you want to Delete? This action is irreversable</h5>
+			<h5 class="text-center">Change {name} Quantity</h5>
 			<div class="flex flex-col items-center justify-center gap-4 pt-4">
 				<form
 					method="post"
@@ -105,12 +109,11 @@
 						'reason',
 						'',
 						'Enter reason',
-						true,
+						false,
 						'',
 						'',
 						true
 					)}
-					{@render fe('Extra Notes', 'notes ', '', 'Enter extra notes', true, '', '', true)}
 					{#if $form.intent === 'add'}
 						<FileUpload {form} {errors} name="reciept" />
 					{/if}

@@ -44,7 +44,7 @@ export const productAdjustments = mysqlTable('product_adjustments', {
 		.notNull()
 		.references(() => products.id),
 	adjustment: int('adjustment').notNull(), // e.g., +50 for new stock, -1 for a sale, -1 for internal use
-	notes: varchar('notes', { length: 255 }),
+	reason: varchar('reason', { length: 255 }),
 	transactionId: int('transaction_id').references(() => transactions.id), // Link directly to the sale that caused the adjustment
 	...secureFields
 });
@@ -56,7 +56,6 @@ export const suppliesAdjustments = mysqlTable('supplies_adjustments', {
 		.references(() => supplies.id),
 	adjustment: int('adjustment').notNull(), // e.g., +50 for new stock, -1 for a sale, -1 for internal use
 	reason: varchar('reason', { length: 255 }),
-	notes: varchar('notes', { length: 255 }),
 	transactionId: int('transaction_id').references(() => transactionSupplies.id, {
 		onDelete: 'set null'
 	}), //if the adjustment is caused by new stuff coming in

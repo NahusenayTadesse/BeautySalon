@@ -135,7 +135,7 @@ export const actions: Actions = {
 		const { id } = params;
 		const form = await superValidate(request, zod4(adjustSchema));
 
-		const { intent, quantity, reason, notes, reciept } = form.data;
+		const { intent, quantity, reason, reciept } = form.data;
 
 		try {
 			if (!id) {
@@ -161,7 +161,6 @@ export const actions: Actions = {
 					productsId: id,
 					adjustment,
 					reason,
-					notes,
 					transactionId: transactionId.id,
 					createdBy: locals.user?.id
 				});
@@ -177,7 +176,6 @@ export const actions: Actions = {
 					productsId: id,
 					adjustment,
 					reason,
-					notes,
 					createdBy: locals.user?.id
 				});
 

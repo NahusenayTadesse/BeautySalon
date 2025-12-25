@@ -4,68 +4,67 @@ import {
 	editSupply as schema,
 	inventoryAdjustmentFormSchema as adjustSchema
 } from '$lib/ZodSchema';
-import { error } from '@sveltejs/kit';
 
 import { db } from '$lib/server/db';
 import {
 	supplies,
 	transactionSupplies,
 	transactions,
-	user,
 	suppliesAdjustments
 } from '$lib/server/db/schema';
-import { eq, and, sql } from 'drizzle-orm';
-import type { Actions, PageServerLoad } from './$types';
+import { eq, sql } from 'drizzle-orm';
+import type { Actions } from './$types';
 import { fail } from 'sveltekit-superforms';
 import { setFlash } from 'sveltekit-flash-message/server';
 import { saveUploadedFile } from '$lib/server/upload';
 
-export const load: PageServerLoad = async ({ params, locals }) => {
-	const { id } = params;
-	const form = await superValidate(zod4(schema));
-	const adjustForm = await superValidate(zod4(adjustSchema));
+// export const load: PageServerLoad = async ({ params, locals }) => {
+// 	const { id } = params;
+// 	const form = await superValidate(zod4(schema));
+// 	const adjustForm = await superValidate(zod4(adjustSchema));
 
-	const supply = await db
-		.select({
-			id: supplies.id,
-			name: supplies.name,
-			costPerUnit: supplies.costPerUnit,
-			description: supplies.description,
-			quantity: supplies.quantity,
-			reorderLevel: supplies.reorderLevel,
-			unitOfMeasure: supplies.unitOfMeasure,
-			supplier: supplies.supplier,
-			createdBy: user.name,
-			createdAt: sql<string>`DATE_FORMAT(${supplies.createdAt}, '%Y-%m-%d')`,
-			paidAmount: sql<number>`COALESCE(SUM(${transactions.amount}), 0)`
-		})
-		.from(supplies)
-		.leftJoin(transactionSupplies, eq(supplies.id, transactionSupplies.supplyId))
-		.leftJoin(transactions, eq(transactionSupplies.transactionId, transactions.id))
-		.leftJoin(user, eq(supplies.createdBy, user.id))
-		.where(and(eq(supplies.branchId, locals?.user?.branch), eq(supplies.id, id)))
-		.groupBy(
-			supplies.id,
-			supplies.name,
-			supplies.costPerUnit,
-			supplies.description,
-			supplies.quantity,
-			supplies.reorderLevel,
-			supplies.supplier,
-			user.name,
-			supplies.createdAt
-		)
-		.then((rows) => rows[0]);
+// 	const supply = await db
+// 		.select({
+// 			id: supplies.id,
+// 			name: supplies.name,
+// 			costPerUnit: supplies.costPerUnit,
+// 			description: supplies.description,
+// 			quantity: supplies.quantity,
+// 			reorderLevel: supplies.reorderLevel,
+// 			unitOfMeasure: supplies.unitOfMeasure,
+// 			supplier: supplies.supplier,
+// 			createdBy: user.name,
+// 			createdAt: sql<string>`DATE_FORMAT(${supplies.createdAt}, '%Y-%m-%d')`,
+// 			paidAmount: sql<number>`COALESCE(SUM(${transactions.amount}), 0)`
+// 		})
+// 		.from(supplies)
+// 		.leftJoin(transactionSupplies, eq(supplies.id, transactionSupplies.supplyId))
+// 		.leftJoin(transactions, eq(transactionSupplies.transactionId, transactions.id))
+// 		.leftJoin(user, eq(supplies.createdBy, user.id))
+// 		.where(and(eq(supplies.branchId, locals?.user?.branch), eq(supplies.id, id)))
+// 		.groupBy(
+// 			supplies.id,
+// 			supplies.name,
+// 			supplies.costPerUnit,
+// 			supplies.description,
+// 			supplies.quantity,
+// 			supplies.reorderLevel,
+// 			supplies.supplier,
+// 			user.name,
+// 			supplies.createdAt
+// 		)
+// 		.then((rows) => rows[0]);
 
-	if (!supply) {
-		throw error(404, 'Supply not found, it has been deleted or never have existed.');
-	}
+// 	if (!supply) {
+// 		throw error(404, 'Supply not found, it has been deleted or never have existed.');
+// 	}
 
-	return {
-		supply,
-		form
-	};
-};
+// 	return {
+// 		supply,
+// 		form,
+// 		adjustForm
+// 	};
+// };
 
 export const actions: Actions = {
 	editSupply: async ({ request, cookies, locals }) => {
@@ -108,6 +107,7 @@ export const actions: Actions = {
 			setFlash({ type: 'success', message: 'New Supply Successuflly Added' }, cookies);
 			return message(form, { type: 'success', text: 'Supply updated successfully' });
 		} catch (err) {
+			console.error(err?.message);
 			setFlash({ type: 'error', message: `Unexpected Error: ${err?.message}` }, cookies);
 			return message(form, { type: `error', text: 'Unexpected Error: ${err?.message}` });
 		}
@@ -116,7 +116,7 @@ export const actions: Actions = {
 		const { id } = params;
 		const form = await superValidate(request, zod4(adjustSchema));
 
-		const { intent, quantity, reason, notes, reciept } = form.data;
+		const { intent, quantity, reason, reciept } = form.data;
 
 		try {
 			if (!id) {
@@ -133,22 +133,25 @@ export const actions: Actions = {
 					.values({
 						amount: adjustment,
 						recieptLink,
+						reason,
 						createdBy: locals.user?.id,
 						branchId: locals.user?.branch
 					})
 					.$returningId();
-				const [supTrans] = await db.insert(transactionSupplies).values({
-					transactionId: transactionId.id,
-					supplyId: id,
-					quantity: adjustment
-				});
+				const [supTrans] = await db
+					.insert(transactionSupplies)
+					.values({
+						transactionId: transactionId.id,
+						supplyId: id,
+						quantity: adjustment
+					})
+					.$returningId();
 
 				await db.insert(suppliesAdjustments).values({
 					suppliesId: id,
 					adjustment,
 					reason,
-					notes,
-					transactionId: transactionId.id,
+					transactionId: supTrans.id,
 					createdBy: locals.user?.id
 				});
 				await db
@@ -157,13 +160,12 @@ export const actions: Actions = {
 						quantity: sql`quantity + ${adjustment}`,
 						updatedBy: locals.user?.id
 					})
-					.where(eq(products.id, id));
+					.where(eq(supplies.id, id));
 			} else {
 				await db.insert(suppliesAdjustments).values({
-					productsId: id,
+					suppliesId: id,
 					adjustment,
 					reason,
-					notes,
 					createdBy: locals.user?.id
 				});
 
@@ -175,10 +177,13 @@ export const actions: Actions = {
 					})
 					.where(eq(supplies.id, id));
 			}
+			setFlash({ type: 'success', message: 'Supply Quantity Successuflly Updated' }, cookies);
+			return message(form, { type: 'success', text: 'Supply Quantity updated successfully' });
 		} catch (err) {
 			console.error('Error adjusting product:', err);
 			setFlash({ type: 'error', message: `Unexpected Error: ${err?.message}` }, cookies);
-			return fail(400);
+
+			return message(form, { type: 'error', text: 'Unexpected Error ' + err?.message });
 		}
 	},
 	delete: async ({ cookies, params }) => {
