@@ -12,23 +12,25 @@
 	import SelectComp from '$lib/formComponents/SelectComp.svelte';
 
 	let { data } = $props();
-	import { updateFlash } from 'sveltekit-flash-message';
-	import { page } from '$app/state';
-	const { form, errors, enhance, delayed, capture, restore } = superForm(data.form, {
+
+	const { form, errors, enhance, delayed, capture, restore, message } = superForm(data.form, {
 		taintedMessage: () => {
 			return new Promise((resolve) => {
 				resolve(window.confirm('Do you want to leave?\nChanges you made may not be saved.'));
 			});
 		},
 
-		validators: zod4Client(addUserSchema),
+		validators: zod4Client(addUserSchema)
+	});
 
-		onResult() {
-			updateFlash(page);
-		},
-
-		onError() {
-			updateFlash(page);
+	import { toast } from 'svelte-sonner';
+	$effect(() => {
+		if ($message) {
+			if ($message.type === 'error') {
+				toast.error($message.text);
+			} else {
+				toast.success($message.text);
+			}
 		}
 	});
 

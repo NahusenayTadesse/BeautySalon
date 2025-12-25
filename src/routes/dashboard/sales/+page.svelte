@@ -5,7 +5,6 @@
 
 	import ComboboxComp from '$lib/formComponents/ComboboxComp.svelte';
 	import { Plus, X, BrushCleaning } from '@lucide/svelte';
-	import type { Snapshot } from '@sveltejs/kit';
 
 	let { data } = $props();
 
@@ -30,28 +29,33 @@
 
 	import { zod4Client } from 'sveltekit-superforms/adapters';
 	import { salesSchema } from '$lib/zodschemas/salesSchema';
-	import { fileProxy, superForm } from 'sveltekit-superforms/client';
+	import { superForm } from 'sveltekit-superforms/client';
 	import { fly } from 'svelte/transition';
 	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';
 	import FileUpload from '$lib/formComponents/FileUpload.svelte';
 	import Errors from '$lib/formComponents/Errors.svelte';
-	import { updateFlash } from 'sveltekit-flash-message';
-	import { page } from '$app/state';
+	import type { Snapshot } from '@sveltejs/kit';
 
-	const { form, errors, enhance, delayed, allErrors, capture, restore } = superForm(data.form, {
-		taintedMessage: () => {
-			return new Promise((resolve) => {
-				resolve(window.confirm('Do you want to leave?\nChanges you made may not be saved.'));
-			});
-		},
-		validators: zod4Client(salesSchema),
+	const { form, errors, enhance, delayed, allErrors, capture, restore, message } = superForm(
+		data.form,
+		{
+			taintedMessage: () => {
+				return new Promise((resolve) => {
+					resolve(window.confirm('Do you want to leave?\nChanges you made may not be saved.'));
+				});
+			},
+			validators: zod4Client(salesSchema)
+		}
+	);
 
-		onResult() {
-			updateFlash(page);
-		},
-
-		onError() {
-			updateFlash(page);
+	import { toast } from 'svelte-sonner';
+	$effect(() => {
+		if ($message) {
+			if ($message.type === 'error') {
+				toast.error($message.text);
+			} else {
+				toast.success($message.text);
+			}
 		}
 	});
 
@@ -88,14 +92,6 @@
 		$form.serviceAmount = checkoutTotalService;
 		$form.total = total;
 	});
-
-	let submitted = $state(false);
-
-	function onsubmit() {
-		submitted = true;
-	}
-
-	const file = fileProxy(form, 'receipt');
 </script>
 
 <svelte:head>
@@ -112,11 +108,11 @@
 		{#if $errors[name]}<span class="text-red-500">{$errors[name]}</span>{/if}
 	</div>
 {/snippet}
-<form action="?/addSales" method="post" enctype="multipart/form-data" use:enhance {onsubmit}>
-	<Errors allErrors={$allErrors} />
+<form action="?/addSales" method="post" enctype="multipart/form-data" use:enhance>
 	<div
 		class="mt-6 w-full max-w-3xl rounded-lg border border-slate-200 bg-white p-4 shadow dark:border-slate-700 dark:bg-slate-800"
 	>
+		<Errors allErrors={$allErrors} />
 		<div class="flex flex-row gap-4">
 			<Button type="button" onclick={() => addProduct()}><Plus /> Add Product</Button>
 			<Button type="button" onclick={() => addService()}><Plus /> Add Service</Button>

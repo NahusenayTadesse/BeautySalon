@@ -30,17 +30,23 @@
 		{ name: 'Created At', value: data.singleUser?.createdAt.toLocaleString() },
 		{ name: 'Updated At', value: data.singleUser?.updatedAt.toLocaleString() }
 	]);
-	import { updateFlash } from 'sveltekit-flash-message';
-	import { page } from '$app/state';
-	const { form, errors, enhance, delayed, capture, restore, allErrors } = superForm(data.form, {
-		validators: zod4Client(editUserSchema),
-		resetForm: false,
-		onResult() {
-			updateFlash(page);
-		},
 
-		onError() {
-			updateFlash(page);
+	const { form, errors, enhance, delayed, capture, restore, allErrors, message } = superForm(
+		data.form,
+		{
+			validators: zod4Client(editUserSchema),
+			resetForm: false
+		}
+	);
+
+	import { toast } from 'svelte-sonner';
+	$effect(() => {
+		if ($message) {
+			if ($message.type === 'error') {
+				toast.error($message.text);
+			} else {
+				toast.success($message.text);
+			}
 		}
 	});
 

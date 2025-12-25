@@ -1,4 +1,4 @@
-import { superValidate } from 'sveltekit-superforms';
+import { message, superValidate } from 'sveltekit-superforms';
 import { zod4 } from 'sveltekit-superforms/adapters';
 import { editUserSchema as schema } from './schema';
 
@@ -93,11 +93,10 @@ export const actions: Actions = {
 
 			// Stay on the same page and set a flash message
 			setFlash({ type: 'success', message: 'User Updated Successuflly Added' }, cookies);
-			return {
-				form
-			};
+			return message(form, { type: 'success', text: 'User Updated Successfully' });
 		} catch (err) {
-			console.error('Error' + err);
+			setFlash({ type: 'error', message: 'User Update Failed: ' + err?.message }, cookies);
+			return message(form, { type: 'error', text: 'User Update Failed ' + err?.message });
 		}
 	},
 	delete: async ({ cookies, params }) => {

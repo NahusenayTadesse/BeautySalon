@@ -17,22 +17,25 @@
 	import { updateFlash } from 'sveltekit-flash-message';
 	import { page } from '$app/state';
 
-	const { form, errors, enhance, delayed, allErrors, capture, restore } = superForm(data.form, {
-		taintedMessage: () => {
-			return new Promise((resolve) => {
-				resolve(window.confirm('Do you want to leave?\nChanges you made may not be saved.'));
-			});
-		},
-		validators: zod4Client(schema),
+	const { form, errors, enhance, delayed, allErrors, capture, restore, message } = superForm(
+		data.form,
+		{
+			taintedMessage: () => {
+				return new Promise((resolve) => {
+					resolve(window.confirm('Do you want to leave?\nChanges you made may not be saved.'));
+				});
+			},
+			validators: zod4Client(schema),
 
-		onResult() {
-			updateFlash(page);
-		},
+			onResult() {
+				updateFlash(page);
+			},
 
-		onError() {
-			updateFlash(page);
+			onError() {
+				updateFlash(page);
+			}
 		}
-	});
+	);
 
 	export const snapshot: Snapshot = { capture, restore };
 
@@ -52,6 +55,17 @@
 		if (byPercent) $form.amount = (percentage / 100) * Number(current) + Number(current);
 		else $form.amount = amount + Number(current);
 	}
+
+	import { toast } from 'svelte-sonner';
+	$effect(() => {
+		if ($message) {
+			if ($message.type === 'error') {
+				toast.error($message.text);
+			} else {
+				toast.success($message.text);
+			}
+		}
+	});
 </script>
 
 <svelte:head>

@@ -1,4 +1,4 @@
-import { superValidate } from 'sveltekit-superforms';
+import { superValidate, message } from 'sveltekit-superforms';
 import { zod4 } from 'sveltekit-superforms/adapters';
 import { addLeavePayrollSchema as schema } from './schema';
 
@@ -9,19 +9,6 @@ import type { Actions } from './$types';
 import { fail } from 'sveltekit-superforms';
 import { setFlash } from 'sveltekit-flash-message/server';
 import { saveUploadedFile } from '$lib/server/upload';
-
-// import fs from 'node:fs';
-// import path from 'node:path';
-// import { generateUserId } from '$lib/global.svelte';
-// import { Readable } from 'node:stream';
-// import { pipeline } from 'node:stream/promises';
-// import { env } from '$env/dynamic/private';
-
-// const FILES_DIR: string = env.FILES_DIR ?? '.tempFiles';
-
-// if (!fs.existsSync(FILES_DIR)) {
-//   fs.mkdirSync(FILES_DIR, { recursive: true });
-// }
 
 export const actions: Actions = {
 	addSalary: async ({ request, cookies, params, locals }) => {
@@ -108,16 +95,16 @@ export const actions: Actions = {
 
 			// Stay on the same page and set a flash message
 			setFlash({ type: 'success', message: 'Salary Record Successuflly Added' }, cookies);
-			return {
-				form
-			};
+			return message(form, { type: 'success', text: 'Salary Record Successuflly Added' });
 		} catch (err) {
 			setFlash(
-				{ type: 'error', message: 'An Error occured while adding Salary ' + err.message },
+				{ type: 'error', message: 'An Error occured while adding Salary ' + err?.message },
 				cookies
 			);
-
-			console.error('Error' + err.message);
+			return message(form, {
+				type: 'error',
+				text: 'An Error occured while adding Salary ' + err?.message
+			});
 		}
 	}
 };

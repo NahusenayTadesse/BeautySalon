@@ -1,4 +1,4 @@
-import { superValidate } from 'sveltekit-superforms';
+import { superValidate, message } from 'sveltekit-superforms';
 import { zod4 } from 'sveltekit-superforms/adapters';
 import {
 	editSupply as schema,
@@ -106,11 +106,10 @@ export const actions: Actions = {
 
 			// Stay on the same page and set a flash message
 			setFlash({ type: 'success', message: 'New Supply Successuflly Added' }, cookies);
-			return {
-				form
-			};
+			return message(form, { type: 'success', text: 'Supply updated successfully' });
 		} catch (err) {
-			console.error('Error' + err);
+			setFlash({ type: 'error', message: `Unexpected Error: ${err?.message}` }, cookies);
+			return message(form, { type: `error', text: 'Unexpected Error: ${err?.message}` });
 		}
 	},
 	adjust: async ({ request, cookies, params, locals }) => {

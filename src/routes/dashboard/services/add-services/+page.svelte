@@ -16,24 +16,28 @@
 
 	let { data } = $props();
 
-	import { updateFlash } from 'sveltekit-flash-message';
-	import { page } from '$app/state';
+	const { form, errors, enhance, delayed, message, capture, restore, message } = superForm(
+		data.form,
+		{
+			taintedMessage: () => {
+				return new Promise((resolve) => {
+					resolve(window.confirm('Do you want to leave?\nChanges you made may not be saved.'));
+				});
+			},
 
-	const { form, errors, enhance, delayed, message, capture, restore } = superForm(data.form, {
-		taintedMessage: () => {
-			return new Promise((resolve) => {
-				resolve(window.confirm('Do you want to leave?\nChanges you made may not be saved.'));
-			});
-		},
-		onResult() {
-			updateFlash(page);
-		},
+			validators: zod4Client(serviceSchema)
+		}
+	);
 
-		onError() {
-			updateFlash(page);
-		},
-
-		validators: zod4Client(serviceSchema)
+	import { toast } from 'svelte-sonner';
+	$effect(() => {
+		if ($message) {
+			if ($message.type === 'error') {
+				toast.error($message.text);
+			} else {
+				toast.success($message.text);
+			}
+		}
 	});
 
 	export const snapshot: Snapshot = { capture, restore };

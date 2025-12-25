@@ -18,7 +18,7 @@ import {
 	user
 } from '$lib/server/db/schema';
 import { eq, sql, and } from 'drizzle-orm';
-import { superValidate } from 'sveltekit-superforms';
+import { message, superValidate } from 'sveltekit-superforms';
 import { zod4 } from 'sveltekit-superforms/adapters';
 import { salesSchema as schema } from '$lib/zodschemas/salesSchema';
 
@@ -279,7 +279,6 @@ export const actions: Actions = {
 				}
 
 				const sumProduct = noofproducts.reduce((acc, n) => acc + Number(n), 0);
-				console.log('Service Length: ' + service.length);
 
 				const existingReport = await tx
 					.select({
@@ -288,8 +287,6 @@ export const actions: Actions = {
 					.from(reports)
 					.where(and(eq(reports.reportDate, sql`CURDATE()`)))
 					.then((rows) => rows[0]);
-
-				console.log('Service Length: ' + service.length);
 
 				if (existingReport) {
 					await tx
@@ -312,10 +309,11 @@ export const actions: Actions = {
 				}
 			});
 
-			return setFlash({ type: 'success', message: 'New Sale Successfully Added' }, cookies);
+			setFlash({ type: 'success', message: 'New Sale Successfully Added' }, cookies);
+			return message(form, { type: 'success', text: 'New Sale Successfully Added' });
 		} catch (e) {
 			setFlash({ type: 'error', message: 'Error ' + e }, cookies);
-			console.error('Error processing sale:', e);
+			return message(form, { type: 'error', text: 'Error ' + e?.message });
 		}
 	}
 };

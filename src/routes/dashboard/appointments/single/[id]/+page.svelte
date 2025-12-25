@@ -36,23 +36,14 @@
 		{ name: 'Booked At', value: data.appointmentsList.bookedAt },
 		{ name: 'Paid Amount', value: data.appointmentsList.paidAmount }
 	]);
-	import { updateFlash } from 'sveltekit-flash-message';
-	import { page } from '$app/state';
 
-	const { form, errors, enhance, delayed, capture, restore } = superForm(data.form, {
+	const { form, errors, enhance, delayed, capture, restore, message } = superForm(data.form, {
 		taintedMessage: () => {
 			return new Promise((resolve) => {
 				resolve(window.confirm('Do you want to leave?\nChanges you made may not be saved.'));
 			});
 		},
-		validators: zod4Client(bookingFeeSchema),
-		onResult() {
-			updateFlash(page);
-		},
-
-		onError() {
-			updateFlash(page);
-		}
+		validators: zod4Client(bookingFeeSchema)
 	});
 
 	const {
@@ -67,7 +58,6 @@
 	});
 
 	export const snapshot: Snapshot = { capture, restore };
-	const file = fileProxy(form, 'image');
 
 	const paymentStatus = [
 		{ value: 'paid', name: 'Full Payment' },
@@ -88,6 +78,16 @@
 	let date = new Date();
 
 	let redirect = `/dashboard/appointments/${date.toLocaleDateString('en-CA')}`;
+	import { toast } from 'svelte-sonner';
+	$effect(() => {
+		if ($message) {
+			if ($message.type === 'error') {
+				toast.error($message.text);
+			} else {
+				toast.success($message.text);
+			}
+		}
+	});
 </script>
 
 <svelte:head>

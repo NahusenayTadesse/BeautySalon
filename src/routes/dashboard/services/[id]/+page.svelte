@@ -34,17 +34,20 @@
 			value: data.service?.saleCount === null ? '0 ETB in Transactions' : ' ETB in Transactions'
 		}
 	]);
-	import { updateFlash } from 'sveltekit-flash-message';
-	import { page } from '$app/state';
-	const { form, errors, enhance, delayed, capture, restore } = superForm(data.form, {
-		validators: zod4Client(editService),
-		resetForm: false,
-		onResult() {
-			updateFlash(page);
-		},
 
-		onError() {
-			updateFlash(page);
+	const { form, errors, enhance, delayed, capture, restore, message } = superForm(data.form, {
+		validators: zod4Client(editService),
+		resetForm: false
+	});
+
+	import { toast } from 'svelte-sonner';
+	$effect(() => {
+		if ($message) {
+			if ($message.type === 'error') {
+				toast.error($message.text);
+			} else {
+				toast.success($message.text);
+			}
 		}
 	});
 

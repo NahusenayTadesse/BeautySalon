@@ -17,19 +17,22 @@
 	import { updateFlash } from 'sveltekit-flash-message';
 	import { page } from '$app/state';
 
-	const { form, errors, enhance, delayed, capture, restore, allErrors } = superForm(data.form, {
-		onResult({ result }) {
-			if (result.type === 'success') {
-				goto('/login');
-			}
-			updateFlash(page);
-		},
-		onError() {
-			updateFlash(page);
-		},
+	const { form, errors, enhance, delayed, capture, restore, allErrors, message } = superForm(
+		data.form,
+		{
+			onResult({ result }) {
+				if (result.type === 'success') {
+					goto('/login');
+				}
+				updateFlash(page);
+			},
+			onError() {
+				updateFlash(page);
+			},
 
-		validators: zod4Client(changePasswordSchema)
-	});
+			validators: zod4Client(changePasswordSchema)
+		}
+	);
 
 	export const snapshot: Snapshot = { capture, restore };
 	let eye = $state(false);

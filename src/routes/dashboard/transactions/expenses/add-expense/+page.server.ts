@@ -1,4 +1,4 @@
-import { superValidate } from 'sveltekit-superforms';
+import { superValidate, message } from 'sveltekit-superforms';
 import { zod4 } from 'sveltekit-superforms/adapters';
 import { fail } from '@sveltejs/kit';
 import { sql, eq, and } from 'drizzle-orm';
@@ -116,14 +116,10 @@ export const actions: Actions = {
 			}
 
 			setFlash({ type: 'success', message: 'Expense Added Successfully' }, cookies);
-			return {
-				form
-			};
+			return message({ type: 'success', text: 'Expense Added Successfully' });
 		} catch (err) {
 			setFlash({ type: 'error', message: `Unexpected Error: ${err.message}` }, cookies);
-			return fail(400, {
-				form
-			});
+			return message({ type: 'error', text: `Unexpected Error: ${err.message}` });
 		}
 	}
 };

@@ -16,7 +16,7 @@ import {
 } from '$lib/server/db/schema';
 import { eq, and, sql } from 'drizzle-orm';
 import type { Actions, PageServerLoad } from './$types';
-import { fail } from 'sveltekit-superforms';
+import { fail, message } from 'sveltekit-superforms';
 import { setFlash } from 'sveltekit-flash-message/server';
 
 export const load: PageServerLoad = async ({ params, locals }) => {
@@ -123,11 +123,12 @@ export const actions: Actions = {
 
 			// Stay on the same page and set a flash message
 			setFlash({ type: 'success', message: 'Product Updated Successuflly Added' }, cookies);
-			return {
-				form
-			};
+
+			return message(form, { type: 'success', text: 'Product Updated Successfully' });
 		} catch (err) {
-			console.error('Error' + err);
+			setFlash({ type: 'error', message: 'Product Update Failed ' + err?.message }, cookies);
+
+			return message(form, { type: 'error', text: 'Product Update Failed' + err?.message });
 		}
 	},
 	adjust: async ({ request, cookies, params, locals }) => {
@@ -184,14 +185,18 @@ export const actions: Actions = {
 					.update(products)
 					.set({
 						quantity: sql`quantity + ${adjustment}`,
-						updatedBy: locals.user.id
+						updatedBy: locals?.user?.id
 					})
 					.where(eq(products.id, id));
 			}
+
+			setFlash({ type: 'success', message: 'Product Updated Successuflly Added' }, cookies);
+
+			return message(form, { type: 'success', text: 'Product Updated Successfully' });
 		} catch (err) {
 			console.error('Error adjusting product:', err);
 			setFlash({ type: 'error', message: `Unexpected Error: ${err?.message}` }, cookies);
-			return fail(400);
+			return message(form, { type: 'error', text: 'Unexpected Error' + err?.message });
 		}
 	},
 	delete: async ({ cookies, params }) => {

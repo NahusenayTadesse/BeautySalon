@@ -26,21 +26,27 @@
 
 	let { children } = $props();
 
+	async function requestNotificationPermission() {
+		if (!('Notification' in window)) return;
+		await Notification.requestPermission();
+	}
+
 	// let iconify = $state('h-6 w-6 animate-ping');
 
 	$effect(() => {
 		if (!$flash) return;
 		if (page.data.flash?.type === 'success') toast.success($flash.message);
 		if (page.data.flash?.type === 'error') toast.error($flash?.message);
-
-		notifyBrowser(
-			page.data.flash?.type === 'success'
-				? 'Success'
-				: page.data.flash?.type === 'error'
-					? 'Error'
-					: 'Message',
-			$flash.message
-		);
+		if (Notification.permission === 'granted') {
+			notifyBrowser(
+				page.data.flash?.type === 'success'
+					? 'Success'
+					: page.data.flash?.type === 'error'
+						? 'Error'
+						: 'Message',
+				$flash.message
+			);
+		}
 		$flash = undefined;
 	});
 </script>

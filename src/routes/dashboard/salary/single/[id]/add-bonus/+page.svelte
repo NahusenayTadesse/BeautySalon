@@ -37,6 +37,16 @@
 	});
 
 	export const snapshot: Snapshot = { capture, restore };
+	import { toast } from 'svelte-sonner';
+	$effect(() => {
+		if ($message) {
+			if ($message.type === 'error') {
+				toast.error($message.text);
+			} else {
+				toast.success($message.text);
+			}
+		}
+	});
 </script>
 
 <svelte:head>

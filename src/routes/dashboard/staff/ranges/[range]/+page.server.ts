@@ -1,4 +1,4 @@
-import { superValidate } from 'sveltekit-superforms';
+import { message, superValidate } from 'sveltekit-superforms';
 import { zod4 } from 'sveltekit-superforms/adapters';
 import { editStaff as schema } from '$lib/zodschemas/appointmentSchema';
 
@@ -213,11 +213,13 @@ export const actions: Actions = {
 
 			// Stay on the same page and set a flash message
 			setFlash({ type: 'success', message: 'Service Updated Successuflly' }, cookies);
-			return {
-				form
-			};
+			return message(form, { type: 'success', text: 'Staff Member Updated Successfully!' });
 		} catch (err) {
-			console.error('Error' + err);
+			setFlash({ type: 'error', message: `Unexpected Error: ${err?.message}` }, cookies);
+			return message(form, {
+				type: 'error',
+				text: 'An error occurred while updating the staff member. ' + err?.message
+			});
 		}
 	},
 	delete: async ({ cookies, params }) => {

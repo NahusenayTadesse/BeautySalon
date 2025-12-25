@@ -7,6 +7,7 @@ import { db } from '$lib/server/db';
 import { services, serviceCategories } from '$lib/server/db/schema/';
 import type { Actions } from './$types';
 import type { PageServerLoad } from './$types.js';
+import { setFlash } from 'sveltekit-flash-message/server';
 
 export const load: PageServerLoad = async () => {
 	const form = await superValidate(zod4(serviceSchema));
@@ -25,10 +26,11 @@ export const load: PageServerLoad = async () => {
 };
 
 export const actions: Actions = {
-	addProduct: async ({ request }) => {
+	addProduct: async ({ request, cookies }) => {
 		const form = await superValidate(request, zod4(serviceSchema));
 
 		if (!form.valid) {
+			setFlash({ type: 'error', message: 'Please check your form data.' }, cookies);
 			return fail(400, {
 				form
 			});
@@ -40,10 +42,17 @@ export const actions: Actions = {
 			await db
 				.insert(services)
 				.values({ serviceName, categoryId: category, description, durationMinutes, price });
-
-			return message(form, 'Valid form!');
+			setFlash({ type: 'success', message: 'Service added successfully.' }, cookies);
+			return message(form, { type: 'success', text: 'Service added successfully' });
 		} catch (err) {
-			console.error('Error' + err);
+			setFlash(
+				{ type: 'error', message: 'An error occurred while adding the service. ' + err?.message },
+				cookies
+			);
+			return message(form, {
+				type: 'error',
+				text: 'An error occurred while adding the service. ' + err?.message
+			});
 		}
 	}
 };

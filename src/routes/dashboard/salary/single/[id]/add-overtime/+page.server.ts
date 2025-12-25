@@ -14,12 +14,12 @@ import { setFlash } from 'sveltekit-flash-message/server';
 
 export const load: PageServerLoad = async () => {
             const form = await superValidate(zod4(schema));
-            
-        
+
+
         return {
              form
         }
-}  
+}
 
 
 export const actions: Actions = {
@@ -32,20 +32,15 @@ export const actions: Actions = {
     if (!form.valid) {
       // Stay on the same page and set a flash message
       setFlash({ type: 'error', message: "Please check your form data." }, cookies);
-      
+
       return fail(400, { form });
     }
 
 
         const { reason, date, amountPerHour, hours} = form.data;
 
-    
+
     try{
-
-       
-
-      
-     
      await db.insert(overTime).values({
          staffId: Number(id),
          amountPerHour,
@@ -54,25 +49,17 @@ export const actions: Actions = {
          reason,
          date,
   createdBy: locals.user?.id,
-  branchId: locals.user?.branch,        
-        
+  branchId: locals.user?.branch,
+
     });
 
-      
-
-
-
-      // Stay on the same page and set a flash message
       setFlash({ type: 'success', message: "Overtime Successuflly Added" }, cookies);
-    return {
-      form
-    } } catch(err){
-          setFlash({ type: "error", message: "An Error occured while adding Overtime" + err.message }, cookies);
-
-         console.error("Error" + err.message)
-    }
+      return message(form, { type: 'success', text: "Overtime Successuflly Added" });
+    } catch(err){
+          setFlash({ type: "error", message: "An Error occured while adding Overtime" + err?.message }, cookies);
+    return message(form, {type: 'error', text: "An Error occured while adding Overtime" + err?.message});
   },
 
-  
-       
+
+
     };

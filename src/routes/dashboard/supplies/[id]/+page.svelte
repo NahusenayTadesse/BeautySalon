@@ -32,9 +32,20 @@
 		{ name: 'Total costs until now', value: data.supply?.paidAmount + ' Birr costs in transaction' }
 	]);
 
-	const { form, errors, enhance, delayed, capture, restore } = superForm(data.form, {
+	const { form, errors, enhance, delayed, capture, restore, message } = superForm(data.form, {
 		validators: zod4Client(editSupply),
 		resetForm: false
+	});
+
+	import { toast } from 'svelte-sonner';
+	$effect(() => {
+		if ($message) {
+			if ($message.type === 'error') {
+				toast.error($message.text);
+			} else {
+				toast.success($message.text);
+			}
+		}
 	});
 
 	(($form.supplyName = data.supply?.name),

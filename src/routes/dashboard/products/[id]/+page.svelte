@@ -43,18 +43,9 @@
 		{ name: 'Sales in Money', value: data.product?.paidAmount + ' Birr in Transactions' }
 	]);
 
-	import { updateFlash } from 'sveltekit-flash-message';
-	import { page } from '$app/state';
 	const { form, errors, enhance, delayed, capture, restore, allErrors } = superForm(data.form, {
 		validators: zod4Client(editProduct),
-		resetForm: false,
-		onResult() {
-			updateFlash(page);
-		},
-
-		onError() {
-			updateFlash(page);
-		}
+		resetForm: false
 	});
 
 	(($form.productName = data.product.name),
@@ -73,6 +64,16 @@
 	//   let date = $derived(dateProxy(editForm, 'appointmentDate', { format: 'date'}));
 
 	let edit = $state(false);
+	import { toast } from 'svelte-sonner';
+	$effect(() => {
+		if ($message) {
+			if ($message.type === 'error') {
+				toast.error($message.text);
+			} else {
+				toast.success($message.text);
+			}
+		}
+	});
 </script>
 
 <svelte:head>

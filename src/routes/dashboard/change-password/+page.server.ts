@@ -9,7 +9,6 @@ import { zod4 } from 'sveltekit-superforms/adapters';
 import { changePasswordSchema as schema } from './schema';
 import type { Actions, PageServerLoad } from './$types';
 import { setFlash } from 'sveltekit-flash-message/server';
-import { set } from 'zod';
 
 export const load: PageServerLoad = async () => {
 	const form = await superValidate(zod4(schema));

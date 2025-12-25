@@ -27,9 +27,10 @@ import {
 } from '$lib/server/db/schema';
 import { eq, and, sql } from 'drizzle-orm';
 import type { Actions, PageServerLoad } from './$types';
-import { setError, fail } from 'sveltekit-superforms';
+import { setError, fail, message } from 'sveltekit-superforms';
 import { setFlash } from 'sveltekit-flash-message/server';
 import { saveUploadedFile } from '$lib/server/upload';
+import { text } from 'drizzle-orm/sqlite-core';
 
 export const load: PageServerLoad = async ({ params, locals }) => {
 	const { id } = params;
@@ -170,13 +171,15 @@ export const actions: Actions = {
 			delete form.data.image;
 
 			setFlash({ type: 'success', message: 'Successfully Confirmed Appointment ' }, cookies);
-			return {
-				form
-			};
+			return message(form, {
+				type: 'success',
+				text: 'Appointment confirmed successfully.'
+			});
 		} catch (err) {
 			setFlash({ type: 'error', message: `Unexpected Error: ${err.message}` }, cookies);
-			return fail(400, {
-				form
+			return message(form, {
+				type: 'error',
+				text: 'Unexpected error occurred.' + err.message
 			});
 		}
 	},
@@ -213,15 +216,17 @@ export const actions: Actions = {
 
 			// Stay on the same page and set a flash message
 			setFlash({ type: 'success', message: 'Appointment updated Successfully Added' }, cookies);
-			return {
-				form
-			};
+			return message(form, {
+				type: 'success',
+				text: 'Appointment updated Successfully Added'
+			});
 		} catch (err) {
 			console.error('Error' + err);
 			setFlash({ type: 'error', message: 'Error: Something Went Wrong Try Again' }, cookies);
 
-			return fail(400, {
-				form
+			return message(form, {
+				type: 'error',
+				text: 'Unexpected error occurred.' + err.message
 			});
 		}
 	},

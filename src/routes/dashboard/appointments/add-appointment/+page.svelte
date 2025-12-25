@@ -20,27 +20,21 @@
 	import { Calendar } from '$lib/components/ui/calendar/index.js';
 	import { cn } from '$lib/utils.js';
 	import Errors from '$lib/formComponents/Errors.svelte';
-
+	import { toast } from 'svelte-sonner';
 	let { data } = $props();
-	import { updateFlash } from 'sveltekit-flash-message';
-	import { page } from '$app/state';
 
-	const { form, errors, enhance, delayed, capture, restore, allErrors } = superForm(data.form, {
-		taintedMessage: () => {
-			return new Promise((resolve) => {
-				resolve(window.confirm('Do you want to leave?\nChanges you made may not be saved.'));
-			});
-		},
+	const { form, errors, enhance, delayed, capture, restore, allErrors, message } = superForm(
+		data.form,
+		{
+			taintedMessage: () => {
+				return new Promise((resolve) => {
+					resolve(window.confirm('Do you want to leave?\nChanges you made may not be saved.'));
+				});
+			},
 
-		validators: zod4Client(appointmentSchema),
-		onResult() {
-			updateFlash(page);
-		},
-
-		onError() {
-			updateFlash(page);
+			validators: zod4Client(appointmentSchema)
 		}
-	});
+	);
 
 	const {
 		form: existingForm,
@@ -49,7 +43,8 @@
 		delayed: existingDelayed,
 		capture: existingCapture,
 		restore: existingRestore,
-		allErrors: existingAllErrors
+		allErrors: existingAllErrors,
+		message: existingMessage
 	} = superForm(data.existingForm, {
 		taintedMessage: () => {
 			return new Promise((resolve) => {
@@ -57,15 +52,7 @@
 			});
 		},
 
-		validators: zod4Client(existingCustomerAppointment),
-
-		onResult() {
-			updateFlash(page);
-		},
-
-		onError() {
-			updateFlash(page);
-		}
+		validators: zod4Client(existingCustomerAppointment)
 	});
 
 	export const snapshot: Snapshot = { capture, restore, existingCapture, existingRestore };
@@ -93,8 +80,6 @@
 
 	let selectedCustomer = $state(null as { value: number; name: string } | null);
 
-	let open = $state(false);
-
 	let todayDate = today(getLocalTimeZone());
 
 	let date = $state(new CalendarDate(todayDate.year, todayDate.month, todayDate.day));
@@ -104,12 +89,28 @@
 		$existingForm.appointmentDate = date.toString();
 		$form.appointmentDate = date2.toString();
 	});
+	$effect(() => {
+		if ($message) {
+			if ($message.type === 'error') {
+				toast.error($message.text);
+			} else {
+				toast.success($message.text);
+			}
+		}
+		if ($existingMessage) {
+			if ($existingMessage.type === 'error') {
+				toast.error($existingMessage.text);
+			} else {
+				toast.success($existingMessage.text);
+			}
+		}
+		existingMessage;
+	});
 </script>
 
 <svelte:head>
 	<title>Add New Appointment</title>
 </svelte:head>
-
 {#snippet fe(
 	label = '',
 	name = '',
@@ -248,7 +249,10 @@
 		<Card.Content>
 			<form
 				use:existingEnhance
-				onsubmit={() => (selectedCustomer = null)}
+				onsubmit={() => {
+					selectedCustomer = null;
+					customer = '';
+				}}
 				action="?/addExistingCustomerAppointment"
 				id="existing"
 				class="flex flex-col gap-4"

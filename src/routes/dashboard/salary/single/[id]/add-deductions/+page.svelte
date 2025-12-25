@@ -16,27 +16,30 @@
 	import Errors from '$lib/formComponents/Errors.svelte';
 	let { data } = $props();
 
-	import { updateFlash } from 'sveltekit-flash-message';
-	import { page } from '$app/state';
-
-	const { form, errors, enhance, delayed, allErrors, capture, restore } = superForm(data.form, {
-		taintedMessage: () => {
-			return new Promise((resolve) => {
-				resolve(window.confirm('Do you want to leave?\nChanges you made may not be saved.'));
-			});
-		},
-		validators: zod4Client(schema),
-
-		onResult() {
-			updateFlash(page);
-		},
-
-		onError() {
-			updateFlash(page);
+	const { form, errors, enhance, delayed, allErrors, capture, restore, message } = superForm(
+		data.form,
+		{
+			taintedMessage: () => {
+				return new Promise((resolve) => {
+					resolve(window.confirm('Do you want to leave?\nChanges you made may not be saved.'));
+				});
+			},
+			validators: zod4Client(schema)
 		}
-	});
+	);
 
 	export const snapshot: Snapshot = { capture, restore };
+
+	import { toast } from 'svelte-sonner';
+	$effect(() => {
+		if ($message) {
+			if ($message.type === 'error') {
+				toast.error($message.text);
+			} else {
+				toast.success($message.text);
+			}
+		}
+	});
 </script>
 
 <svelte:head>

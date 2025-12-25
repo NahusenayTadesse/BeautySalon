@@ -18,8 +18,7 @@
 	import ComboboxComp from '$lib/formComponents/ComboboxComp.svelte';
 
 	let { data } = $props();
-	import { updateFlash } from 'sveltekit-flash-message';
-	import { page } from '$app/state';
+
 	const { form, errors, enhance, delayed, message, capture, restore } = superForm(data.form, {
 		taintedMessage: () => {
 			return new Promise((resolve) => {
@@ -27,13 +26,17 @@
 			});
 		},
 
-		validators: zod4Client(expensesSchema),
-		onResult() {
-			updateFlash(page);
-		},
+		validators: zod4Client(expensesSchema)
+	});
 
-		onError() {
-			updateFlash(page);
+	import { toast } from 'svelte-sonner';
+	$effect(() => {
+		if ($message) {
+			if ($message.type === 'error') {
+				toast.error($message.text);
+			} else {
+				toast.success($message.text);
+			}
 		}
 	});
 

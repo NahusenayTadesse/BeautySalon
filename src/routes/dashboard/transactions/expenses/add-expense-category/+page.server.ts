@@ -44,6 +44,7 @@ export const actions: Actions = {
 			await db.insert(expensesType).values({ name, description });
 
 			setFlash({ type: 'success', message: `Expense Category created successfully!` }, cookies);
+			return message(form, { type: 'success', text: 'Expense Category created successfully!' });
 		} catch (err: any) {
 			setFlash(
 				{
@@ -56,12 +57,12 @@ export const actions: Actions = {
 				cookies
 			);
 
-			if (err.code === 'ER_DUP_ENTRY')
+			if (err.code === 'ER_DUP_ENTRY') {
 				return setError(form, 'name', 'Category Name already exists.');
-
-			return fail(400, {
-				form
-			});
+				return message(form, { type: 'error', text: 'Category Name already exists.' });
+			} else {
+				return message(form, { type: 'error', text: err.message });
+			}
 		}
 	}
 } satisfies Actions;

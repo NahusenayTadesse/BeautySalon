@@ -33,20 +33,14 @@
 		{ name: 'Number of Appointments', value: data.customer?.appointmentCount + ' ' + count },
 		{ name: 'Number of Days Since Joined', value: data.customer?.daysSinceJoined + ' Days' }
 	]);
-	import { updateFlash } from 'sveltekit-flash-message';
-	import { page } from '$app/state';
 
-	const { form, errors, enhance, delayed, capture, restore, allErrors } = superForm(data.form, {
-		validators: zod4Client(editCustomer),
-		resetForm: false,
-		onResult() {
-			updateFlash(page);
-		},
-
-		onError() {
-			updateFlash(page);
+	const { form, errors, enhance, delayed, capture, restore, allErrors, message } = superForm(
+		data.form,
+		{
+			validators: zod4Client(editCustomer),
+			resetForm: false
 		}
-	});
+	);
 
 	export const snapshot: Snapshot = { capture, restore };
 
@@ -58,8 +52,16 @@
 	//   let date = $derived(dateProxy(editForm, 'appointmentDate', { format: 'date'}));
 
 	let edit = $state(false);
-
-	console.log($form);
+	import { toast } from 'svelte-sonner';
+	$effect(() => {
+		if ($message) {
+			if ($message.type === 'error') {
+				toast.error($message.text);
+			} else {
+				toast.success($message.text);
+			}
+		}
+	});
 </script>
 
 <svelte:head>

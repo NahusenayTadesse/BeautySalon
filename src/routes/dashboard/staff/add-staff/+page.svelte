@@ -13,28 +13,29 @@
 	import DatePicker2 from '$lib/formComponents/DatePicker2.svelte';
 
 	let { data } = $props();
-	import { updateFlash } from 'sveltekit-flash-message';
-	import { page } from '$app/state';
-	const { form, errors, enhance, delayed, capture, restore } = superForm(data.form, {
+	const { form, errors, enhance, message, delayed, capture, restore } = superForm(data.form, {
 		taintedMessage: () => {
 			return new Promise((resolve) => {
 				resolve(window.confirm('Do you want to leave?\nChanges you made may not be saved.'));
 			});
 		},
 
-		validators: zod4Client(staffSchema),
-		onResult() {
-			updateFlash(page);
-		},
-
-		onError() {
-			updateFlash(page);
-		}
+		validators: zod4Client(staffSchema)
 	});
 	const govId = fileProxy(form, 'govId');
 	const contract = fileProxy(form, 'contract');
 
 	export const snapshot: Snapshot = { capture, restore };
+	import { toast } from 'svelte-sonner';
+	$effect(() => {
+		if ($message) {
+			if ($message.type === 'error') {
+				toast.error($message.text);
+			} else {
+				toast.success($message.text);
+			}
+		}
+	});
 	// 	 function getItemNameById(items: any, value: any) {
 	//   const item = items.find(i=> i.value === value);
 	//   return item ? item.name : null; // returns null if not found

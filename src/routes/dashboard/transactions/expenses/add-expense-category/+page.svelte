@@ -14,28 +14,31 @@
 	import { columns } from '$lib/components/CategoryColumns.js';
 
 	let { data } = $props();
-	import { updateFlash } from 'sveltekit-flash-message';
-	import { page } from '$app/state';
-	const { form, errors, delayed, enhance, capture, restore } = superForm(data.form, {
+
+	const { form, errors, delayed, enhance, capture, restore, message } = superForm(data.form, {
 		taintedMessage: () => {
 			return new Promise((resolve) => {
 				resolve(window.confirm('Do you want to leave?\nChanges you made may not be saved.'));
 			});
 		},
 
-		validators: zod4Client(positionSchema),
-		onResult() {
-			updateFlash(page);
-		},
-
-		onError() {
-			updateFlash(page);
-		}
+		validators: zod4Client(positionSchema)
 	});
 
 	export const snapshot: Snapshot = { capture, restore };
 
 	let search = true;
+
+	import { toast } from 'svelte-sonner';
+	$effect(() => {
+		if ($message) {
+			if ($message.type === 'error') {
+				toast.error($message.text);
+			} else {
+				toast.success($message.text);
+			}
+		}
+	});
 </script>
 
 {#snippet fe(

@@ -15,7 +15,7 @@ import {
 	transactionServices
 } from '$lib/server/db/schema';
 import { eq, sql, and } from 'drizzle-orm';
-import { superValidate } from 'sveltekit-superforms';
+import { superValidate, message } from 'sveltekit-superforms';
 import { zod4 } from 'sveltekit-superforms/adapters';
 import { salesSchema as schema } from '$lib/zodschemas/salesSchema';
 import type { Actions } from './$types';
@@ -126,30 +126,6 @@ export const actions: Actions = {
 			return fail(400, { form });
 		}
 
-		// if (!form.valid) {
-		//    // Stay on the same page and set a flash message
-		//    setFlash({ type: 'error', message: "Please check your form data." }, cookies);
-		//    return fail(400, { form });
-		//  }
-
-		//  console.log(products[0].product, products[0].staff, products[0].noofproducts, products[0].tip)
-
-		// const imageName = `${generateUserId()}${path.extname(receipt.name)}`;
-
-		// const file_path: string = path.normalize(path.join(FILES_DIR, imageName));
-
-		// const nodejs_wstream = fs.createWriteStream(file_path);
-		// const web_rstream = receipt.stream();
-		// const nodejs_rstream = Readable.fromWeb(web_rstream);
-		// await pipeline(nodejs_rstream, nodejs_wstream).catch(() => {
-		// 	setFlash({ type: 'error', message: 'Upload Failed' }, cookies);
-		// });
-
-		//  if (!form.valid) {
-		//        // Stay on the same page and set a flash message
-		//        setFlash({ type: 'error', message: "Please check your form data." }, cookies);
-		//        return fail(400, { form });
-		//      }
 		try {
 			const recieptLink = await saveUploadedFile(receipt);
 			delete form.data.receipt;
@@ -311,14 +287,12 @@ export const actions: Actions = {
 				}
 			});
 
-			return setFlash({ type: 'success', message: 'New Sale Successfully Added' }, cookies);
+			setFlash({ type: 'success', message: 'New Sale Successfully Added' }, cookies);
+			return message(form, { type: 'success', text: 'New Sale Successfully Added' });
 		} catch (e) {
-			console.error(e);
-			setFlash({ type: 'error', message: 'Error ' + e }, cookies);
+			setFlash({ type: 'error', message: 'Error ' + e?.message }, cookies);
+			return message(form, { type: 'error', text: 'Error ' + e?.message });
 		}
-		return {
-			form
-		};
 	}
 };
 
