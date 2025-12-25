@@ -16,18 +16,15 @@
 
 	let { data } = $props();
 
-	const { form, errors, enhance, delayed, message, capture, restore, message } = superForm(
-		data.form,
-		{
-			taintedMessage: () => {
-				return new Promise((resolve) => {
-					resolve(window.confirm('Do you want to leave?\nChanges you made may not be saved.'));
-				});
-			},
+	const { form, errors, enhance, delayed, message, capture, restore } = superForm(data.form, {
+		taintedMessage: () => {
+			return new Promise((resolve) => {
+				resolve(window.confirm('Do you want to leave?\nChanges you made may not be saved.'));
+			});
+		},
 
-			validators: zod4Client(serviceSchema)
-		}
-	);
+		validators: zod4Client(serviceSchema)
+	});
 
 	import { toast } from 'svelte-sonner';
 	$effect(() => {

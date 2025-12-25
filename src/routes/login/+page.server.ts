@@ -6,7 +6,7 @@ import * as auth from '$lib/server/auth';
 import { db } from '$lib/server/db';
 import * as table from '$lib/server/db/schema/';
 import type { Actions, PageServerLoad } from './$types';
-import { superValidate } from 'sveltekit-superforms';
+import { message, superValidate } from 'sveltekit-superforms';
 import { zod4 } from 'sveltekit-superforms/adapters';
 import { loginSchema } from '$lib/ZodSchema';
 import { redirect, setFlash } from 'sveltekit-flash-message/server';
@@ -26,36 +26,39 @@ export const actions: Actions = {
 		if (!form.valid) {
 			return fail(400, { form });
 		}
-		const { email, password } = form.data;
+		try {
+			const { email, password } = form.data;
 
-		const result = await db
-			.select()
-			.from(table.user)
-			.where(and(eq(table.user.email, email), eq(table.user.isActive, true)))
-			.then((rows) => rows[0]);
+			const result = await db
+				.select()
+				.from(table.user)
+				.where(and(eq(table.user.email, email), eq(table.user.isActive, true)))
+				.then((rows) => rows[0]);
 
-		if (!result) {
-			setFlash({ type: 'error', message: 'Incorrect username or password' }, event.cookies);
+			if (!result) {
+				setFlash({ type: 'error', message: 'Incorrect username or password' }, event.cookies);
 
-			return fail(400, { form });
+				return fail(400, { form });
+			}
+
+			const validPassword = await verify(result.passwordHash, password, {
+				memoryCost: 19456,
+				timeCost: 2,
+				outputLen: 32,
+				parallelism: 1
+			});
+			if (!validPassword) {
+				return message(form, { type: 'error', text: 'Incorrect username or password' });
+			}
+
+			const sessionToken = auth.generateSessionToken();
+			const session = await auth.createSession(sessionToken, result.id);
+			auth.setSessionTokenCookie(event, sessionToken, session.expiresAt);
+
+			redirect('/dashboard', { type: 'success', message: 'Login Successful!' }, event.cookies);
+		} catch (error) {
+			return message(form, { type: 'error', text: 'An error occurred while logging in' });
 		}
-
-		const validPassword = await verify(result.passwordHash, password, {
-			memoryCost: 19456,
-			timeCost: 2,
-			outputLen: 32,
-			parallelism: 1
-		});
-		if (!validPassword) {
-			setFlash({ type: 'error', message: 'Incorrect username or password' }, event.cookies);
-			return fail(400, { form });
-		}
-
-		const sessionToken = auth.generateSessionToken();
-		const session = await auth.createSession(sessionToken, result.id);
-		auth.setSessionTokenCookie(event, sessionToken, session.expiresAt);
-
-		redirect('/dashboard', { type: 'success', message: 'Login Successful!' }, event.cookies);
 	}
 	// register: async (event) => {
 	// 	const formData = await event.request.formData();

@@ -13,15 +13,17 @@
 
 	let { data, action = '?/login' }: { data: SuperValidated<Infer<LoginSchema>>; action: string } =
 		$props();
-	import { updateFlash } from 'sveltekit-flash-message';
-	import { page } from '$app/state';
-	const { form, errors, enhance, allErrors } = superForm(data, {
-		onResult() {
-			updateFlash(page);
-		},
 
-		onError() {
-			updateFlash(page);
+	const { form, errors, enhance, allErrors, message } = superForm(data, {});
+
+	import { toast } from 'svelte-sonner';
+	$effect(() => {
+		if ($message) {
+			if ($message.type === 'error') {
+				toast.error($message.text);
+			} else {
+				toast.success($message.text);
+			}
 		}
 	});
 

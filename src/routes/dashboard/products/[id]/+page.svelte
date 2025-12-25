@@ -43,10 +43,13 @@
 		{ name: 'Sales in Money', value: data.product?.paidAmount + ' Birr in Transactions' }
 	]);
 
-	const { form, errors, enhance, delayed, capture, restore, allErrors } = superForm(data.form, {
-		validators: zod4Client(editProduct),
-		resetForm: false
-	});
+	const { form, errors, enhance, delayed, capture, restore, allErrors, message } = superForm(
+		data.form,
+		{
+			validators: zod4Client(editProduct),
+			resetForm: false
+		}
+	);
 
 	(($form.productName = data.product.name),
 		($form.category = data.product.categoryId),

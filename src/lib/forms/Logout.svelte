@@ -9,8 +9,7 @@
 
 	let deleting = $state(false);
 
-	import { updateFlash } from 'sveltekit-flash-message';
-	import { page } from '$app/state';
+	import { toast } from 'svelte-sonner';
 </script>
 
 <Dialog.Root bind:open>
@@ -33,7 +32,11 @@
 						return async ({ result, update }) => {
 							await update(); // 2. apply action result to page
 							deleting = false;
-							updateFlash(page);
+							if (result.type === 'success') {
+								toast.success('Logged out successfully');
+							} else {
+								toast.error('Failed to log out');
+							}
 							// 3. stop spinner
 						};
 					}}
