@@ -6,7 +6,7 @@ import * as auth from '$lib/server/auth';
 import { db } from '$lib/server/db';
 import * as table from '$lib/server/db/schema/';
 import type { Actions, PageServerLoad } from './$types';
-import { message, superValidate } from 'sveltekit-superforms';
+import { message, superValidate, setError } from 'sveltekit-superforms';
 import { zod4 } from 'sveltekit-superforms/adapters';
 import { loginSchema } from '$lib/ZodSchema';
 import { redirect, setFlash } from 'sveltekit-flash-message/server';
@@ -36,9 +36,9 @@ export const actions: Actions = {
 				.then((rows) => rows[0]);
 
 			if (!result) {
-				setFlash({ type: 'error', message: 'Incorrect username or password' }, event.cookies);
-
-				return fail(400, { form });
+				setError(form, 'email', 'Incorrect username or password');
+				setError(form, 'password', 'Incorrect username or password');
+				return message(form, { type: 'error', text: 'Incorrect username or password' });
 			}
 
 			const validPassword = await verify(result.passwordHash, password, {
@@ -48,6 +48,8 @@ export const actions: Actions = {
 				parallelism: 1
 			});
 			if (!validPassword) {
+				setError(form, 'email', 'Incorrect username or password');
+				setError(form, 'password', 'Incorrect username or password');
 				return message(form, { type: 'error', text: 'Incorrect username or password' });
 			}
 
