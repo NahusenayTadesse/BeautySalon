@@ -114,7 +114,7 @@
       onChange={f => (columnFilters = f)}
     /> -->
 			</div>
-			<div class="sticky top-0 z-10 flex flex-row items-center gap-4 bg-background">
+			<div class="sticky top-0 z-20 flex flex-row items-center gap-4 bg-background">
 				<Input
 					type="search"
 					placeholder="Search Table..."
@@ -172,7 +172,7 @@
 						<Table.Row data-state={row.getIsSelected() && 'selected'}>
 							{#each row.getVisibleCells() as cell, index}
 								<Table.Cell
-									class="capitalize {index === 1 ? 'sticky left-0 z-20 bg-background' : ''}"
+									class="capitalize {index === 1 ? 'sticky left-0 z-10 bg-background' : ''}"
 								>
 									<FlexRender content={cell.column.columnDef.cell} context={cell.getContext()} />
 								</Table.Cell>

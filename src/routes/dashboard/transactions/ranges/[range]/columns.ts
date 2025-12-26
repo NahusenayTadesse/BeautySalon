@@ -57,7 +57,14 @@ export const columns = [
 				onclick: column.getToggleSortingHandler()
 			}),
 
-		sortable: true
+		sortable: true,
+		cell: ({ row }) => {
+			return renderComponent(DataTableLinks, {
+				id: row.original.recievedById,
+				name: row.original.recievedBy,
+				link: '/dashboard/users'
+			});
+		}
 	},
 
 	{
