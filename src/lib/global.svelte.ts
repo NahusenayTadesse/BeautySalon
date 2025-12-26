@@ -102,3 +102,38 @@ export function isMobile() {
 	if (typeof window === 'undefined') return false; // SSR guard
 	return window.innerWidth <= 768;
 }
+
+import crypto from 'crypto';
+
+export function generatePassword(
+	length: number = 8,
+	options = {
+		lowercase: true,
+		uppercase: true,
+		numbers: true,
+		symbols: true
+	}
+): string {
+	const lowers = 'abcdefghijklmnopqrstuvwxyz';
+	const uppers = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+	const nums = '0123456789';
+	const syms = '!@#$%^&*()-_=+[]{};:,.<>/?';
+
+	let chars = '';
+	if (options.lowercase) chars += lowers;
+	if (options.uppercase) chars += uppers;
+	if (options.numbers) chars += nums;
+	if (options.symbols) chars += syms;
+
+	if (!chars) throw new Error('No character sets selected!');
+
+	let password = '';
+	const charArray = chars.split('');
+
+	for (let i = 0; i < length; i++) {
+		const randomIndex = crypto.randomInt(0, charArray.length);
+		password += charArray[randomIndex];
+	}
+
+	return password;
+}
