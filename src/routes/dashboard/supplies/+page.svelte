@@ -11,7 +11,7 @@
 </script>
 
 <svelte:head>
-	<title>Products List</title>
+	<title>Supplies List</title>
 </svelte:head>
 
 {#await data}

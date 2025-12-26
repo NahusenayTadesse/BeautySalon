@@ -15,7 +15,7 @@
 <svelte:head>
 	<title>Quantity Change History</title>
 </svelte:head>
-<Button href="/dashboard/supplies/{page.params.id}" class="justify-self-start"
+<Button href="/dashboard/products/{page.params.id}" class="justify-self-start"
 	><ArrowLeft /> Back</Button
 >
 {#await data}
@@ -31,7 +31,7 @@
 			<DateMonth
 				start={data?.start}
 				end={data?.end}
-				link="/dashboard/supplies/{page.params.id}/ranges"
+				link="/dashboard/products/{page.params.id}/ranges"
 			/>
 		</div>
 	{:else}
@@ -41,7 +41,7 @@
 			<DateMonth
 				start={data?.start}
 				end={data?.end}
-				link="/dashboard/supplies/{page.params.id}/ranges"
+				link="/dashboard/products/{page.params.id}/ranges"
 			/>
 
 			<!-- <div class="lg:w-[1250px] w-[350px] lg:p-0 p-2 mt-8 mb-4 pt-4 px-2">

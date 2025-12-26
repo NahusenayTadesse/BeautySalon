@@ -8,7 +8,6 @@ import { eq, and, sql } from 'drizzle-orm';
 import type { Actions, PageServerLoad } from './$types';
 import { fail } from 'sveltekit-superforms';
 import { setFlash } from 'sveltekit-flash-message/server';
-import * as auth from '$lib/server/auth';
 
 export const load: PageServerLoad = async ({ params }) => {
 	const { id } = params;

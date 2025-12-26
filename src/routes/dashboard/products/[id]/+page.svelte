@@ -9,12 +9,13 @@
 	import SingleTable from '$lib/components/SingleTable.svelte';
 	import { Button } from '$lib/components/ui/button/index.js';
 	import { superForm } from 'sveltekit-superforms/client';
+	import { page } from '$app/state';
 
 	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';
-	import { ArrowLeft, Pencil, Save } from '@lucide/svelte';
+	import { ArrowLeft, Pencil, Save, History } from '@lucide/svelte';
 	import SelectComp from '$lib/formComponents/SelectComp.svelte';
 	import type { Snapshot } from '@sveltejs/kit';
-
+	import { getCurrentMonthRange } from '$lib/global.svelte';
 	import { Textarea } from '$lib/components/ui/textarea/index.js';
 	import Delete from '$lib/forms/Delete.svelte';
 	import SingleView from '$lib/components/SingleView.svelte';
@@ -97,6 +98,9 @@
 		</Button>
 		<Delete redirect="/dashboard/products" />
 		<Adjustment data={data.adjustForm} name={data.product?.name} />
+		<Button href="/dashboard/products/{page.params.id}/ranges/{getCurrentMonthRange()}">
+			<History /> See Change History
+		</Button>
 	</div>
 	{#if edit === false}
 		<div class="w-full p-4"><SingleTable {singleTable} /></div>

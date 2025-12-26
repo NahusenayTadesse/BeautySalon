@@ -1,12 +1,8 @@
 import { db } from '$lib/server/db';
 import {
-	paymentMethods,
-	transactionProducts,
 	transactions,
-	transactionServices,
 	transactionSupplies,
 	user,
-	supplies,
 	suppliesAdjustments
 } from '$lib/server/db/schema';
 import { and, asc, eq, sql } from 'drizzle-orm';
@@ -14,8 +10,8 @@ import { and, asc, eq, sql } from 'drizzle-orm';
 import { currentMonthFilter } from '$lib/global.svelte';
 import type { PageServerLoad } from './$types';
 
-export const load: PageServerLoad = async ({ params, locals }) => {
-	const { id } = params.id;
+export const load: PageServerLoad = async ({ params }) => {
+	const id = Number(params.id);
 	const { range } = params as { range: string };
 
 	const [y1, m1, d1, y2, m2, d2] = range.split('-');
@@ -30,15 +26,12 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 			quantity: suppliesAdjustments.adjustment,
 			reason: suppliesAdjustments.reason,
 			changedBy: user.name,
-			recievedById: user.id,
-			recieptLink: transactions.recieptLink
+			changedById: user.id,
+			reciept: transactions.recieptLink
 		})
 		.from(suppliesAdjustments)
-		.leftJoin(
-			transactionSupplies,
-			eq(suppliesAdjustments.transactionId, transactionSupplies.transactionId)
-		)
-		.leftJoin(transactions, eq(transactionSupplies.transactionId, transactions.id))
+		.leftJoin(transactionSupplies, eq(transactionSupplies.id, suppliesAdjustments.transactionId))
+		.leftJoin(transactions, eq(transactions.id, transactionSupplies.transactionId))
 		.leftJoin(user, eq(suppliesAdjustments.createdBy, user.id))
 		.where(
 			and(
