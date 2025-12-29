@@ -18,8 +18,9 @@
 	import type { ComponentProps } from 'svelte';
 	import { page } from '$app/state';
 	import { bgGradient, selectItem } from '$lib/global.svelte';
-	import { fade, scale } from 'svelte/transition';
+	import { fade } from 'svelte/transition';
 	import { useSidebar } from '$lib/components/ui/sidebar/index.js';
+	import { ScrollArea } from './ui/scroll-area/index';
 	const navigation = [
 		{ title: 'Dashboard', url: '/dashboard', icon: LayoutDashboard },
 		{ title: 'Customers', url: '/dashboard/customers', icon: Users },
@@ -64,9 +65,18 @@
 </script>
 
 <Sidebar.Root collapsible="icon" {...restProps}>
-	<Sidebar.Content class={bgGradient}>
+	<Sidebar.Content
+		class="{bgGradient} h-full
+  overflow-y-scroll [scrollbar-color:#a3a3a3_transparent]
+  [scrollbar-width:thin]
+  [&::-webkit-scrollbar]:w-2
+  [&::-webkit-scrollbar-thumb]:bg-gray-400
+  [&::-webkit-scrollbar-thumb:hover]:bg-gray-500
+  [&::-webkit-scrollbar-track]:bg-transparent
+"
+	>
 		<Sidebar.Group>
-			<Sidebar.GroupLabel>
+			<Sidebar.GroupLabel class="sticky top-0 z-10 bg-white py-4 dark:bg-gray-700">
 				<div class="flex flex-row items-center justify-center gap-4 py-8">
 					<img src="/logo.png" class="h-8 w-8" alt="Logo" />
 					<h4 class="!text-[22px] text-gray-900 dark:text-white">Suna Marketing</h4>
