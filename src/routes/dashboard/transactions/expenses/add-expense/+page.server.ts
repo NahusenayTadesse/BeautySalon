@@ -15,7 +15,20 @@ import type { Actions } from './$types';
 import type { PageServerLoad } from './$types.js';
 import { setFlash } from 'sveltekit-flash-message/server';
 
-export const load: PageServerLoad = async () => {
+export const load: PageServerLoad = async ({ parent }) => {
+	const layoutData = await parent();
+	const permList = layoutData?.permList;
+	const perm = 'view:expenses';
+
+	const hasPerm = permList?.some((p) => p.name === perm);
+
+	if (!hasPerm) {
+		error(
+			403,
+			'Not Allowed! You do not have permission to see expenses. <br /> Talk to an admin to change it.'
+		);
+	}
+
 	const form = await superValidate(zod4(schema));
 	const categories = await db
 		.select({
@@ -115,11 +128,9 @@ export const actions: Actions = {
 				});
 			}
 
-			setFlash({ type: 'success', message: 'Expense Added Successfully' }, cookies);
-			return message({ type: 'success', text: 'Expense Added Successfully' });
+			return message(form, { type: 'success', text: 'Expense Added Successfully' });
 		} catch (err) {
-			setFlash({ type: 'error', message: `Unexpected Error: ${err.message}` }, cookies);
-			return message({ type: 'error', text: `Unexpected Error: ${err.message}` });
+			return message(form, { type: 'error', text: `Unexpected Error: ${err.message}` });
 		}
 	}
 };

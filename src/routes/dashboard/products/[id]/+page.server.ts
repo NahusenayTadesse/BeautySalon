@@ -170,7 +170,7 @@ export const actions: Actions = {
 						quantity: sql`quantity + ${adjustment}`,
 						updatedBy: locals.user?.id
 					})
-					.where(eq(products.id, id));
+					.where(eq(products.id, Number(id)));
 			} else {
 				await db.insert(productAdjustments).values({
 					productsId: id,
@@ -185,15 +185,11 @@ export const actions: Actions = {
 						quantity: sql`quantity + ${adjustment}`,
 						updatedBy: locals?.user?.id
 					})
-					.where(eq(products.id, id));
+					.where(eq(products.id, Number(id)));
 			}
-
-			setFlash({ type: 'success', message: 'Product Updated Successuflly Added' }, cookies);
 
 			return message(form, { type: 'success', text: 'Product Updated Successfully' });
 		} catch (err) {
-			console.error('Error adjusting product:', err);
-			setFlash({ type: 'error', message: `Unexpected Error: ${err?.message}` }, cookies);
 			return message(form, { type: 'error', text: 'Unexpected Error' + err?.message });
 		}
 	},

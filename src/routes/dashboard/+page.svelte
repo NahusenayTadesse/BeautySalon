@@ -37,27 +37,35 @@
 
 	<!-- Main Content -->
 	<div class="mx-auto flex max-w-7xl flex-col gap-8 px-4 py-8 sm:px-6 lg:px-8">
-		<Reports report={data.todayReport} />
-
+		{#if data?.permList?.some((p) => p.name === 'view:reports')}
+			<Reports report={data.todayReport} />
+		{/if}
 		<!-- Stats Grid -->
-		<div class="mb-8 grid gap-6">
-			<AppointmentCard count={data.nofAppointments} />
-		</div>
+		{#if data?.permList?.some((p) => p.name === 'view:appointments')}
+			<div class="mb-8 grid gap-6">
+				<AppointmentCard count={data.nofAppointments} />
+			</div>
+		{/if}
 
 		<!-- Reorder Items Grid -->
+
 		<div class="mb-8 grid gap-6 md:grid-cols-2">
-			<ReorderList
-				title="Products to Reorder"
-				description="Items below reorder level"
-				items={data.reorderProducts}
-				icon={PackageIcon}
-			/>
-			<ReorderList
-				title="Supplies to Reorder"
-				description="Items below reorder level"
-				items={data.reorderSupplies}
-				icon={BoxIcon}
-			/>
+			{#if data?.permList?.some((p) => p.name === 'view:products')}
+				<ReorderList
+					title="Products to Reorder"
+					description="Items below reorder level"
+					items={data.reorderProducts}
+					icon={PackageIcon}
+				/>
+			{/if}
+			{#if data?.permList?.some((p) => p.name === 'view:supplies')}
+				<ReorderList
+					title="Supplies to Reorder"
+					description="Items below reorder level"
+					items={data.reorderSupplies}
+					icon={BoxIcon}
+				/>
+			{/if}
 		</div>
 
 		<!-- Report Section -->

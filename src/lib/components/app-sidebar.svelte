@@ -21,7 +21,15 @@
 	import { fade } from 'svelte/transition';
 	import { useSidebar } from '$lib/components/ui/sidebar/index.js';
 	import { ScrollArea } from './ui/scroll-area/index';
-	const navigation = [
+
+	type PermList = { name: string }[] | undefined;
+
+	let {
+		permList,
+		...restProps
+	}: { permList: PermList; restProps: ComponentProps<typeof Sidebar.Root> } = $props();
+
+	const originalNavigation = [
 		{ title: 'Dashboard', url: '/dashboard', icon: LayoutDashboard },
 		{ title: 'Customers', url: '/dashboard/customers', icon: Users },
 		{ title: 'Appointments', url: '/dashboard/appointments', icon: Calendar },
@@ -37,7 +45,22 @@
 		{ title: 'Admin Panel', url: '/dashboard/admin-panel', icon: UserRoundCog }
 	];
 
-	let { ...restProps }: ComponentProps<typeof Sidebar.Root> = $props();
+	const filteredNavigation = (navigation: typeof originalNavigation, permList?: PermList) => {
+		if (!permList) return [];
+
+		const permissionSet = new Set(permList.map((p) => p.name));
+
+		return navigation.filter((item) => {
+			if (item.title === 'Dashboard') return true;
+
+			if (item.title === 'Admin Panel') {
+				return permList.length === 39;
+			}
+			return permissionSet.has(`view:${item.title.toLocaleLowerCase()}`);
+		});
+	};
+
+	const navigation = filteredNavigation(originalNavigation, permList);
 
 	const on = 'bg-sidebar-primary text-sidebar-primary-foreground';
 	const off = 'text-sidebar-foreground';

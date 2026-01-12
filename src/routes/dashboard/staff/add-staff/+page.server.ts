@@ -7,8 +7,23 @@ import { db } from '$lib/server/db';
 import { staffTypes as positions, salaries, staff } from '$lib/server/db/schema/';
 import type { Actions } from './$types';
 import type { PageServerLoad } from './$types.js';
+import { eq } from 'drizzle-orm';
+import { error } from '@sveltejs/kit';
 
-export const load: PageServerLoad = async () => {
+export const load: PageServerLoad = async ({ parent }) => {
+	const layoutData = await parent();
+	const permList = layoutData?.permList;
+	const perm = 'add:staff';
+
+	const hasPerm = permList?.some((p) => p.name === perm);
+
+	if (!hasPerm) {
+		error(
+			403,
+			'Not Allowed! You do not have permission to add staff. <br /> Talk to an admin to change it.'
+		);
+	}
+
 	const form = await superValidate(zod4(staffSchema));
 
 	const allPositions = await db
@@ -17,7 +32,8 @@ export const load: PageServerLoad = async () => {
 			name: positions.name,
 			description: positions.description
 		})
-		.from(positions);
+		.from(positions)
+		.where(eq(positions.isActive, true));
 
 	const allStaff = await db
 		.select({

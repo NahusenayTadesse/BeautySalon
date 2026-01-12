@@ -26,7 +26,7 @@
 		{ name: 'Email', value: data.singleUser?.email },
 		{ name: 'Phone', value: data.singleUser?.phone },
 		{ name: 'Role', value: data.singleUser?.role },
-		{ name: 'Status', value: data.singleUser?.status },
+		{ name: 'Status', value: data.singleUser?.status ? 'Active' : 'Inactive' },
 		{ name: 'Created At', value: data.singleUser?.createdAt.toLocaleString() },
 		{ name: 'Updated At', value: data.singleUser?.updatedAt.toLocaleString() }
 	]);
@@ -67,17 +67,21 @@
 </svelte:head>
 <SingleView title="User Details">
 	<div class="mt-4 flex w-full flex-row items-start justify-start gap-2 pl-4">
-		<Button onclick={() => (edit = !edit)}>
-			{#if !edit}
-				<Pencil class="h-4 w-4" />
-				Edit
-			{:else}
-				<ArrowLeft class="h-4 w-4" />
+		{#if data?.permList.some((p) => p.name === 'edit:users')}
+			<Button onclick={() => (edit = !edit)}>
+				{#if !edit}
+					<Pencil class="h-4 w-4" />
+					Edit
+				{:else}
+					<ArrowLeft class="h-4 w-4" />
 
-				Back
-			{/if}
-		</Button>
-		<Delete redirect="/dashboard/products" />
+					Back
+				{/if}
+			</Button>
+		{/if}
+		{#if data?.permList.some((p) => p.name === 'delete:users')}
+			<Delete redirect="/dashboard/users" />
+		{/if}
 	</div>
 	{#if edit === false}
 		<div class="w-full p-4"><SingleTable {singleTable} /></div>

@@ -7,10 +7,23 @@ import { db } from '$lib/server/db';
 import { roles, user } from '$lib/server/db/schema/';
 import type { Actions } from './$types';
 import type { PageServerLoad } from './$types.js';
-import { hash } from '@node-rs/argon2';
+import { error } from '@sveltejs/kit';
+
 // import { encodeBase32LowerCase } from '@oslojs/encoding';
 
-export const load: PageServerLoad = async () => {
+export const load: PageServerLoad = async ({ parent }) => {
+	const layoutData = await parent();
+	const permList = layoutData?.permList;
+	const perm = 'add:users';
+
+	const hasPerm = permList?.some((p) => p.name === perm);
+
+	if (!hasPerm) {
+		error(
+			403,
+			'Not Allowed! You do not have permission to add users. <br /> Talk to an admin to change it.'
+		);
+	}
 	const form = await superValidate(zod4(schema));
 
 	const allRoles = await db

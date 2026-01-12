@@ -10,7 +10,7 @@
 </script>
 
 <Sidebar.Provider>
-	<AppSidebar />
+	<AppSidebar permList={data?.permList} />
 	<main class="w-full px-2">
 		<div
 			class="absolute top-2 left-2 z-100 flex w-[95%] flex-row

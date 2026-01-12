@@ -9,8 +9,21 @@ import { products, customers, appointments, reports } from '$lib/server/db/schem
 import type { Actions } from './$types';
 import type { PageServerLoad } from './$types.js';
 import { setFlash } from 'sveltekit-flash-message/server';
+import { error } from '@sveltejs/kit';
 
-export const load: PageServerLoad = async ({ locals }) => {
+export const load: PageServerLoad = async ({ locals, parent }) => {
+	const layoutData = await parent();
+	const permList = layoutData.permList;
+	const perm = 'add:appointments';
+
+	const hasPerm = permList?.some((p) => p.name === perm);
+
+	if (!hasPerm) {
+		error(
+			403,
+			'Not Allowed! You do not have permission to add appointments. <br /> Talk to an admin to change it.'
+		);
+	}
 	const form = await superValidate(zod4(schema));
 	const existingForm = await superValidate(zod4(existingCustomerAppointment));
 	const customersList = await db

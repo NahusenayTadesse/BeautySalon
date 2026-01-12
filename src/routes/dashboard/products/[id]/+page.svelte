@@ -86,21 +86,25 @@
 
 <SingleView title="Product Details">
 	<div class="mt-4 flex w-full flex-row items-start justify-start gap-2 pl-4">
-		<Button onclick={() => (edit = !edit)}>
-			{#if !edit}
-				<Pencil class="h-4 w-4" />
-				Edit
-			{:else}
-				<ArrowLeft class="h-4 w-4" />
+		{#if data?.permList.some((p) => p.name === 'edit:products')}
+			<Button onclick={() => (edit = !edit)}>
+				{#if !edit}
+					<Pencil class="h-4 w-4" />
+					Edit
+				{:else}
+					<ArrowLeft class="h-4 w-4" />
 
-				Back
-			{/if}
-		</Button>
-		<Delete redirect="/dashboard/products" />
-		<Adjustment data={data.adjustForm} name={data.product?.name} />
-		<Button href="/dashboard/products/{page.params.id}/ranges/{getCurrentMonthRange()}">
-			<History /> See Change History
-		</Button>
+					Back
+				{/if}
+			</Button>
+			<Adjustment data={data.adjustForm} name={data.product?.name} />
+			<Button href="/dashboard/products/{page.params.id}/ranges/{getCurrentMonthRange()}">
+				<History /> See Change History
+			</Button>
+		{/if}
+		{#if data?.permList.some((p) => p.name === 'delete:products')}
+			<Delete redirect="/dashboard/products" />
+		{/if}
 	</div>
 	{#if edit === false}
 		<div class="w-full p-4"><SingleTable {singleTable} /></div>

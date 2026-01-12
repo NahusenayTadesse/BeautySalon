@@ -8,10 +8,6 @@
 
 	let { data } = $props();
 
-	// function getName(List: Array<{ value: number; name: string }>, value: number) {
-	// 	const single = List.find((s) => s.value === value);
-	// 	return single ? single.name : null;
-	// }
 	function getPrice(
 		List: Array<{ value: number; name: string; price: string }>,
 		value: number
@@ -44,6 +40,8 @@
 					resolve(window.confirm('Do you want to leave?\nChanges you made may not be saved.'));
 				});
 			},
+			resetForm: true,
+			dataType: 'json',
 			validators: zod4Client(salesSchema)
 		}
 	);
@@ -85,7 +83,7 @@
 		}, 0)
 	);
 
-	let total = $derived(checkoutTotal + checkoutTotalService);
+	let total = $derived(checkoutTotal + checkoutTotalService + ($form?.generalTip || 0));
 
 	$effect(() => {
 		$form.productAmount = checkoutTotal;
@@ -108,6 +106,7 @@
 		{#if $errors[name]}<span class="text-red-500">{$errors[name]}</span>{/if}
 	</div>
 {/snippet}
+
 <form action="?/addSales" method="post" enctype="multipart/form-data" use:enhance>
 	<div
 		class="mt-6 w-full max-w-3xl rounded-lg border border-slate-200 bg-white p-4 shadow dark:border-slate-700 dark:bg-slate-800"
@@ -122,7 +121,7 @@
 				<h2>Products</h2>
 			{/if}
 
-			{#each $form.products as value, i}
+			{#each $form.products as _, i}
 				<div class={singleContainer} transition:fly={{ x: -200, duration: 200 }}>
 					{i + 1}
 					<div class={arrParts}>
@@ -130,8 +129,8 @@
 						<ComboboxComp
 							items={data.staffes}
 							required={true}
-							name="product_staff"
-							bind:value={value.staff}
+							name="staff"
+							bind:value={$form.products[i].staff}
 						/>
 
 						{#if $errors.products?.[i]?.staff}
@@ -146,7 +145,7 @@
 							items={data.products}
 							name="product"
 							required={true}
-							bind:value={value.product}
+							bind:value={$form.products[i].product}
 						/>
 
 						{#if $errors.products?.[i]?.product}
@@ -156,7 +155,12 @@
 					<div class={arrParts}>
 						<Label for="noofproducts">Number of Product</Label>
 
-						<Input type="number" min="1" name="noofproducts" bind:value={value.noofproducts} />
+						<Input
+							type="number"
+							min="1"
+							name="noOfProducts"
+							bind:value={$form.products[i].noofproducts}
+						/>
 
 						{#if $errors.products?.[i]?.noofproducts}
 							<p class={errorsStyle}>{$errors.products[i].noofproducts}</p>
@@ -165,7 +169,7 @@
 					<div class={arrParts}>
 						<Label for="tip">Tip</Label>
 
-						<Input type="number" name="tip" bind:value={value.tip} />
+						<Input type="number" name="tip" bind:value={$form.products[i].tip} />
 						{#if $errors.products?.[i]?.tip}
 							<p class={errorsStyle}>{$errors.products[i].tip}</p>
 						{/if}
@@ -189,7 +193,7 @@
 				<h2>Services</h2>
 			{/if}
 
-			{#each $form.services as value, i}
+			{#each $form.services as _, i}
 				<div class={singleContainer} transition:fly={{ x: -200, duration: 200 }}>
 					{i + 1}
 					<div class={arrParts}>
@@ -198,21 +202,21 @@
 						<ComboboxComp
 							items={data.staffes}
 							required={true}
-							name="service_staff"
-							bind:value={value.staff}
+							name="staff"
+							bind:value={$form.services[i].staff}
 						/>
 						{#if $errors.services?.[i]?.staff}
 							<p class={errorsStyle}>{$errors.services[i].staff}</p>
 						{/if}
 					</div>
 					<div class={arrParts}>
-						<Label for="staff">Service</Label>
+						<Label for="service">Service</Label>
 
 						<ComboboxComp
 							items={data.services}
 							required={true}
 							name="service"
-							bind:value={value.service}
+							bind:value={$form.services[i].service}
 						/>
 
 						{#if $errors.services?.[i]?.service}
@@ -222,7 +226,7 @@
 					<div class={arrParts}>
 						<Label for="serviceTip">Tip</Label>
 
-						<Input type="number" name="serviceTip" bind:value={value.serviceTip} />
+						<Input type="number" name="tip" bind:value={$form.services[i].serviceTip} />
 
 						{#if $errors.services?.[i]?.serviceTip}
 							<p class={errorsStyle}>{$errors.services[i].serviceTip}</p>
@@ -272,30 +276,21 @@
 		</div>
 
 		{#if $form.products.length > 0 || $form.services.length > 0}
-			<!-- <div class="my-8 flex w-full flex-col justify-start gap-2">
-				<Label for="receipt" class="capitalize">Upload Reciept or Screenshot of Sale</Label>
-				<div class="flex flex-row">
-					<Input
-						type="file"
-						name="receipt"
-						accept="image/*,application/pdf"
-						bind:files={$file}
-						multiple={false}
-					/>
-					<Button
-						variant="ghost"
-						onclick={() => {
-							$file = 0;
-						}}><X /></Button
-					>
-				</div>
-				{#if $errors.receipt}
-					<span>{$errors.receipt}</span>
-				{/if}
-			</div> -->
-			<FileUpload name="receipt" {form} {errors} />
+			<div class="flex flex-col gap-4">
+				<div class={arrParts}>
+					<Label for="generalTip">General Tip</Label>
 
-			{@render combo('paymentMethod', data.allMethods)}
+					<Input type="number" name="generalTip" bind:value={$form.generalTip} />
+
+					{#if $errors.generalTip}
+						<p class={errorsStyle}>{$errors.generalTip}</p>
+					{/if}
+				</div>
+
+				{@render combo('paymentMethod', data.allMethods)}
+
+				<FileUpload name="receipt" {form} {errors} />
+			</div>
 		{/if}
 
 		<div

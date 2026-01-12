@@ -38,12 +38,7 @@ export async function load({ locals, params }) {
 		.innerJoin(appointments, eq(transactionBookingFee.appointmentId, appointments.id))
 		.leftJoin(customers, eq(appointments.customerId, customers.id))
 		.leftJoin(transactions, eq(transactionBookingFee.transactionId, transactions.id))
-		.where(
-			and(
-				eq(appointments.branchId, locals?.user?.branch),
-				eq(appointments.id, id) // if you want *all* appointments for a customer, remove this filter
-			)
-		)
+		.where(eq(appointments.id, Number(id)))
 		.groupBy(customers.id, customers.firstName, customers.lastName)
 		.then((rows) => rows[0]);
 
@@ -53,8 +48,7 @@ export async function load({ locals, params }) {
 			name: sql<string>`TRIM(CONCAT(${srvs.name}, ' ', COALESCE(CONCAT(${srvs.price}, ' ETB'), '')))`,
 			price: srvs.price
 		})
-		.from(srvs)
-		.where(eq(srvs.branchId, locals.user?.branch));
+		.from(srvs);
 
 	const fetchedProducts = await db
 		.select({
@@ -70,16 +64,14 @@ export async function load({ locals, params }) {
 			value: staff.id,
 			name: sql<string>`TRIM(CONCAT(${staff.firstName}, ' ', COALESCE(${staff.lastName}, '')))`
 		})
-		.from(staff)
-		.where(eq(staff.branchId, locals.user?.branch));
+		.from(staff);
 
 	const fetchedCustomer = await db
 		.select({
 			value: customers.id,
 			name: sql<string>`TRIM(CONCAT(${customers.firstName}, ' ', COALESCE(${customers.lastName}, '')))`
 		})
-		.from(customers)
-		.where(eq(customers.branchId, locals.user?.branch));
+		.from(customers);
 
 	const form = await superValidate(zod4(schema));
 
@@ -102,19 +94,9 @@ export async function load({ locals, params }) {
 		form
 	};
 }
-// import fs from 'node:fs';
-// import path from 'node:path';
-// import { generateUserId } from '$lib/global.svelte';
-// import { Readable } from 'node:stream';
-// import { pipeline } from 'node:stream/promises';
-// import { env } from '$env/dynamic/private';
+
 import type { Actions } from '../../$types';
 import { saveUploadedFile } from '$lib/server/upload';
-// const FILES_DIR: string = env.FILES_DIR ?? '.tempFiles';
-
-// if (!fs.existsSync(FILES_DIR)) {
-// 	fs.mkdirSync(FILES_DIR, { recursive: true });
-// }
 
 export const actions: Actions = {
 	addSales: async ({ request, cookies, locals, params }) => {
@@ -123,37 +105,19 @@ export const actions: Actions = {
 
 		const form = await superValidate(formData, zod4(schema));
 
-		const { paymentMethod, total, receipt } = form.data;
+		if (!form.valid) {
+			return message(form, { type: 'error', text: 'Please check the form for errors' });
+		}
+		console.log(form);
 
-		const product_staff = formData.getAll('product_staff'); // ← fix typo
-		const product = formData.getAll('product');
-		const noofproducts = formData.getAll('noofproducts');
-		const tip = formData.getAll('tip');
+		const { products, services, paymentMethod, total, receipt, generalTip } = form.data;
 
-		const service_staff = formData.getAll('service_staff');
-		const service = formData.getAll('service');
-		const serviceTip = formData.getAll('serviceTip');
+		const gTip = generalTip / (products.length + services.length);
 
-		console.log('Received form data:', service, service.length);
-
-		// if (!form.valid) {
-		//    // Stay on the same page and set a flash message
-		//    setFlash({ type: 'error', message: "Please check your form data." }, cookies);
-		//    return fail(400, { form });
-		//  }
-
-		//  console.log(products[0].product, products[0].staff, products[0].noofproducts, products[0].tip)
 		try {
+			const recieptLink = await saveUploadedFile(receipt);
+			delete form.data.receipt;
 			await db.transaction(async (tx) => {
-				const recieptLink = await saveUploadedFile(receipt);
-				delete form.data.receipt;
-
-				//  if (!form.valid) {
-				//        // Stay on the same page and set a flash message
-				//        setFlash({ type: 'error', message: "Please check your form data." }, cookies);
-				//        return fail(400, { form });
-				//      }
-
 				// 1. master transaction row
 				const [txn] = await tx
 					.insert(transactions)
@@ -169,33 +133,31 @@ export const actions: Actions = {
 
 				const fetchedProducts = await tx // ← tx, not db
 					.select({ value: prds.id, price: prds.price, commissionPct: prds.commissionAmount })
-					.from(prds)
-					.where(eq(prds.branchId, locals.user?.branch));
+					.from(prds);
 
 				const fetchedServices = await tx // ← tx, not db
 					.select({ value: srvs.id, price: srvs.price, commissionPct: srvs.commissionAmount })
-					.from(srvs)
-					.where(eq(srvs.branchId, locals.user?.branch));
+					.from(srvs);
 
 				// 2. product lines
-				if (product.length) {
+				if (products.length) {
 					const txnPrdId = await tx
 						.insert(transactionProducts)
 						.values(
-							product.map((_, idx) => ({
-								appointmentId: id,
+							products.map((_, idx) => ({
 								transactionId: txn.id,
-								staffId: product_staff[idx] || null,
-								productId: product[idx] || null,
-								quantity: noofproducts[idx],
-								unitPrice: Number(getPrice(fetchedProducts, Number(product[idx]))),
-								tip: tip[idx],
+								staffId: products[idx].staff || null,
+								productId: products[idx].product || null,
+								quantity: products[idx].noofproducts,
+								unitPrice: getPrice(fetchedProducts, Number(products[idx].product)),
+								tip: products[idx].tip,
 								total:
-									Number(getPrice(fetchedProducts, Number(product[idx]))) *
-										Number(noofproducts[idx]) +
-									Number(tip[idx] || 0),
+									Number(getPrice(fetchedProducts, Number(products[idx].product))) *
+										Number(products[idx].noofproducts) +
+									Number(products[idx].tip || 0),
 								branchId: locals.user?.branch,
-								createdBy: locals.user?.id
+								createdBy: locals.user?.id,
+								appointmentId: Number(id)
 							}))
 						)
 						.$returningId();
@@ -203,22 +165,23 @@ export const actions: Actions = {
 					const today = new Date();
 
 					await tx.insert(commissionProduct).values(
-						product.map((_, idx) => ({
-							saleItemId: txnPrdId[idx].id,
-							staffId: product_staff[idx],
+						products.map((_, idx) => ({
+							saleItemId: products[idx].product,
+							staffId: products[idx].staff,
 							amount:
-								Number(getCommission(fetchedProducts, Number(product[idx]))) *
-								Number(noofproducts[idx]),
+								Number(getCommission(fetchedProducts, Number(products[idx].product))) *
+								Number(products[idx].noofproducts),
 							commissionDate: today,
 							branchId: locals.user?.branch,
 							createdBy: locals.user?.id
 						}))
 					);
+
 					await tx.insert(tipsProduct).values(
-						product.map((_, idx) => ({
-							saleItemId: txnPrdId[idx].id,
-							staffId: product_staff[idx],
-							amount: tip[idx],
+						products.map((_, idx) => ({
+							saleItemId: products[idx].product,
+							staffId: products[idx].staff,
+							amount: Number(products[idx].tip) + Number(gTip),
 							tipDate: today,
 							branchId: locals.user?.branch,
 							createdBy: locals.user?.id
@@ -226,51 +189,53 @@ export const actions: Actions = {
 					);
 
 					await Promise.all(
-						product.map((_, idx) =>
+						products.map((_, idx) =>
 							tx
 								.update(prds)
 								.set({
-									quantity: sql`${prds.quantity} - ${noofproducts[idx]}`
+									quantity: sql`${prds.quantity} - ${products[idx].noofproducts}`
 								})
-								.where(eq(prds.id, product[idx]))
+								.where(eq(prds.id, products[idx].product))
 						)
 					);
 				}
 
 				// 4. service lines
-				if (service.length) {
+				if (services.length) {
 					const txnsrvid = await tx
 						.insert(transactionServices)
 						.values(
-							service.map((_, idx) => ({
-								appointmentId: id,
+							services.map((_, idx) => ({
 								transactionId: txn.id,
-								staffId: service_staff[idx] || null,
-								serviceId: service[idx] || null,
-								price: Number(getPrice(fetchedServices, Number(service[idx]))),
-								tip: serviceTip[idx],
+								staffId: services[idx].staff || null,
+								serviceId: services[idx].service || null,
+								price: Number(getPrice(fetchedServices, Number(services[idx].service))),
+								tip: services[idx].serviceTip,
 								total:
-									Number(getPrice(fetchedServices, Number(service[idx]))) +
-									Number(serviceTip[idx] || 0)
+									Number(getPrice(fetchedServices, Number(services[idx].service))) +
+									Number(services[idx].serviceTip || 0),
+								appointmentId: Number(id),
+								createdBy: locals.user.ids
 							}))
 						)
 						.$returningId();
 					const today = new Date();
 					await tx.insert(commissionService).values(
-						service.map((_, idx) => ({
-							saleItemId: txnsrvid[idx].id,
-							staffId: service_staff[idx],
-							amount: Number(getCommission(fetchedServices, Number(service[idx]))),
+						services.map((_, idx) => ({
+							saleItemId: services[idx].service,
+							staffId: services[idx].staff,
+							amount: Number(getCommission(fetchedServices, Number(services[idx].serviceTip))),
 							commissionDate: today,
 							branchId: locals.user?.branch,
 							createdBy: locals.user?.id
 						}))
 					);
+
 					await tx.insert(tipsService).values(
-						service.map((_, idx) => ({
-							saleItemId: txnsrvid[idx].id,
-							staffId: service_staff[idx],
-							amount: serviceTip[idx],
+						services.map((_, idx) => ({
+							saleItemId: services[idx].service,
+							staffId: services[idx].staff,
+							amount: Number(services[idx].serviceTip) + Number(gTip),
 							tipDate: today,
 							branchId: locals.user?.branch,
 							createdBy: locals.user?.id
@@ -278,7 +243,9 @@ export const actions: Actions = {
 					);
 				}
 
-				const sumProduct = noofproducts.reduce((acc, n) => acc + Number(n), 0);
+				const today = new Date();
+
+				const sumProduct = products.reduce((sum, item) => sum + item.noofproducts, 0);
 
 				const existingReport = await tx
 					.select({
@@ -293,16 +260,16 @@ export const actions: Actions = {
 						.update(reports)
 						.set({
 							productsSold: sql<number>`${reports.productsSold} + ${sumProduct}`,
-							servicesRendered: sql<number>`${reports.servicesRendered} + ${service.length}`,
+							servicesRendered: sql<number>`${reports.servicesRendered} + ${services.length}`,
 							dailyIncome: sql`${sql`IFNULL(${reports.dailyIncome}, 0)`} + ${total}`,
 							transactions: sql<number>`${reports.transactions} + 1`
 						})
 						.where(and(eq(reports.id, existingReport.id)));
 				} else {
 					await tx.insert(reports).values({
-						reportDate: sql`CURDATE()`,
+						reportDate: today,
 						productsSold: sumProduct,
-						servicesRendered: service.length,
+						servicesRendered: services.length,
 						dailyIncome: total,
 						transactions: 1
 					});
@@ -312,7 +279,8 @@ export const actions: Actions = {
 			setFlash({ type: 'success', message: 'New Sale Successfully Added' }, cookies);
 			return message(form, { type: 'success', text: 'New Sale Successfully Added' });
 		} catch (e) {
-			setFlash({ type: 'error', message: 'Error ' + e }, cookies);
+			console.error(e?.message);
+			setFlash({ type: 'error', message: 'Error ' + e?.message }, cookies);
 			return message(form, { type: 'error', text: 'Error ' + e?.message });
 		}
 	}

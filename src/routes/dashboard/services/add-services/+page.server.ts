@@ -8,8 +8,22 @@ import { services, serviceCategories } from '$lib/server/db/schema/';
 import type { Actions } from './$types';
 import type { PageServerLoad } from './$types.js';
 import { setFlash } from 'sveltekit-flash-message/server';
+import { eq } from 'drizzle-orm';
+import { error } from '@sveltejs/kit';
 
-export const load: PageServerLoad = async () => {
+export const load: PageServerLoad = async ({ parent }) => {
+	const layoutData = await parent();
+	const permList = layoutData?.permList;
+	const perm = 'add:services';
+
+	const hasPerm = permList?.some((p) => p.name === perm);
+
+	if (!hasPerm) {
+		error(
+			403,
+			'Not Allowed! You do not have permission to add services. <br /> Talk to an admin to change it.'
+		);
+	}
 	const form = await superValidate(zod4(serviceSchema));
 	const categories = await db
 		.select({
@@ -17,7 +31,8 @@ export const load: PageServerLoad = async () => {
 			name: serviceCategories.name,
 			description: serviceCategories.description
 		})
-		.from(serviceCategories);
+		.from(serviceCategories)
+		.where(eq(serviceCategories.isActive, true));
 
 	return {
 		form,

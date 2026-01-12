@@ -68,7 +68,7 @@
 	</div>
 {/if} -->
 
-<ProgressBar class="text-accent" />
+<ProgressBar color="#3B82F6" zIndex={1000} />
 
 {#if updated.current}
 	<div class={toastmsg} transition:fly={{ x: 20, duration: 300 }}>

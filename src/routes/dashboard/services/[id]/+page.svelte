@@ -74,17 +74,21 @@
 
 <SingleView title="Service Details">
 	<div class="mt-4 flex w-full flex-row items-start justify-start gap-4 pl-4">
-		<Button onclick={() => (edit = !edit)}>
-			{#if !edit}
-				<Pencil class="h-4 w-4" />
-				Edit
-			{:else}
-				<ArrowLeft class="h-4 w-4" />
+		{#if data?.permList?.some((p) => p.name === 'edit:services')}
+			<Button onclick={() => (edit = !edit)}>
+				{#if !edit}
+					<Pencil class="h-4 w-4" />
+					Edit
+				{:else}
+					<ArrowLeft class="h-4 w-4" />
 
-				Back
-			{/if}
-		</Button>
-		<Delete redirect="/dashboard/services" />
+					Back
+				{/if}
+			</Button>
+		{/if}
+		{#if data?.permList?.some((p) => p.name === 'delete:services')}
+			<Delete redirect="/dashboard/services" />
+		{/if}
 	</div>
 	{#if edit === false}
 		<div class="w-full p-4"><SingleTable {singleTable} /></div>

@@ -72,21 +72,25 @@
 
 <SingleView title="Supply Details">
 	<div class="mt-4 flex w-full flex-row items-start justify-start gap-2 pl-4">
-		<Button onclick={() => (edit = !edit)}>
-			{#if !edit}
-				<Pencil class="h-4 w-4" />
-				Edit
-			{:else}
-				<ArrowLeft class="h-4 w-4" />
+		{#if data?.permList?.some((p) => p.name === 'edit:supplies')}
+			<Button onclick={() => (edit = !edit)}>
+				{#if !edit}
+					<Pencil class="h-4 w-4" />
+					Edit
+				{:else}
+					<ArrowLeft class="h-4 w-4" />
 
-				Back
-			{/if}
-		</Button>
-		<Delete redirect="/dashboard/supplies" />
-		<Adjustment data={data.adjustForm} name={data.supply?.name} />
-		<Button href="/dashboard/supplies/{data.supply.id}/ranges/{getCurrentMonthRange()}">
-			<History /> See Change History
-		</Button>
+					Back
+				{/if}
+			</Button>
+			<Adjustment data={data.adjustForm} name={data.supply?.name} />
+			<Button href="/dashboard/supplies/{data.supply.id}/ranges/{getCurrentMonthRange()}">
+				<History /> See Change History
+			</Button>
+		{/if}
+		{#if data?.permList?.some((p) => p.name === 'delete:supplies')}
+			<Delete redirect="/dashboard/supplies" />
+		{/if}
 	</div>
 	{#if edit === false}
 		<div class="w-full p-4"><SingleTable {singleTable} /></div>

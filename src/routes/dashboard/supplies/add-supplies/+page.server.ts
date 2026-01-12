@@ -8,8 +8,21 @@ import { supplies as inventory } from '$lib/server/db/schema/';
 import type { Actions } from './$types';
 import type { PageServerLoad } from './$types.js';
 import { setFlash } from 'sveltekit-flash-message/server';
+import { error } from '@sveltejs/kit';
 
-export const load: PageServerLoad = async () => {
+export const load: PageServerLoad = async ({ parent }) => {
+	const layoutData = await parent();
+	const permList = layoutData?.permList;
+	const perm = 'add:supplies';
+
+	const hasPerm = permList?.some((p) => p.name === perm);
+
+	if (!hasPerm) {
+		error(
+			403,
+			'Not Allowed! You do not have permission to add supplies. <br /> Talk to an admin to change it.'
+		);
+	}
 	const form = await superValidate(zod4(schema));
 
 	return {

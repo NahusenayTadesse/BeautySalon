@@ -44,7 +44,7 @@
 		>
 		<DropdownMenu.Item
 			><a href="/dashboard/files/{recieptLink}" download="transactions" class={dropdownClass}
-				><Download /> View Reciept</a
+				><Download /> Download Reciept</a
 			></DropdownMenu.Item
 		>
 	</DropdownMenu.Content>

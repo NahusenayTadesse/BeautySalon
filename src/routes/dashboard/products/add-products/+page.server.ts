@@ -8,15 +8,30 @@ import { products as inventory, productCategories } from '$lib/server/db/schema/
 import type { Actions } from './$types';
 import type { PageServerLoad } from './$types.js';
 import { setFlash } from 'sveltekit-flash-message/server';
+import { error } from '@sveltejs/kit';
+import { eq } from 'drizzle-orm';
 
-export const load: PageServerLoad = async () => {
+export const load: PageServerLoad = async ({ parent }) => {
+	const layoutData = await parent();
+	const permList = layoutData?.permList;
+	const perm = 'add:products';
+
+	const hasPerm = permList?.some((p) => p.name === perm);
+
+	if (!hasPerm) {
+		error(
+			403,
+			'Not Allowed! You do not have permission to see products. <br /> Talk to an admin to change it.'
+		);
+	}
 	const allCategories = await db
 		.select({
 			value: productCategories.id,
 			name: productCategories.name,
 			description: productCategories.description
 		})
-		.from(productCategories);
+		.from(productCategories)
+		.where(eq(productCategories.isActive, true));
 	const form = await superValidate(zod4(inventoryItemSchema));
 
 	return {

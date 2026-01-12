@@ -9,11 +9,11 @@
 
 <div class="mb-8 flex flex-row items-center justify-start gap-2">
 	<Button href="/dashboard/customers"><Sheet /> All Customers</Button>
-	<DialogComp title="Add New Customer" {content} />
+	{#if data?.permList?.some((p) => p.name === 'add:customers')}
+		<DialogComp title="Add New Customer" variant="default">
+			<AddCustomer data={data?.form} action="/dashboard/customers?/addCustomer" />
+		</DialogComp>
+	{/if}
 </div>
-
-{#snippet content()}
-	<AddCustomer data={data?.form} action="/dashboard/customers?/addCustomer" />
-{/snippet}
 
 {@render children?.()}
