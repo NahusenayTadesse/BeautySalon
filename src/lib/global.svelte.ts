@@ -1,6 +1,6 @@
 export const bgGradient = `bg-gradient-to-b from-[#e0f2ff] via-[#f0f7ff] to-[#ffffff]
 
-    dark:bg-gradient-to-tr dark:from-[#181818] dark:via-[#121212] dark:to-[#262626]/20`;
+    dark:bg-gradient-to-r dark:from-primary/40 dark:via-[#121212] dark:to-[#262626]/20`;
 export const selectItem = `hover:bg-gray-100 hover:shadow-md hover:scale-101 duration-300 transition-all ease-in-out dark:hover:bg-gray-900`;
 export const toastmsg = `fixed right-4 bottom-20 lg:bottom-4 z-50
              flex items-center gap-3
