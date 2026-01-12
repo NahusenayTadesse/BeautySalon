@@ -8,6 +8,7 @@ import { roles, user } from '$lib/server/db/schema/';
 import type { Actions } from './$types';
 import type { PageServerLoad } from './$types.js';
 import { error } from '@sveltejs/kit';
+import { hash } from '@node-rs/argon2';
 
 // import { encodeBase32LowerCase } from '@oslojs/encoding';
 

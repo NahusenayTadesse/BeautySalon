@@ -27,7 +27,7 @@
 			<DateMonth start={data?.start} end={data?.end} link="/dashboard/transactions/ranges" />
 		</div>
 	{:else}
-		<div class="flex flex-col gap-4">
+		<div class="flex w-full flex-col gap-4">
 			<h2 class="my-4 text-2xl">No of Transactions {data.allTransactions?.length}</h2>
 
 			<DateMonth start={data?.start} end={data?.end} link="/dashboard/transactions/ranges" />

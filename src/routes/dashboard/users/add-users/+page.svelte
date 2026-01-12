@@ -93,7 +93,7 @@
 
 			<Button type="submit" class="mt-4" form="main">
 				{#if $delayed}
-					<LoadingBtn name="Adding Service" />
+					<LoadingBtn name="Adding User" />
 				{:else}
 					<Plus class="h-4 w-4" />
 
