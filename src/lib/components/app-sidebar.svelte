@@ -102,7 +102,7 @@
 			<Sidebar.GroupLabel class="sticky top-0 z-10 bg-white py-4 dark:bg-gray-700">
 				<div class="flex flex-row items-center justify-center gap-4 py-8">
 					<img src="/logo.png" class="h-8 w-8" alt="Logo" />
-					<h4 class="!text-[22px] text-gray-900 dark:text-white">Suna Marketing</h4>
+					<h4 class="!text-[22px] text-gray-900 dark:text-white">Red Beauty Salon</h4>
 				</div></Sidebar.GroupLabel
 			>
 			<Sidebar.GroupContent class="mt-8">
