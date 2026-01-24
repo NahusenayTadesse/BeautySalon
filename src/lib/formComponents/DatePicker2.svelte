@@ -6,32 +6,19 @@
 	import { CalendarDate, getLocalTimeZone, today, parseDate } from '@internationalized/date';
 	import { CalendarIcon } from '@lucide/svelte';
 
-	function getTodayDate() {
-		const today = new Date();
-		const year = today.getFullYear();
-		const month = String(today.getMonth() + 1).padStart(2, '0'); // months are 0-indexed
-		const day = String(today.getDate()).padStart(2, '0');
+	let {
+		data = $bindable(),
+		oldDays = false,
+		year = false,
+		futureDays = false
+	}: {
+		data: string;
+		oldDays?: boolean;
+		year?: boolean;
+		futureDays?: boolean;
+	} = $props();
 
-		return `${year}-${month}-${day}`;
-	}
-	let { data = $bindable(), oldDays = false }: { data: string; oldDays?: boolean } = $props();
-
-	const todayDate = oldDays ? undefined : today(getLocalTimeZone());
-
-	//     function formatDateIntl(dateStr: string): string {
-	//   const date = new Date(dateStr);
-
-	//   if (isNaN(date.getTime())) {
-	//     throw new Error("Invalid date string");
-	//   }
-
-	//   return new Intl.DateTimeFormat("en-US", {
-	//     year: "numeric",
-	//     month: "long",
-	//     day: "numeric"
-	//   }).format(date);
-
-	// let form = $state(parseDate(data));
+	const todayDate = $derived(oldDays ? undefined : today(getLocalTimeZone()));
 
 	let form = $state(
 		parseDate(data || todayDate?.toString() || new Date().toISOString().split('T')[0])
@@ -40,6 +27,20 @@
 	$effect(() => {
 		data = form.toString();
 	});
+
+	const formatEthiopianDate = (date: CalendarDate | undefined): string => {
+		if (!date) return '';
+
+		const formatter = new Intl.DateTimeFormat('am-ET', {
+			year: 'numeric',
+			month: 'long',
+			day: 'numeric',
+			calendar: 'ethiopic'
+		});
+
+		return formatter.format(date.toDate(getLocalTimeZone()));
+	};
+	const displayDate = $derived(form ? formatEthiopianDate(form) : formatEthiopianDate(todayDate));
 </script>
 
 <Popover.Root>
@@ -47,29 +48,41 @@
 		class={cn(
 			buttonVariants({
 				variant: 'outline',
-				class: 'justify-start '
+				class: 'justify-between '
 			}),
 			!form && 'text-muted-foreground'
 		)}
 	>
-		<CalendarIcon />
-		{form ? form.toString() : 'Select Appointment Date'}
+		<div class="flex items-center gap-2">
+			<CalendarIcon />
+			{displayDate}
+		</div>
 	</Popover.Trigger>
 
-	<Popover.Content class="flex flex-wrap gap-2 border-t p-0 px-2 !pt-4">
-		<!-- {#each [{ label: 'Today', value: 0 }, { label: 'Tomorrow', value: 1 }, { label: 'In a week', value: 7 }] as preset (preset.value)}
+	<Popover.Content class="flex flex-wrap gap-2 border-t p-0 px-2 py-4!">
+		<div class="text-sm text-muted-foreground">
+			Ethiopian Date: <span class="font-semibold text-foreground">{displayDate}</span>
+		</div>
+
+		<Calendar
+			locale="am-ET"
+			type="single"
+			captionLayout={year ? 'dropdown-years' : 'label'}
+			minValue={todayDate}
+			maxValue={futureDays ? today(getLocalTimeZone()) : undefined}
+			bind:value={form}
+		/>
+		{#each [{ label: 'Today', value: 0 }, { label: 'Tomorrow', value: 1 }, { label: 'In 3 days', value: 3 }, { label: 'In a week', value: 7 }, { label: 'In 2 weeks', value: 14 }] as preset (preset.value)}
 			<Button
 				variant="outline"
 				size="sm"
 				class="flex-1"
 				onclick={() => {
-					form = todayDate?.add({ days: preset.value });
+					form = today(getLocalTimeZone()).add({ days: preset.value });
 				}}
 			>
 				{preset.label}
 			</Button>
-		{/each} -->
-
-		<Calendar type="single" minValue={todayDate} bind:value={form} />
+		{/each}
 	</Popover.Content>
 </Popover.Root>

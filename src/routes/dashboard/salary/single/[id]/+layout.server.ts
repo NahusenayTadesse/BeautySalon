@@ -60,7 +60,7 @@ export const load: LayoutServerLoad = async ({ params, parent }) => {
 		.leftJoin(bonuses, eq(bonuses.staffId, staff.id))
 		.leftJoin(commissionProduct, eq(commissionProduct.staffId, staff.id))
 		.leftJoin(commissionService, eq(commissionService.staffId, staff.id))
-		.where(eq(staff.id, id))
+		.where(eq(staff.id, Number(id)))
 		.groupBy(staff.id, salaries.amount)
 		.then((rows) => rows[0]);
 
