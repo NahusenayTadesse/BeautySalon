@@ -7,6 +7,11 @@
 </script>
 
 <div class="mb-8 flex flex-row items-center justify-start gap-2">
+	<Button
+		href="/dashboard/staff"
+		variant={page.url.pathname === '/dashboard/staff' ? 'default' : 'outline'}
+		><Sheet /> All Staff</Button
+	>
 	{#if data?.permList?.some((p) => p.name === 'add:staff')}
 		<Button
 			href="/dashboard/staff/add-staff"

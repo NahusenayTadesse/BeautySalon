@@ -1,0 +1,1 @@
+ALTER TABLE `staff_schedule` ADD `week_day` tinyint NOT NULL;

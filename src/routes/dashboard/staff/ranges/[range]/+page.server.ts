@@ -15,7 +15,8 @@ import {
 	transactionProducts,
 	transactionServices,
 	tipsProduct,
-	tipsService
+	tipsService,
+	staffSchedule
 } from '$lib/server/db/schema';
 import { eq, and, sql } from 'drizzle-orm';
 import type { Actions, PageServerLoad } from './$types';
@@ -25,6 +26,7 @@ import { setFlash } from 'sveltekit-flash-message/server';
 import { saveUploadedFile } from '$lib/server/upload';
 
 import { currentMonthFilter } from '$lib/global.svelte';
+import { addSchedule, editSchedule } from './schema.ts';
 
 export const load: PageServerLoad = async ({ params }) => {
 	const { range } = params;
@@ -50,7 +52,7 @@ export const load: PageServerLoad = async ({ params }) => {
 			and(
 				currentMonthFilter(commissionService.commissionDate, start, end),
 
-				eq(commissionService.staffId, id)
+				eq(commissionService.staffId, Number(id))
 			)
 		);
 
@@ -68,7 +70,7 @@ export const load: PageServerLoad = async ({ params }) => {
 
 		.where(
 			and(
-				eq(commissionProduct.staffId, id),
+				eq(commissionProduct.staffId, Number(id)),
 				currentMonthFilter(commissionProduct.commissionDate, start, end)
 			)
 		);
@@ -88,7 +90,7 @@ export const load: PageServerLoad = async ({ params }) => {
 			and(
 				currentMonthFilter(tipsService.tipDate, start, end),
 
-				eq(tipsService.staffId, id)
+				eq(tipsService.staffId, Number(id))
 			)
 		);
 
@@ -103,7 +105,9 @@ export const load: PageServerLoad = async ({ params }) => {
 		.leftJoin(transactionProducts, eq(tipsProduct.saleItemId, transactionProducts.id))
 		.leftJoin(products, eq(transactionProducts.productId, products.id))
 
-		.where(and(eq(tipsProduct.staffId, id), currentMonthFilter(tipsProduct.tipDate, start, end)));
+		.where(
+			and(eq(tipsProduct.staffId, Number(id)), currentMonthFilter(tipsProduct.tipDate, start, end))
+		);
 
 	// --- Select Bonuses ---
 	const staffBonuses = await db
@@ -240,6 +244,75 @@ export const actions: Actions = {
 			console.error('Error deleting staff member:', err);
 			setFlash({ type: 'error', message: `Unexpected Error: ${err?.message}` }, cookies);
 			return fail(400);
+		}
+	},
+	addSchedule: async ({ request, locals, params }) => {
+		const { range } = params;
+
+		const id = range.split('-').pop();
+		const form = await superValidate(request, zod4(addSchedule));
+
+		if (!form.valid) {
+			return message(form, { type: 'error', text: `Error: check the form` });
+		}
+
+		const { day, startTime, endTime, status } = form.data;
+
+		try {
+			await db.transaction(async (tx) => {
+				await tx.insert(staffSchedule).values({
+					weekDay: day,
+					startTime,
+					staffId: Number(id),
+					endTime,
+					isActive: status,
+					createdBy: locals?.user?.id
+				});
+
+				return message(form, {
+					type: 'success',
+					text: 'Schedule Details Created Successfully!'
+				});
+			});
+		} catch (err) {
+			return message(form, {
+				type: 'error',
+				text: `Creating Schedule failed: ${err instanceof Error ? err.message : 'Unknown error'}`
+			});
+		}
+	},
+	editSchedule: async ({ request, locals }) => {
+		const form = await superValidate(request, zod4(editSchedule));
+
+		if (!form.valid) {
+			return message(form, { type: 'error', text: `Error: check the form` });
+		}
+
+		const { id, day, startTime, endTime, status } = form.data;
+
+		try {
+			await db.transaction(async (tx) => {
+				await tx
+					.update(staffSchedule)
+					.set({
+						weekDay: day,
+						startTime,
+						endTime,
+						isActive: status,
+						updatedBy: locals?.user?.id
+					})
+					.where(eq(staffSchedule.id, id));
+
+				return message(form, {
+					type: 'success',
+					text: 'Schedule Details Updated Successfully!'
+				});
+			});
+		} catch (err) {
+			return message(form, {
+				type: 'error',
+				text: `Updating Schedule failed: ${err instanceof Error ? err.message : 'Unknown error'}`
+			});
 		}
 	}
 };

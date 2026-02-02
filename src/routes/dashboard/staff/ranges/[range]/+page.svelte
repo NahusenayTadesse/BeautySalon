@@ -67,6 +67,8 @@
 
 	let govtId = $state(false);
 	let contractPdf = $state(false);
+
+	import Schedules from './schedules.svelte';
 </script>
 
 <svelte:head>
@@ -256,6 +258,9 @@
 		</div>
 	</div>
 {/snippet}
+<div class="mt-4">
+	<Schedules data={data?.schedules} form={data?.edit} addForm={data?.add} />
+</div>
 <div class="my-8 w-full lg:w-1/2">
 	<div class="mb-6">
 		<h3 class="text-lg font-semibold">Product Tips Today</h3>
