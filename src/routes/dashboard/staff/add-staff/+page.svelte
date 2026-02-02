@@ -7,10 +7,11 @@
 	import { Button } from '$lib/components/ui/button/index.js';
 	import { zod4Client } from 'sveltekit-superforms/adapters';
 	import { staffSchema } from '$lib/zodschemas/appointmentSchema';
-	import { fileProxy, superForm } from 'sveltekit-superforms/client';
+	import { superForm } from 'sveltekit-superforms/client';
 	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';
 	import SelectComp from '$lib/formComponents/SelectComp.svelte';
 	import DatePicker2 from '$lib/formComponents/DatePicker2.svelte';
+	import InputComp from '$lib/formComponents/InputComp.svelte';
 
 	let { data } = $props();
 	const { form, errors, enhance, message, delayed, capture, restore } = superForm(data.form, {
@@ -22,8 +23,6 @@
 
 		validators: zod4Client(staffSchema)
 	});
-	const govId = fileProxy(form, 'govId');
-	const contract = fileProxy(form, 'contract');
 
 	export const snapshot: Snapshot = { capture, restore };
 	import { toast } from 'svelte-sonner';
@@ -117,7 +116,7 @@
 				<input type="text" name="hiredAt" bind:value={$form.hiredAt} />
 			</div>
 
-			<div class="flex w-full flex-col justify-start gap-2">
+			<!-- <div class="flex w-full flex-col justify-start gap-2">
 				<Label for="govId" class="capitalize">Upload new staff member Goverment Id</Label>
 				<Input
 					type="file"
@@ -143,7 +142,25 @@
 				{#if $errors.govId}
 					<span>{$errors.govId}</span>
 				{/if}
-			</div>
+			</div> -->
+			<InputComp
+				label="Upload new staff member Goverment Id"
+				placeholder="Upload Government ID in pdf Max(10MB) "
+				name="govId"
+				type="file"
+				{form}
+				{errors}
+			/>
+
+			<InputComp
+				label="Upload new staff member Contract"
+				placeholder="Upload Contract in pdf Max(10MB) "
+				name="contract"
+				type="file"
+				required={false}
+				{form}
+				{errors}
+			/>
 
 			<Button type="submit" class="mt-4" form="main">
 				{#if $delayed}

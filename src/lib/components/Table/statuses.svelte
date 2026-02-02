@@ -32,7 +32,13 @@
 		removable: { icon: OctagonMinus, colour: 'bg-red-500' },
 
 		/* fallback */
-		unknown: { icon: Loader, colour: 'bg-gray-500' }
+		unknown: { icon: Loader, colour: 'bg-gray-500' },
+
+		terminated: { icon: OctagonMinus, colour: 'bg-red-500' },
+		full_time: { icon: BadgeCheck, colour: 'bg-green-400' },
+		on_leave: { icon: OctagonMinus, colour: 'bg-red-500' },
+		probation: { icon: OctagonMinus, colour: 'bg-red-500' },
+		contract: { icon: BadgeCheck, colour: 'bg-green-400' }
 	} as const;
 
 	/* ---------- derived ---------- */
@@ -42,5 +48,8 @@
 
 <Badge variant="secondary" class="{colour} text-white">
 	<Icon />
-	{status}
+	{status
+		.split('_')
+		.map((w) => w[0].toUpperCase() + w.slice(1))
+		.join(' ')}
 </Badge>

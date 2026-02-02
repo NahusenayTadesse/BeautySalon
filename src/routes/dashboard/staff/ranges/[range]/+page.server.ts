@@ -16,7 +16,8 @@ import {
 	transactionServices,
 	tipsProduct,
 	tipsService,
-	staffSchedule
+	staffSchedule,
+	employeeTermination
 } from '$lib/server/db/schema';
 import { eq, and, sql } from 'drizzle-orm';
 import type { Actions, PageServerLoad } from './$types';
@@ -26,7 +27,7 @@ import { setFlash } from 'sveltekit-flash-message/server';
 import { saveUploadedFile } from '$lib/server/upload';
 
 import { currentMonthFilter } from '$lib/global.svelte';
-import { addSchedule, editSchedule } from './schema.ts';
+import { addSchedule, editSchedule, terminate } from './schema';
 
 export const load: PageServerLoad = async ({ params }) => {
 	const { range } = params;
@@ -313,6 +314,51 @@ export const actions: Actions = {
 				type: 'error',
 				text: `Updating Schedule failed: ${err instanceof Error ? err.message : 'Unknown error'}`
 			});
+		}
+	},
+	terminate: async ({ params, cookies, request, locals }) => {
+		const { range } = params;
+
+		const id = range.split('-').pop();
+
+		const form = await superValidate(request, zod4(terminate));
+
+		if (!form.valid) {
+			// Stay on the same page and set a flash message
+			return message(form, { type: 'error', text: `Error: check the form` });
+		}
+		const { reason, terminationDate } = form.data;
+
+		try {
+			if (!id) {
+				return message(form, { type: 'error', text: `Employee Not Found` });
+			}
+
+			// Wrap the database operations in a transaction
+			await db.transaction(async (tx) => {
+				// 1. Insert the termination record
+
+				await tx.insert(employeeTermination).values({
+					staffId: Number(id),
+					reason,
+					terminationDate,
+					createdBy: locals?.user?.id
+				});
+
+				await tx
+					.update(staff)
+					.set({
+						employmentStatus: 'terminated',
+						terminationDate: new Date(terminationDate) || null,
+						isActive: false,
+						updatedBy: locals?.user?.id
+					})
+					.where(eq(staff.id, Number(id)));
+			});
+			return message(form, { type: 'success', text: 'Staff Member Terminated Successfully!' });
+		} catch (err) {
+			console.error('Error terminating staff member:', err);
+			return message(form, { type: 'error', text: `Unexpected Error: ${err?.message}` });
 		}
 	}
 };

@@ -11,7 +11,8 @@ import {
 	tinyint,
 	date,
 	time,
-	index
+	index,
+	boolean
 } from 'drizzle-orm/mysql-core';
 import { secureFields } from './secureFields';
 import { user } from './user';
@@ -209,3 +210,25 @@ export const staffScheduleRelations = relations(staffSchedule, ({ one }) => ({
 		references: [staff.id]
 	})
 }));
+
+export const employeeTermination = mysqlTable('empoloyee_termination', {
+	id: int('id').autoincrement().primaryKey(),
+	staffId: int('staff_id')
+		.notNull()
+		.references(() => staff.id),
+	reason: varchar('reason', { length: 255 }),
+	terminationLetter: varchar('termination_letter', { length: 255 }),
+	terminationDate: date('termination_date').notNull(),
+	...secureFields
+});
+
+export const missingDays = mysqlTable('missing_days', {
+	id: int('id').autoincrement().primaryKey(),
+	staffId: int('staff_id')
+		.notNull()
+		.references(() => staff.id, { onDelete: 'cascade' }),
+	day: date('day').notNull(),
+	reason: varchar('reason', { length: 255 }).notNull(),
+	deductable: boolean('deductable').notNull().default(false),
+	...secureFields
+});

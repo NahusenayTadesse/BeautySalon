@@ -28,8 +28,14 @@
 		{ name: 'Position', value: data.staffMember.category },
 		{ name: 'Hired On', value: data.staffMember?.hireDate },
 		{ name: 'Added By', value: data.staffMember?.addedBy },
-		{ name: 'Goverment Id', value: data.staffMember?.govId },
-		{ name: 'Contract', value: data.staffMember?.contract }
+		{
+			name: 'Employment Status',
+			value:
+				data.staffMember?.employmentStatus === 'terminated'
+					? 'Terminated'
+					: data.staffMember?.employmentStatus
+		},
+		{ name: 'Status', value: data.staffMember?.status ? 'Active' : 'InActive' }
 	]);
 
 	const { form, errors, enhance, delayed, capture, restore, message } = superForm(data.form, {
@@ -69,6 +75,7 @@
 	let contractPdf = $state(false);
 
 	import Schedules from './schedules.svelte';
+	import Terminate from './terminate.svelte';
 </script>
 
 <svelte:head>
@@ -91,6 +98,10 @@
 				Back
 			{/if}
 		</Button>
+		<Terminate
+			data={data?.terminated}
+			employee="{data?.staffMember?.firstName} {data?.staffMember?.lastName} "
+		/>
 		<Delete redirect="/dashboard/staff" />
 	</div>
 	{#if edit === false}

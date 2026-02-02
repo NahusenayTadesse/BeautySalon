@@ -41,7 +41,7 @@
 			<DateMonth
 				start={data?.start}
 				end={data?.end}
-				link="/dashboard/products/{page.params.id}/ranges"
+				link="/dashboard/productsg/{page.params.id}/ranges"
 			/>
 
 			<!-- <div class="lg:w-[1250px] w-[350px] lg:p-0 p-2 mt-8 mb-4 pt-4 px-2">

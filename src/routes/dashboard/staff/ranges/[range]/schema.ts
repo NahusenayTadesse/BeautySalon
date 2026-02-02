@@ -1,5 +1,11 @@
 import { z } from 'zod/v4';
 
+export const terminate = z.object({
+	reason: z.string().min(2).max(255),
+	terminationDate: z.coerce.string('Termination Date is Required')
+});
+
+export type Terminate = z.infer<typeof terminate>;
 export const addSchedule = z.object({
 	day: z.number('Day is Required'),
 	startTime: z.string('Start Time is required'),

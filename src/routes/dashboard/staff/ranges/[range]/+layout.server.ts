@@ -17,7 +17,7 @@ import {
 import { eq, and, sql } from 'drizzle-orm';
 import type { LayoutServerLoad } from './$types';
 import { tipsService } from '$lib/server/db/schema';
-import { addSchedule, editSchedule } from './schema';
+import { addSchedule, editSchedule, terminate } from './schema';
 
 export const load: LayoutServerLoad = async ({ params, locals }) => {
 	const { range } = params;
@@ -27,6 +27,7 @@ export const load: LayoutServerLoad = async ({ params, locals }) => {
 	const form = await superValidate(zod4(schema));
 	const add = await superValidate(zod4(addSchedule));
 	const edit = await superValidate(zod4(editSchedule));
+	const terminated = await superValidate(zod4(terminate));
 
 	const staffMember = await db
 		.select({
@@ -37,11 +38,11 @@ export const load: LayoutServerLoad = async ({ params, locals }) => {
 			categoryId: staffTypes.id,
 			phone: staff.phone,
 			email: staff.email,
-			status: staff.employmentStatus,
+			status: staff.isActive,
 			hireDate: sql<string>`DATE_FORMAT(${staff.hireDate}, '%Y-%m-%d')`,
 			govId: staff.govtId,
 			contract: staff.contract,
-
+			employmentStatus: staff.employmentStatus,
 			addedBy: user.name,
 			years: sql<number>`TIMESTAMPDIFF(YEAR, ${staff.hireDate}, CURDATE())`
 		})
@@ -108,6 +109,7 @@ export const load: LayoutServerLoad = async ({ params, locals }) => {
 		serviceTipsToday,
 		add,
 		edit,
-		schedules
+		schedules,
+		terminated
 	};
 };
