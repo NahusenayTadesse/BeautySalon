@@ -4,8 +4,14 @@ export const terminate = z.object({
 	reason: z.string().min(2).max(255),
 	terminationDate: z.coerce.string('Termination Date is Required')
 });
-
 export type Terminate = z.infer<typeof terminate>;
+
+export const reinstate = z.object({
+	newStatus: z.string('New Status is Required')
+});
+
+export type Reinstate = z.infer<typeof reinstate>;
+
 export const addSchedule = z.object({
 	day: z.number('Day is Required'),
 	startTime: z.string('Start Time is required'),

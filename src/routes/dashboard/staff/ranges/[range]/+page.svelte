@@ -76,6 +76,7 @@
 
 	import Schedules from './schedules.svelte';
 	import Terminate from './terminate.svelte';
+	import Reinstate from './reinstate.svelte';
 </script>
 
 <svelte:head>
@@ -98,11 +99,17 @@
 				Back
 			{/if}
 		</Button>
-		<Terminate
-			data={data?.terminated}
-			employee="{data?.staffMember?.firstName} {data?.staffMember?.lastName} "
-		/>
-		<Delete redirect="/dashboard/staff" />
+		{#if data?.staffMember?.employmentStatus !== 'terminated'}
+			<Terminate
+				data={data?.terminated}
+				employee="{data?.staffMember?.firstName} {data?.staffMember?.lastName} "
+			/>
+		{:else}
+			<Reinstate
+				data={data?.reinstated}
+				employee="{data?.staffMember?.firstName} {data?.staffMember?.lastName} "
+			/>
+		{/if}
 	</div>
 	{#if edit === false}
 		<div class="w-full p-4"><SingleTable {singleTable} /></div>

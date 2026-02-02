@@ -27,7 +27,7 @@ import { setFlash } from 'sveltekit-flash-message/server';
 import { saveUploadedFile } from '$lib/server/upload';
 
 import { currentMonthFilter } from '$lib/global.svelte';
-import { addSchedule, editSchedule, terminate } from './schema';
+import { addSchedule, editSchedule, terminate, reinstate } from './schema';
 
 export const load: PageServerLoad = async ({ params }) => {
 	const { range } = params;
@@ -358,6 +358,40 @@ export const actions: Actions = {
 			return message(form, { type: 'success', text: 'Staff Member Terminated Successfully!' });
 		} catch (err) {
 			console.error('Error terminating staff member:', err);
+			return message(form, { type: 'error', text: `Unexpected Error: ${err?.message}` });
+		}
+	},
+	reinstate: async ({ params, request, locals }) => {
+		const { range } = params;
+
+		const id = range.split('-').pop();
+
+		const form = await superValidate(request, zod4(reinstate));
+		if (!form.valid) {
+			// Stay on the same page and set a flash message
+			return message(form, { type: 'error', text: `Error: check the form` });
+		}
+		const { newStatus } = form.data;
+
+		try {
+			if (!id) {
+				return message(form, { type: 'error', text: `Employee Not Found` });
+			}
+
+			// Wrap the database operations in a transaction
+			await db.transaction(async (tx) => {
+				await tx
+					.update(staff)
+					.set({
+						employmentStatus: newStatus,
+						isActive: true,
+						updatedBy: locals?.user?.id
+					})
+					.where(eq(staff.id, Number(id)));
+			});
+			return message(form, { type: 'success', text: 'Staff Member Reinstated Successfully!' });
+		} catch (err) {
+			console.error('Error terminating Staff Member:', err);
 			return message(form, { type: 'error', text: `Unexpected Error: ${err?.message}` });
 		}
 	}

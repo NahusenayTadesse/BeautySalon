@@ -17,7 +17,7 @@ import {
 import { eq, and, sql } from 'drizzle-orm';
 import type { LayoutServerLoad } from './$types';
 import { tipsService } from '$lib/server/db/schema';
-import { addSchedule, editSchedule, terminate } from './schema';
+import { addSchedule, editSchedule, reinstate, terminate } from './schema';
 
 export const load: LayoutServerLoad = async ({ params, locals }) => {
 	const { range } = params;
@@ -28,6 +28,7 @@ export const load: LayoutServerLoad = async ({ params, locals }) => {
 	const add = await superValidate(zod4(addSchedule));
 	const edit = await superValidate(zod4(editSchedule));
 	const terminated = await superValidate(zod4(terminate));
+	const reinstated = await superValidate(zod4(reinstate));
 
 	const staffMember = await db
 		.select({
@@ -64,7 +65,7 @@ export const load: LayoutServerLoad = async ({ params, locals }) => {
 		.leftJoin(transactionServices, eq(tipsService.saleItemId, transactionServices.id))
 		.leftJoin(services, eq(transactionServices.serviceId, services.id))
 
-		.where(and(eq(tipsService.staffId, Number(id)), eq(tipsService.tipDate, today)));
+		.where(and(eq(tipsService.staffId, Number(id)), eq(tipsService.tipDate, new Date(today))));
 
 	const productTipsToday = await db
 		.select({
@@ -110,6 +111,7 @@ export const load: LayoutServerLoad = async ({ params, locals }) => {
 		add,
 		edit,
 		schedules,
-		terminated
+		terminated,
+		reinstated
 	};
 };
