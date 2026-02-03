@@ -59,7 +59,7 @@ export const staff = mysqlTable(
 		street: varchar('street', { length: 100 }),
 		kebele: varchar('kebele', { length: 100 }),
 		buildingNumber: varchar('building_number', { length: 10 }),
-		floor: int('floor'),
+		floor: varchar('floor', { length: 20 }),
 		houseNumber: varchar('house_number', { length: 50 }),
 		...secureFields
 	},
@@ -268,7 +268,7 @@ export const employeeGuarantor = mysqlTable('employee_guarantor', {
 	street: varchar('street', { length: 100 }),
 	kebele: varchar('kebele', { length: 100 }),
 	buildingNumber: varchar('building_number', { length: 10 }),
-	floor: int('floor'),
+	floor: varchar('floor', { length: 20 }),
 	houseNumber: varchar('house_number', { length: 50 }),
 	...secureFields
 });

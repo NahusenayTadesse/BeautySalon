@@ -19,14 +19,12 @@
 		{ value: 'other', name: 'Other' }
 	];
 
-	import { type AddGuarantor } from './schema';
+	import { type AddGuarantor } from '../schema';
 
 	let {
-		data,
-		subcityList
+		data
 	}: {
 		data: SuperValidated<Infer<AddGuarantor>>;
-		subcityList: Item[];
 	} = $props();
 
 	const { form, errors, enhance, delayed, message, allErrors } = superForm(data, {
@@ -34,7 +32,6 @@
 		invalidateAll: true
 	});
 	import { toast } from 'svelte-sonner';
-	import type { Item } from '$lib/global.svelte';
 	$effect(() => {
 		if ($message) {
 			if ($message.type === 'error') {
@@ -162,15 +159,7 @@
 		/>
 		<h4>Guarantor Address</h4>
 
-		<InputComp
-			label="Subcity"
-			name="subcity"
-			type="combo"
-			{form}
-			{errors}
-			required
-			items={subcityList}
-		/>
+		<InputComp label="Subcity" name="subcity" type="text" {form} {errors} required />
 		<InputComp label="Street" name="street" type="text" {form} {errors} required />
 		<InputComp label="Kebele" name="kebele" type="text" {form} {errors} required />
 		<InputComp

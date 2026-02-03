@@ -19,39 +19,17 @@
 		{ value: 'other', name: 'Other' }
 	];
 
-	import { type EditGuarantor } from './schema';
+	import { type EditGuarantor } from '../schema';
 
 	let {
-		data,
-		name,
-		phone,
-		email,
-		relationship,
-		relation,
-		jobType,
-		company,
-		salary,
-		photo,
-		document,
-		govtId,
-		id
+		formData,
+		data
 	}: {
-		data: SuperValidated<Infer<EditGuarantor>>;
-		name: string;
-		phone: string;
-		email: string;
-		relationship: string;
-		relation?: string;
-		jobType: string;
-		company: string;
-		salary: string;
-		photo: string;
-		document: string;
-		govtId: string;
-		id: number;
+		formData: SuperValidated<Infer<EditGuarantor>>;
+		data: any[];
 	} = $props();
 
-	const { form, errors, enhance, delayed, message, allErrors } = superForm(data, {
+	const { form, errors, enhance, delayed, message, allErrors } = superForm(formData, {
 		resetForm: false,
 		invalidateAll: true
 	});
@@ -65,15 +43,21 @@
 			}
 		}
 	});
-	$form.id = id;
-	$form.name = name;
-	$form.phone = phone;
-	$form.email = email;
-	$form.relationship = relationship;
-	$form.relation = relation;
-	$form.jobType = jobType;
-	$form.company = company;
-	$form.salary = salary;
+	$form.id = data?.id;
+	$form.name = data?.name;
+	$form.phone = data?.phone;
+	$form.email = data?.email;
+	$form.relationship = data?.relationship;
+	$form.relation = data?.relation;
+	$form.jobType = data?.jobType;
+	$form.company = data?.company;
+	$form.salary = data?.salary;
+	$form.subcity = data?.subcity;
+	$form.street = data?.street;
+	$form.kebele = data?.kebele;
+	$form.buildingNumber = data?.buildingNumber;
+	$form.floor = data?.floor;
+	$form.houseNumber = data?.houseNumber;
 </script>
 
 <DialogComp title="Edit" variant="default" IconComp={SquarePen}>
@@ -111,7 +95,7 @@
 			label="Photo"
 			name="photo"
 			type="file"
-			image={photo ? photo : ''}
+			image={data?.photo ? data.photo : ''}
 			{form}
 			{errors}
 			required
@@ -120,7 +104,7 @@
 			label="Document"
 			name="document"
 			type="file"
-			image={document ? document : ''}
+			image={data?.guarantorDocument ? data?.guarantorDocument : ''}
 			{form}
 			{errors}
 			required
@@ -129,11 +113,27 @@
 			label="Goverment Id"
 			name="govtId"
 			type="file"
-			image={govtId ? govtId : ''}
+			image={data?.govtId ? data?.govtId : ''}
 			{form}
 			{errors}
 			required
 		/>
+
+		<h4>Guarantor Address</h4>
+
+		<InputComp label="Subcity" name="subcity" type="text" {form} {errors} required />
+		<InputComp label="Street" name="street" type="text" {form} {errors} required />
+		<InputComp label="Kebele" name="kebele" type="text" {form} {errors} required />
+		<InputComp
+			label="Building Name or Number"
+			name="buildingNumber"
+			type="text"
+			{form}
+			{errors}
+			required
+		/>
+		<InputComp label="Floor" name="floor" type="number" {form} {errors} required />
+		<InputComp label="House Number" name="houseNumber" type="text" {form} {errors} required />
 
 		<Errors allErrors={$allErrors} />
 		<Button type="submit" class="w-full" form="main" variant="default">

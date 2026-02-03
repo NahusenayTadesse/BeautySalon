@@ -17,14 +17,7 @@ import {
 import { eq, and, sql } from 'drizzle-orm';
 import type { LayoutServerLoad } from './$types';
 import { tipsService } from '$lib/server/db/schema';
-import {
-	addSchedule,
-	editSchedule,
-	reinstate,
-	terminate,
-	editGuarantor,
-	addGuarantor
-} from './schema';
+import { addSchedule, editSchedule, reinstate, terminate } from './schema';
 
 export const load: LayoutServerLoad = async ({ params, locals }) => {
 	const { range } = params;
@@ -36,8 +29,6 @@ export const load: LayoutServerLoad = async ({ params, locals }) => {
 	const edit = await superValidate(zod4(editSchedule));
 	const terminated = await superValidate(zod4(terminate));
 	const reinstated = await superValidate(zod4(reinstate));
-	const editGuarantorForm = await superValidate(zod4(editGuarantor));
-	const addGuarantorForm = await superValidate(zod4(addGuarantor));
 
 	const staffMember = await db
 		.select({
@@ -59,7 +50,7 @@ export const load: LayoutServerLoad = async ({ params, locals }) => {
 		.from(staff)
 		.leftJoin(staffTypes, eq(staff.type, staffTypes.id))
 		.leftJoin(user, eq(staff.createdBy, user.id))
-		.where(and(eq(staff.branchId, Number(locals?.user?.branch)), eq(staff.id, Number(id))))
+		.where(eq(staff.id, Number(id)))
 		.then((rows) => rows[0]);
 
 	const today = new Date().toISOString().split('T')[0];
@@ -121,8 +112,6 @@ export const load: LayoutServerLoad = async ({ params, locals }) => {
 		edit,
 		schedules,
 		terminated,
-		reinstated,
-		editGuarantorForm,
-		addGuarantorForm
+		reinstated
 	};
 };

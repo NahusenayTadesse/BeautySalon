@@ -137,3 +137,17 @@ export function generatePassword(
 
 	return password;
 }
+
+export function formatETB(amount: number, useAmharic: boolean = false): string {
+	// 'am-ET' for Amharic/Ethiopic script (ብር)
+	// 'en-ET' for English/Latin script (Br)
+	const locale = useAmharic ? 'am-ET' : 'en-ET';
+
+	return new Intl.NumberFormat(locale, {
+		style: 'currency',
+		currency: 'ETB',
+		// Optional: Controls whether to show "ETB", "Br", or "ብር"
+		currencyDisplay: 'symbol',
+		minimumFractionDigits: 2
+	}).format(amount);
+}

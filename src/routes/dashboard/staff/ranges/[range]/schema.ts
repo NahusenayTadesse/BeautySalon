@@ -84,7 +84,13 @@ export const editGuarantor = z.object({
 			(file) => ACCEPTED_FILE_TYPES.includes(file.type),
 			'Please upload a valid image (JPG, PNG, WebP, HEIC/HEIF) or PDF.'
 		)
-		.optional()
+		.optional(),
+	subcity: z.string('Subsity is required'),
+	street: z.string('Street is required'),
+	kebele: z.string('Kebele is required'),
+	buildingNumber: z.string().optional(),
+	floor: z.string().optional(),
+	houseNumber: z.string('House Number is Required')
 });
 export type EditGuarantor = z.infer<typeof editGuarantor>;
 
@@ -139,7 +145,7 @@ export const addGuarantor = z.object({
 			(file) => ACCEPTED_FILE_TYPES.includes(file.type),
 			'Please upload a valid image (JPG, PNG, WebP, HEIC/HEIF) or PDF.'
 		),
-	subcity: z.number('Subsity is required'),
+	subcity: z.string('Subsity is required'),
 	street: z.string('Street is required'),
 	kebele: z.string('Kebele is required'),
 	buildingNumber: z.string().optional(),

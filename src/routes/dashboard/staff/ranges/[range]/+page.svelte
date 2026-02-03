@@ -77,8 +77,7 @@
 	import Schedules from './schedules.svelte';
 	import Terminate from './terminate.svelte';
 	import Reinstate from './reinstate.svelte';
-	import EditGuarantor from './editGuarantor.svelte';
-	import AddGuarantor from './addGuarantor.svelte';
+	import { page } from '$app/state';
 </script>
 
 <svelte:head>
@@ -112,6 +111,7 @@
 				employee="{data?.staffMember?.firstName} {data?.staffMember?.lastName} "
 			/>
 		{/if}
+		<Button href="/dashboard/staff/ranges/{page.params.range}/guarantor">Guarantor</Button>
 	</div>
 	{#if edit === false}
 		<div class="w-full p-4"><SingleTable {singleTable} /></div>

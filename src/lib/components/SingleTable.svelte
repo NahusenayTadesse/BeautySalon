@@ -18,7 +18,7 @@
 {#await singleTable}
 	<h1 class="m-2 flex flex-row">Loading <LoaderCircle class="animate-spin" /></h1>
 {:then table}
-	<table id="table" class="table-auto text-left lg:w-full">
+	<table id="table" class="w-full table-fixed text-left lg:w-full">
 		<thead
 			class="bg-gray-100 font-semibold tracking-wider text-gray-700 uppercase dark:bg-gray-700 dark:text-gray-300"
 		>
@@ -31,7 +31,7 @@
 			{#each singleTable as value}
 				<tr>
 					<td class="px-4 py-3 font-semibold">{value.name}</td>
-					<td class="px-4 py-3 capitalize">
+					<td class="break-words capitalize">
 						{#if value.name === 'Phone'}
 							<Copy data={value.value} />
 						{:else if value.name === 'Status' || value.name.includes('Status')}
