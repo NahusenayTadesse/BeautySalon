@@ -77,6 +77,8 @@
 	import Schedules from './schedules.svelte';
 	import Terminate from './terminate.svelte';
 	import Reinstate from './reinstate.svelte';
+	import EditGuarantor from './editGuarantor.svelte';
+	import AddGuarantor from './addGuarantor.svelte';
 </script>
 
 <svelte:head>

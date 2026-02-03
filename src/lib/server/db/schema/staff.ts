@@ -55,6 +55,12 @@ export const staff = mysqlTable(
 			'retired',
 			'deceased'
 		]).default('full_time'),
+		subcity: varchar('subcity', { length: 100 }),
+		street: varchar('street', { length: 100 }),
+		kebele: varchar('kebele', { length: 100 }),
+		buildingNumber: varchar('building_number', { length: 10 }),
+		floor: int('floor'),
+		houseNumber: varchar('house_number', { length: 50 }),
 		...secureFields
 	},
 	(table) => [
@@ -230,5 +236,66 @@ export const missingDays = mysqlTable('missing_days', {
 	day: date('day').notNull(),
 	reason: varchar('reason', { length: 255 }).notNull(),
 	deductable: boolean('deductable').notNull().default(false),
+	...secureFields
+});
+
+export const employeeGuarantor = mysqlTable('employee_guarantor', {
+	id: int('id').autoincrement().primaryKey(),
+	staffId: int('staff_id')
+		.notNull()
+		.references(() => staff.id),
+	name: varchar('name', { length: 255 }).notNull(),
+	relationship: mysqlEnum('relationship', [
+		'mother',
+		'father',
+		'spouse',
+		'son',
+		'brother',
+		'sister',
+		'daughter',
+		'other'
+	]).notNull(),
+	relation: varchar('relation', { length: 255 }),
+	jobType: varchar('job_type', { length: 255 }).notNull(),
+	company: varchar('company', { length: 255 }).notNull(),
+	salary: decimal('salary', { precision: 10, scale: 2 }).notNull(),
+	gurantorDocument: varchar('gurantor_document', { length: 255 }).notNull(),
+	phone: varchar('phone', { length: 255 }).notNull(),
+	photo: varchar('photo', { length: 255 }).notNull(),
+	govtId: varchar('govt_id', { length: 255 }).notNull(),
+	email: varchar('email', { length: 255 }),
+	subcity: varchar('subcity', { length: 100 }),
+	street: varchar('street', { length: 100 }),
+	kebele: varchar('kebele', { length: 100 }),
+	buildingNumber: varchar('building_number', { length: 10 }),
+	floor: int('floor'),
+	houseNumber: varchar('house_number', { length: 50 }),
+	...secureFields
+});
+
+export const staffFamilies = mysqlTable('staff_families', {
+	id: int('id').autoincrement().primaryKey(),
+	staffId: int('staff_id').references(() => staff.id, { onDelete: 'cascade' }),
+	relationship: mysqlEnum('relationship', [
+		'mother',
+		'father',
+		'spouse',
+		'son',
+		'daughter',
+		'grandchild',
+		'grandfather',
+		'grandmother',
+		'uncle',
+		'aunt',
+		'brother',
+		'sister',
+		'other'
+	]).notNull(),
+	gender: mysqlEnum('gender', ['male', 'female']).notNull().default('male'),
+	otherRelationship: varchar('other_relationship', { length: 255 }),
+	name: varchar('name', { length: 255 }).notNull(),
+	phone: varchar('phone', { length: 255 }).notNull(),
+	email: varchar('email', { length: 255 }),
+	emergencyContact: boolean('emergency_contact').notNull().default(false),
 	...secureFields
 });
