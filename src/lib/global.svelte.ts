@@ -151,3 +151,8 @@ export function formatETB(amount: number, useAmharic: boolean = false): string {
 		minimumFractionDigits: 2
 	}).format(amount);
 }
+
+export type Item = {
+	value: string | number;
+	name: string;
+};

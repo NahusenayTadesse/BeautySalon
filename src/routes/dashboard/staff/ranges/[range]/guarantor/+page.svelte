@@ -5,7 +5,8 @@
 	import AddGuarantor from './addGuarantor.svelte';
 	import SingleView from '$lib/components/SingleView.svelte';
 	import { formatETB } from '$lib/global.svelte';
-	import { FileX, Eye, MapPin, IdCard } from '@lucide/svelte';
+	import { FileX, Eye, MapPin, IdCard, ArrowLeft } from '@lucide/svelte';
+	import { page } from '$app/state';
 	let { data } = $props();
 
 	let employeeGuarantor = $derived([
@@ -37,31 +38,34 @@
 <svelte:head>
 	<title>Guarantor Details</title>
 </svelte:head>
-
+<Button class="my-3 justify-self-start" href="/dashboard/staff/ranges/{page.params.range}">
+	<ArrowLeft /> Back to {data?.staffMember?.firstName}
+	{data?.staffMember?.lastName}
+</Button>
 <SingleView title="Guarantor Details" class="w-full!">
 	<div class="grid grid-cols-1 gap-4 px-4 py-4 wrap-break-word lg:grid-cols-2">
-		<div class="flex flex-col gap-2">
-			<h4 class="flex items-center gap-2">
-				{#if data.guarantor}
+		{#if data.guarantor}
+			<div class="flex flex-col gap-2">
+				<h4 class="flex items-center gap-2">
 					<IdCard /> Guarantor Details
 					{#key data?.guarantor}
 						<EditGuarantor formData={data?.editGuarantorForm} data={data?.guarantor} />
 					{/key}
-				{:else}
-					No Guarantor!
-					<AddGuarantor data={data?.addGuarantorForm} />
+				</h4>
+				{#if data.guarantor}
+					<SingleTable singleTable={employeeGuarantor} />
 				{/if}
-			</h4>
-			{#if data.guarantor}
-				<SingleTable singleTable={employeeGuarantor} />
-			{/if}
-		</div>
-		<div class="flex flex-col gap-2">
-			<h4 class="flex items-center gap-2">
-				<MapPin /> Guarantor Address
-			</h4>
-			<SingleTable singleTable={guarantorAddress} />
-		</div>
+			</div>
+			<div class="flex flex-col gap-2">
+				<h4 class="flex items-center gap-2">
+					<MapPin /> Guarantor Address
+				</h4>
+				<SingleTable singleTable={guarantorAddress} />
+			</div>
+		{:else}
+			No Guarantor!
+			<AddGuarantor data={data?.addGuarantorForm} />
+		{/if}
 	</div>
 	<div class="flex w-full flex-wrap items-center gap-2">
 		{#if data?.guarantor?.photo}
@@ -97,11 +101,11 @@
 				No Id Added
 			</Button>
 		{/if}
-		{#if data?.guarantor?.guarantorDocument}
+		{#if data?.guarantor?.gurantorDocument}
 			<Button
 				title="View {data?.guarantor?.name}'s ID"
 				variant="outline"
-				href="/dashboard/files/{data?.guarantor?.guarantorDocument}"
+				href="/dashboard/files/{data?.guarantor?.gurantorDocument}"
 				target="_blank"
 				rel="noopener noreferrer"
 				aria-label="View {data?.guarantor?.name}'s Government Id(FIDA) in a new tab"

@@ -17,7 +17,8 @@ import {
 	tipsProduct,
 	tipsService,
 	staffSchedule,
-	employeeTermination
+	employeeTermination,
+	staffAccounts
 } from '$lib/server/db/schema';
 import { eq, and, sql } from 'drizzle-orm';
 import type { Actions, PageServerLoad } from './$types';
@@ -25,9 +26,10 @@ import { fail } from 'sveltekit-superforms';
 import { setFlash } from 'sveltekit-flash-message/server';
 
 import { saveUploadedFile } from '$lib/server/upload';
+import { paymentMethods } from '$lib/server/fastData';
 
 import { currentMonthFilter } from '$lib/global.svelte';
-import { addSchedule, editSchedule, terminate, reinstate } from './schema';
+import { addSchedule, editSchedule, terminate, reinstate, addAccount, editAccount } from './schema';
 
 export const load: PageServerLoad = async ({ params }) => {
 	const { range } = params;
@@ -147,6 +149,8 @@ export const load: PageServerLoad = async ({ params }) => {
 			and(eq(deductions.staffId, id), currentMonthFilter(deductions.deductionDate, start, end))
 		);
 
+	const bankList = await paymentMethods();
+
 	// --- Combine all results using unionAll ---
 
 	return {
@@ -159,7 +163,8 @@ export const load: PageServerLoad = async ({ params }) => {
 		serviceCommissions,
 
 		start,
-		end
+		end,
+		bankList
 	};
 };
 
@@ -393,6 +398,86 @@ export const actions: Actions = {
 		} catch (err) {
 			console.error('Error terminating Staff Member:', err);
 			return message(form, { type: 'error', text: `Unexpected Error: ${err?.message}` });
+		}
+	},
+	addAccount: async ({ request, locals, params }) => {
+		const { range } = params;
+
+		const id = range.split('-').pop();
+		const form = await superValidate(request, zod4(addAccount));
+
+		if (!form.valid) {
+			return message(form, { type: 'error', text: `Error: check the form` });
+		}
+
+		const { paymentMethod, accountDetail, status } = form.data;
+
+		try {
+			await db.transaction(async (tx) => {
+				if (status === true) {
+					await tx
+						.update(staffAccounts)
+						.set({ isActive: false })
+						.where(eq(staffAccounts.staffId, Number(id)));
+				}
+				await tx.insert(staffAccounts).values({
+					staffId: Number(id),
+					paymentMethodId: paymentMethod,
+					accountDetail,
+					isActive: status,
+					createdBy: locals?.user?.id
+				});
+			});
+			return message(form, {
+				type: 'success',
+				text: 'Account Details Creating Successfully!'
+			});
+		} catch (err) {
+			return message(form, {
+				type: 'error',
+				text: `Creating Account failed: ${err instanceof Error ? err.message : 'Unknown error'}`
+			});
+		}
+	},
+	editAccount: async ({ request, locals, params }) => {
+		const { range } = params;
+
+		const staffId = range.split('-').pop();
+		const form = await superValidate(request, zod4(editAccount));
+		if (!form.valid) {
+			return message(form, { type: 'error', text: `Error: check the form` });
+		}
+
+		const { id, paymentMethod, accountDetail, status } = form.data;
+
+		try {
+			await db.transaction(async (tx) => {
+				if (status === true) {
+					await tx
+						.update(staffAccounts)
+						.set({ isActive: false })
+						.where(eq(staffAccounts.staffId, Number(staffId)));
+				}
+				await tx
+					.update(staffAccounts)
+					.set({
+						paymentMethodId: paymentMethod,
+						accountDetail,
+						isActive: status,
+						updatedBy: locals?.user?.id
+					})
+					.where(eq(staffAccounts.id, id));
+			});
+			return message(form, {
+				type: 'success',
+				text: 'Account Details Updated Successfully!'
+			});
+		} catch (err) {
+			console.error(err?.message);
+			return message(form, {
+				type: 'error',
+				text: `Updated Account failed: ${err instanceof Error ? err.message : 'Unknown error'}`
+			});
 		}
 	}
 };

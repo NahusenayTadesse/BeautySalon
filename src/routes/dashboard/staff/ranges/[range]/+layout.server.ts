@@ -7,17 +7,19 @@ import {
 	products,
 	services,
 	staff,
+	staffAccounts,
 	staffSchedule,
 	staffTypes,
 	tipsProduct,
 	transactionProducts,
 	transactionServices,
-	user
+	user,
+	paymentMethods
 } from '$lib/server/db/schema';
-import { eq, and, sql } from 'drizzle-orm';
+import { eq, and, sql, desc } from 'drizzle-orm';
 import type { LayoutServerLoad } from './$types';
 import { tipsService } from '$lib/server/db/schema';
-import { addSchedule, editSchedule, reinstate, terminate } from './schema';
+import { addAccount, addSchedule, editAccount, editSchedule, reinstate, terminate } from './schema';
 
 export const load: LayoutServerLoad = async ({ params, locals }) => {
 	const { range } = params;
@@ -29,6 +31,8 @@ export const load: LayoutServerLoad = async ({ params, locals }) => {
 	const edit = await superValidate(zod4(editSchedule));
 	const terminated = await superValidate(zod4(terminate));
 	const reinstated = await superValidate(zod4(reinstate));
+	const addAccountForm = await superValidate(zod4(addAccount));
+	const editAccountForm = await superValidate(zod4(editAccount));
 
 	const staffMember = await db
 		.select({
@@ -102,6 +106,21 @@ export const load: LayoutServerLoad = async ({ params, locals }) => {
 		.leftJoin(user, eq(staffSchedule.createdBy, user.id))
 		.where(eq(staffSchedule.staffId, Number(id)));
 
+	const accounts = await db
+		.select({
+			id: staffAccounts.id,
+			paymentMethod: paymentMethods.name,
+			accountDetail: staffAccounts.accountDetail,
+			paymentMethodId: staffAccounts.paymentMethodId,
+			status: staffAccounts.isActive,
+			addedBy: user.name,
+			addedById: user.id
+		})
+		.from(staffAccounts)
+		.leftJoin(user, eq(staffAccounts.createdBy, user.id))
+		.leftJoin(paymentMethods, eq(staffAccounts.paymentMethodId, paymentMethods.id))
+		.where(eq(staffAccounts.staffId, Number(id)))
+		.orderBy(desc(staffAccounts.isActive));
 	return {
 		staffMember,
 		form,
@@ -112,6 +131,9 @@ export const load: LayoutServerLoad = async ({ params, locals }) => {
 		edit,
 		schedules,
 		terminated,
-		reinstated
+		reinstated,
+		addAccountForm,
+		editAccountForm,
+		accounts
 	};
 };

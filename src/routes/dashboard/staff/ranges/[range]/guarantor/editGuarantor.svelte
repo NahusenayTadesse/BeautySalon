@@ -104,7 +104,7 @@
 			label="Document"
 			name="document"
 			type="file"
-			image={data?.guarantorDocument ? data?.guarantorDocument : ''}
+			image={data?.gurantorDocument ? data?.gurantorDocument : ''}
 			{form}
 			{errors}
 			required

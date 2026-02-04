@@ -77,6 +77,8 @@
 	import Schedules from './schedules.svelte';
 	import Terminate from './terminate.svelte';
 	import Reinstate from './reinstate.svelte';
+	import Accounts from './accounts.svelte';
+
 	import { page } from '$app/state';
 </script>
 
@@ -279,7 +281,17 @@
 	</div>
 {/snippet}
 <div class="mt-4">
+	<h4>Shift Schedule</h4>
 	<Schedules data={data?.schedules} form={data?.edit} addForm={data?.add} />
+</div>
+<div class="mt-4">
+	<h4>Bank Accounts</h4>
+	<Accounts
+		data={data?.accounts}
+		form={data?.editAccountForm}
+		addForm={data?.addAccountForm}
+		paymentMethods={data?.bankList}
+	/>
 </div>
 <div class="my-8 w-full lg:w-1/2">
 	<div class="mb-6">
