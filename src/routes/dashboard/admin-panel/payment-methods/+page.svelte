@@ -88,7 +88,7 @@
 	<title>Product Categories</title>
 </svelte:head>
 
-<DialogComp title="+ Add New Category" variant="default">
+<DialogComp title="+ Add New Payment Method or Bank" variant="default">
 	<form action="?/add" use:enhance id="main" class="flex flex-col gap-4" method="post">
 		<InputComp {form} {errors} label="name" type="text" name="name" required={true} />
 

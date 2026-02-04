@@ -98,7 +98,7 @@
 			label="Description"
 			type="textarea"
 			name="description"
-			placeholder="Enter Department Description"
+			placeholder="Enter Product Description"
 			required={true}
 			rows={10}
 		/>

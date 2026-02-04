@@ -2,6 +2,7 @@ import { renderComponent } from '$lib/components/ui/data-table/index.js';
 import DataTableLinks from '$lib/components/Table/data-table-links.svelte';
 import DataTableActions from './data-table-actions.svelte';
 import DataTableSort from '$lib/components/Table/data-table-sort.svelte';
+import { formatEthiopianDate } from '$lib/global.svelte';
 
 export const columns = [
 	{
@@ -17,7 +18,11 @@ export const columns = [
 				name: 'Changed At',
 				onclick: column.getToggleSortingHandler()
 			}),
-		sortable: true
+		sortable: true,
+		cell: (info) => {
+			const n = info.getValue(); // number of days
+			return formatEthiopianDate(new Date(n));
+		}
 	},
 
 	{
@@ -29,6 +34,22 @@ export const columns = [
 			}),
 
 		sortable: true
+	},
+
+	{
+		accessorKey: 'costPerItem',
+		header: ({ column }) =>
+			renderComponent(DataTableSort, {
+				name: 'Cost Per Item',
+				onclick: column.getToggleSortingHandler()
+			}),
+
+		sortable: true,
+		cell: ({ row }) => {
+			return row.original.costPerItem === null
+				? 'Removed'
+				: `$${row.original.costPerItem.toFixed(2)}`;
+		}
 	},
 
 	{

@@ -30,7 +30,6 @@ import type { Actions, PageServerLoad } from './$types';
 import { setError, fail, message } from 'sveltekit-superforms';
 import { setFlash } from 'sveltekit-flash-message/server';
 import { saveUploadedFile } from '$lib/server/upload';
-import { text } from 'drizzle-orm/sqlite-core';
 
 export const load: PageServerLoad = async ({ params, locals }) => {
 	const { id } = params;
@@ -53,7 +52,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 			date: sql<string>`DATE_FORMAT(${appointments.appointmentDate}, '%Y-%m-%d')`,
 			time: sql<string>`DATE_FORMAT(${appointments.appointmentTime}, '%H:%i')`,
 			bookedBy: user.name,
-			status: appointmentStatuses.name,
+			status: appointments.status,
 			notes: appointments.notes,
 			bookedAt: sql<string>`DATE_FORMAT(${appointments.createdAt}, '%Y-%m-%d')`,
 			paidAmount: sql<number>`COALESCE(SUM(${transactions.amount}), 0)`
@@ -61,16 +60,14 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 		.from(appointments)
 		.leftJoin(customers, eq(appointments.customerId, customers.id))
 		.leftJoin(user, eq(appointments.createdBy, user.id))
-		.leftJoin(appointmentStatuses, eq(appointments.statusId, appointmentStatuses.id))
 		.leftJoin(transactionBookingFee, eq(appointments.id, transactionBookingFee.appointmentId))
 		.leftJoin(transactions, eq(transactionBookingFee.transactionId, transactions.id))
-		.where(and(eq(appointments.branchId, locals?.user?.branch), eq(appointments.id, id)))
+		.where(eq(appointments.id, Number(id)))
 		.groupBy(
 			appointments.id,
 			customers.firstName,
 			customers.lastName,
 			customers.phone,
-			appointmentStatuses.name,
 			user.name,
 			appointments.appointmentDate,
 			appointments.appointmentTime,

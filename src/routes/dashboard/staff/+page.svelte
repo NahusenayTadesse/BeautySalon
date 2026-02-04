@@ -8,6 +8,9 @@
 	import Loading from '$lib/components/Loading.svelte';
 	import { Frown, Plus } from '@lucide/svelte';
 	import { Button } from '$lib/components/ui/button';
+	import FilterMenu from '$lib/components/Table/FilterMenu.svelte';
+
+	let filteredList = $derived(data.staffList);
 </script>
 
 <svelte:head>
@@ -23,7 +26,7 @@
 				<Frown class="h-12 w-16  animate-bounce" />
 				No staff members added yet
 			</p>
-			<Button href="/dashboard/services/add-services"><Plus />Add New Staff Members</Button>
+			<Button href="/dashboard/staff/add-staff"><Plus />Add New Staff Members</Button>
 		</div>
 	{:else}
 		<h2 class="my-4 text-2xl">No of Staff {data.staffList?.length}</h2>
@@ -32,7 +35,12 @@
 
    <DataTable data={data.staffList} {columns} filterBlacklist={['id']} />
  </div> -->
-		<DataTable data={data.staffList} {columns} filterBlacklist={['id']} />
+		<FilterMenu
+			data={data.staffList}
+			bind:filteredList
+			filterKeys={['category', 'years', 'status']}
+		/>
+		<DataTable data={data.staffList} {columns} />
 	{/if}
 {:catch}
 	<div class="flex h-screen w-screen flex-col items-center justify-center">

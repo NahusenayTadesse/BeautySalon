@@ -107,14 +107,23 @@
 
 			{@render fe('Email', 'email', 'email', 'Enter Email', true)}
 			{@render fe('Salary', 'salary', 'number', 'Enter Salary', true)}
-			<div class="flex w-full flex-col justify-start gap-2">
+			<!-- <div class="flex w-full flex-col justify-start gap-2">
 				<Label for="hiredAt" class="capitalize">Hired On</Label>
 
 				<DatePicker2 bind:data={$form.hiredAt} />
 
 				{#if $errors.hiredAt}<span class="text-red-500">{$errors.hiredAt}</span>{/if}
-				<input type="text" name="hiredAt" bind:value={$form.hiredAt} />
-			</div>
+				<input type="hidden" name="hiredAt" bind:value={$form.hiredAt} />
+			</div> -->
+
+			<InputComp
+				label="Hired On"
+				placeholder="Upload Government ID in pdf Max(10MB) "
+				name="hiredAt"
+				type="date"
+				{form}
+				{errors}
+			/>
 
 			<!-- <div class="flex w-full flex-col justify-start gap-2">
 				<Label for="govId" class="capitalize">Upload new staff member Goverment Id</Label>

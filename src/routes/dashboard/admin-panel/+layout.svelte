@@ -1,6 +1,4 @@
 <script>
-	import { Button } from '$lib/components/ui/button/index.js';
-	import * as NavigationMenu from '$lib/components/ui/navigation-menu/index.js';
 	import * as Menubar from '$lib/components/ui/menubar/index.js';
 	import { selectItem } from '$lib/global.svelte';
 	import { ChevronDown } from '@lucide/svelte';
@@ -8,16 +6,10 @@
 
 	let { children } = $props();
 
-	let menus = [
-		{ name: 'Services', href: '/dashboard/admin-panel/add-services' },
-		{ name: 'Product Categories', href: '/dashboard/admin-panel/add-product-category' },
-		{ name: 'Staff Positions', href: '/dashboard/admin-panel/add-positions' },
-		{ name: 'Payment Methods', href: '/dashboard/admin-panel/payment-methods' }
-	];
-
 	let users = [
-		{ name: 'Users', href: '/dashboard/admin-panel/add-users' },
-		{ name: 'Roles', href: '/dashboard/admin-panel/roles' }
+		{ name: 'Users', href: '/dashboard/users' },
+		{ name: 'Roles', href: '/dashboard/admin-panel/roles' },
+		{ name: 'Payment Methods', href: '/dashboard/admin-panel/payment-methods' }
 	];
 </script>
 
@@ -40,7 +32,6 @@
 {/snippet}
 
 <Menubar.Root class="sticky mb-8 bg-transparent">
-	{@render menu('System', menus)}
 	{@render menu('Users', users)}
 </Menubar.Root>
 

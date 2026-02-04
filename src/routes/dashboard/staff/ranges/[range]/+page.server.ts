@@ -159,7 +159,10 @@ export const load: PageServerLoad = async ({ params }) => {
 		})
 		.from(deductions)
 		.where(
-			and(eq(deductions.staffId, id), currentMonthFilter(deductions.deductionDate, start, end))
+			and(
+				eq(deductions.staffId, Number(id)),
+				currentMonthFilter(deductions.deductionDate, start, end)
+			)
 		);
 
 	const bankList = await paymentMethods();

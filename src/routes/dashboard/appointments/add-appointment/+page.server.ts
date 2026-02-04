@@ -81,7 +81,7 @@ export const actions: Actions = {
 				customerId: customer.id,
 				appointmentDate,
 				appointmentTime,
-				appointmentStatusId: 1,
+				status: 'pending',
 				notes,
 				createdBy: locals?.user?.id,
 				branchId: locals?.user?.branch
@@ -153,7 +153,7 @@ export const actions: Actions = {
 				customerId,
 				appointmentDate,
 				appointmentTime,
-				statusId: 1,
+				status: 'pending',
 				notes,
 				createdBy: locals?.user?.id,
 				branchId: locals?.user?.branch

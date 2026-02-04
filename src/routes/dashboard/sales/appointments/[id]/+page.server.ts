@@ -24,8 +24,28 @@ import { salesSchema as schema } from '$lib/zodschemas/salesSchema';
 
 import { setFlash } from 'sveltekit-flash-message/server';
 
+import { error } from '@sveltejs/kit';
+
 export async function load({ locals, params }) {
 	const { id } = params;
+
+	const existingBooking = await db
+		.select({
+			id: transactionServices.id
+		})
+		.from(transactionServices)
+		.where(eq(transactionServices.appointmentId, Number(id)));
+
+	const existingBookingProducts = await db
+		.select({
+			id: transactionProducts.id
+		})
+		.from(transactionProducts)
+		.where(eq(transactionProducts.appointmentId, Number(id)));
+
+	if (existingBooking.length > 0 || existingBookingProducts.length > 0) {
+		return error(400, 'Booking Purchase with this appointment already exists');
+	}
 
 	const bookings = await db
 		.select({
@@ -57,7 +77,7 @@ export async function load({ locals, params }) {
 			price: prds.price
 		})
 		.from(prds)
-		.where(eq(prds.branchId, locals.user?.branch));
+		.where(eq(prds.branchId, Number(locals.user?.branch)));
 
 	const fetchedStaff = await db
 		.select({
@@ -83,6 +103,7 @@ export async function load({ locals, params }) {
 		})
 		.from(paymentMethods)
 		.where(eq(paymentMethods.isActive, true));
+
 	return {
 		services: fetchedServices,
 		products: fetchedProducts,

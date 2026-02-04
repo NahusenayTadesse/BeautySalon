@@ -49,7 +49,11 @@
 
    <DataTable data={data.allTransactions} {columns}  />
  </div> -->
-			<DataTable data={data.allTransactions} {columns} search={false} />
+			<DataTable
+				data={data.allTransactions}
+				{columns}
+				fileName="{data?.supply.name} Quantity Change History"
+			/>
 		</div>
 	{/if}
 {:catch}

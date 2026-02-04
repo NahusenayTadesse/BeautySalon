@@ -4,7 +4,11 @@ import { fail } from '@sveltejs/kit';
 
 import { inventoryItemSchema } from '$lib/ZodSchema';
 import { db } from '$lib/server/db';
-import { products as inventory, productCategories } from '$lib/server/db/schema/';
+import {
+	products as inventory,
+	productCategories,
+	productSuppliers as suppliers
+} from '$lib/server/db/schema/';
 import type { Actions } from './$types';
 import type { PageServerLoad } from './$types.js';
 import { setFlash } from 'sveltekit-flash-message/server';
@@ -34,9 +38,18 @@ export const load: PageServerLoad = async ({ parent }) => {
 		.where(eq(productCategories.isActive, true));
 	const form = await superValidate(zod4(inventoryItemSchema));
 
+	const supplierList = await db
+		.select({
+			value: suppliers.id,
+			name: suppliers.name
+		})
+		.from(suppliers)
+		.where(eq(suppliers.isActive, true));
+
 	return {
 		form,
-		allCategories
+		allCategories,
+		supplierList
 	};
 };
 

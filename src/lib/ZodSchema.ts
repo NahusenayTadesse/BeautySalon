@@ -40,7 +40,7 @@ export const inventoryItemSchema = z.object({
 	commission: z
 		.number({ message: 'Commission is required, enter 0 if it is not decided yet' })
 		.positive({ message: 'Price must be a positive number.' }),
-	supplier: z.string().min(1, { message: 'Supplier is required.' }),
+	supplier: z.number('Supplier is required'),
 	reorderLevel: z.coerce
 		.number()
 		.int({ message: 'Reorder Level can only be full numbers, no decimals.' })
@@ -72,7 +72,7 @@ export const editProduct = z.object({
 	commission: z.coerce
 		.number({ message: 'Commission is required, enter 0 if it is not decided yet' })
 		.nonnegative({ message: 'Price must be a positive number.' }),
-	supplier: z.string().min(1, { message: 'Supplier is required.' }),
+	supplier: z.number('Supplier is required.'),
 	reorderLevel: z.coerce
 		.number()
 		.int({ message: 'Reorder Level can only be full numbers, no decimals.' })
@@ -325,3 +325,13 @@ export const inventoryAdjustmentFormSchema = z.object({
 		.optional() // Now only the receipt can be undefined
 });
 export type InventoryAdjustmentForm = z.infer<typeof inventoryAdjustmentFormSchema>;
+
+export const damagedFormSchema = z.object({
+	damagedBy: z.coerce.string('Employee is required'),
+	quantity: z.coerce.string('Quantity must be greater than 0'),
+
+	reason: z.string().max(255).optional(),
+
+	// Move .optional() inside the field definition
+	deductable: z.boolean('Deductable is required').default(true)
+});

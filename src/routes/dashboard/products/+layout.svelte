@@ -21,6 +21,17 @@
 		variant={page.url.pathname === '/dashboard/products/categories' ? 'default' : 'outline'}
 		><Sheet /> Categories</Button
 	>
+	<Button
+		href="/dashboard/products/suppliers"
+		variant={page.url.pathname === '/dashboard/products/suppliers' ? 'default' : 'outline'}
+		><Sheet /> Suppliers</Button
+	>
+	<Button
+		href="/dashboard/products/suppliers/add-suppliers"
+		variant={page.url.pathname === '/dashboard/products/suppliers/add-suppliers'
+			? 'default'
+			: 'outline'}><Plus /> Add Suppliers</Button
+	>
 	<!-- <DialogComp title="Add New Customer" {content} /> -->
 </div>
 

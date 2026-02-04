@@ -44,7 +44,7 @@
 </script>
 
 <svelte:head>
-	<title>Add New Inventory Item</title>
+	<title>Add New Product Item</title>
 </svelte:head>
 
 {#snippet fe(
@@ -115,7 +115,7 @@
 			)}
 			{@render fe('Price', 'price', 'number', 'Enter the price of item', true, '0')}
 			{@render fe('Commission', 'commission', 'number', 'Enter the commision of item', true, '0')}
-			{@render fe('Supplier', 'supplier', 'text', 'Enter the supplier of the product')}
+			{@render selects('supplier', data?.supplierList)}
 			{@render fe(
 				'Reorder Notify Level',
 				'reorderLevel',

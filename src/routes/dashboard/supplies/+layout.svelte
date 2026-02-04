@@ -3,18 +3,39 @@
 	import Button from '$lib/components/ui/button/button.svelte';
 	// import DialogComp from "$lib/formComponents/DialogComp.svelte";
 	// import AddCustomer from "$lib/forms/AddCustomer.svelte";
-	import { Plus } from '@lucide/svelte';
-	let { data, children } = $props();
+	import { Plus, Sheet } from '@lucide/svelte';
+	let { children } = $props();
 </script>
 
-<div class="mb-8 flex flex-row items-center justify-start gap-2">
-	{#if data?.permList?.some((p) => p.name === 'add:supplies')}
-		<Button
-			href="/dashboard/supplies/add-supplies"
-			variant={page.url.pathname === '/dashboard/supplies/add-supplies' ? 'default' : 'outline'}
-			><Plus /> Add Supplies</Button
-		>
-	{/if}
+<div class="mb-8 flex flex-row flex-wrap items-center justify-start gap-2">
+	<Button
+		href="/dashboard/supplies"
+		variant={page.url.pathname === '/dashboard/supplies' ? 'default' : 'outline'}
+		><Sheet /> All Supplies</Button
+	>
+	<Button
+		href="/dashboard/supplies/add-supplies"
+		variant={page.url.pathname === '/dashboard/supplies/add-supplies' ? 'default' : 'outline'}
+		><Plus /> Add Supplies</Button
+	>
+	<Button
+		href="/dashboard/supplies/suppliers"
+		variant={page.url.pathname === '/dashboard/supplies/suppliers' ? 'default' : 'outline'}
+		><Sheet />Suppliers</Button
+	>
+	<Button
+		href="/dashboard/supplies/suppliers/add-suppliers"
+		variant={page.url.pathname === '/dashboard/supplies/suppliers/add-suppliers'
+			? 'default'
+			: 'outline'}><Sheet />Add Suppliers</Button
+	>
+
+	<Button
+		href="/dashboard/supplies/categories"
+		variant={page.url.pathname === '/dashboard/supplies/categories' ? 'default' : 'outline'}
+		><Sheet />Category</Button
+	>
+
 	<!-- <DialogComp title="Add New Customer" {content} /> -->
 </div>
 

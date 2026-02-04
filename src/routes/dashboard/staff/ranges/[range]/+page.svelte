@@ -25,7 +25,7 @@
 
 	let singleTable = $derived([
 		{ name: 'Name', value: `${data.staffMember?.firstName} ${data.staffMember?.lastName}` },
-		{ name: 'Position', value: data.staffMember.category },
+		{ name: 'Position', value: data.staffMember?.category },
 		{ name: 'Hired On', value: data.staffMember?.hireDate },
 		{ name: 'Added By', value: data.staffMember?.addedBy },
 		{
@@ -54,15 +54,15 @@
 		}
 	});
 
-	$form.staffId = data.staffMember.id;
+	$form.staffId = data?.staffMember?.id;
 
-	$form.firstName = data.staffMember.firstName;
-	$form.lastName = data.staffMember.lastName;
-	$form.position = data.staffMember.categoryId;
-	$form.phone = data.staffMember.phone;
-	$form.email = data.staffMember.email;
-	$form.salary = data.staffMember?.salary;
-	$form.hiredAt = data.staffMember.hireDate;
+	$form.firstName = data?.staffMember?.firstName;
+	$form.lastName = data?.staffMember?.lastName;
+	$form.position = data?.staffMember?.categoryId;
+	$form.phone = data?.staffMember?.phone;
+	$form.email = data?.staffMember?.email;
+	$form.salary = data?.staffMember?.salary;
+	$form.hiredAt = data?.staffMember?.hireDate;
 
 	export const snapshot: Snapshot = { capture, restore };
 

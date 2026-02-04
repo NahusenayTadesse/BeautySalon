@@ -6,12 +6,16 @@ import { Row } from '$lib/components/ui/table';
 
 export const columns = [
 	{
-		accessorKey: 'index',
+		id: 'index',
 		header: '#',
-		cell: (info) => info.row.index + 1,
-		sortable: false
+		cell: (info) => {
+			const rowIndex = info.table.getRowModel().rows.findIndex((row) => row.id === info.row.id);
+			return rowIndex + 1;
+		},
+		enableSorting: false
 	},
 
+	,
 	{
 		accessorKey: 'name',
 		header: ({ column }) =>
@@ -31,6 +35,17 @@ export const columns = [
 	},
 
 	{
+		accessorKey: 'type',
+		header: ({ column }) =>
+			renderComponent(DataTableSort, {
+				name: 'Type',
+				onclick: column.getToggleSortingHandler()
+			}),
+
+		sortable: true
+	},
+
+	{
 		accessorKey: 'quantity',
 		header: ({ column }) =>
 			renderComponent(DataTableSort, {
@@ -39,45 +54,14 @@ export const columns = [
 			}),
 
 		sortable: true,
-		cell: (info) => info.getValue() // always “day”
-	},
-
-	{
-		accessorKey: 'price',
-		header: ({ column }) =>
-			renderComponent(DataTableSort, {
-				name: 'Price',
-				onclick: column.getToggleSortingHandler()
-			}),
-
-		sortable: true,
-		cell: (info) => `${info.getValue()} ETB` // always “day”
-	},
-
-	{
-		accessorKey: 'unitOfMeasure',
-		header: ({ column }) =>
-			renderComponent(DataTableSort, {
-				name: 'Unit of Measurement',
-				onclick: column.getToggleSortingHandler()
-			}),
-
-		sortable: true,
-		cell: (info) => info.getValue() // always “day”
+		cell: (info) => {
+			return info.getValue() + ' ' + info.row.original.unitOfMeasure;
+		} // always “day”
 	},
 
 	{
 		accessorKey: 'description',
 		header: 'Description'
-	},
-
-	{
-		accessorKey: 'supplier',
-		header: ({ column }) =>
-			renderComponent(DataTableSort, {
-				name: 'Supplier',
-				onclick: column.getToggleSortingHandler()
-			})
 	},
 
 	{

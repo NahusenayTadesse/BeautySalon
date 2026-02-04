@@ -5,64 +5,15 @@
     {
       "idx": 0,
       "version": "5",
-      "when": 1765027313306,
-      "tag": "0000_sudden_maria_hill",
+      "when": 1770184335894,
+      "tag": "0000_flawless_rocket_raccoon",
       "breakpoints": true
     },
     {
       "idx": 1,
       "version": "5",
-      "when": 1766432444421,
-      "tag": "0001_lowly_silver_sable",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "5",
-      "when": 1766432742523,
-      "tag": "0002_powerful_onslaught",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "5",
-      "when": 1766681549067,
-      "tag": "0003_complex_mauler",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "5",
-      "when": 1770023209847,
-      "tag": "0004_misty_mojo",
-      "breakpoints": true
-    },
-    {
-      "idx": 5,
-      "version": "5",
-      "when": 1770053905015,
-      "tag": "0005_fine_ultimatum",
-      "breakpoints": true
-    },
-    {
-      "idx": 6,
-      "version": "5",
-      "when": 1770110143492,
-      "tag": "0006_rapid_winter_soldier",
-      "breakpoints": true
-    },
-    {
-      "idx": 7,
-      "version": "5",
-      "when": 1770110266611,
-      "tag": "0007_lethal_vulcan",
-      "breakpoints": true
-    },
-    {
-      "idx": 8,
-      "version": "5",
-      "when": 1770123632449,
-      "tag": "0008_oval_cerebro",
+      "when": 1770187504514,
+      "tag": "0001_furry_union_jack",
       "breakpoints": true
     }
   ]

@@ -42,6 +42,7 @@ export const columns = [
 
 		cell: (info) => info.getValue() + ' ETB'
 	},
+
 	{
 		accessorKey: 'quantity',
 		header: ({ column }) =>
@@ -69,6 +70,15 @@ export const columns = [
 		header: ({ column }) =>
 			renderComponent(DataTableSort, {
 				name: 'Category',
+				onclick: column.getToggleSortingHandler()
+			}),
+		sortable: true
+	},
+	{
+		accessorKey: 'supplier',
+		header: ({ column }) =>
+			renderComponent(DataTableSort, {
+				name: 'Supplier',
 				onclick: column.getToggleSortingHandler()
 			}),
 		sortable: true

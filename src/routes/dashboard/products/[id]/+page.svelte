@@ -21,6 +21,7 @@
 	import SingleView from '$lib/components/SingleView.svelte';
 	import Errors from '$lib/formComponents/Errors.svelte';
 	import Adjustment from '$lib/forms/Adjustment.svelte';
+	import Damaged from '$lib/forms/Damaged.svelte';
 
 	let singleTable = $derived([
 		{ name: 'Name', value: data.product?.name },
@@ -31,7 +32,7 @@
 		{ name: 'Product Description', value: data.product?.description },
 		{ name: 'Product Commission', value: data.product?.commission },
 		{ name: 'Reorder Notification Quantity', value: data.product?.reorderLevel },
-		{ name: 'Product Supplier', value: data.product?.supplier },
+		{ name: 'Product Supplier', value: data?.product?.supplier },
 		{ name: 'Added On', value: data.product?.createdAt },
 		{ name: 'Added By', value: data.product?.createdBy },
 		{
@@ -61,7 +62,7 @@
 		($form.quantity = data.product.quantity),
 		($form.price = data.product.price),
 		($form.reorderLevel = data.product.reorderLevel),
-		($form.supplier = data.product.supplier));
+		($form.supplier = data?.product?.supplierId));
 
 	export const snapshot: Snapshot = { capture, restore };
 
@@ -85,7 +86,7 @@
 </svelte:head>
 
 <SingleView title="Product Details">
-	<div class="mt-4 flex w-full flex-row items-start justify-start gap-2 pl-4">
+	<div class="mt-4 flex w-full flex-row flex-wrap items-start justify-start gap-2 pl-4">
 		{#if data?.permList.some((p) => p.name === 'edit:products')}
 			<Button onclick={() => (edit = !edit)}>
 				{#if !edit}
@@ -100,6 +101,10 @@
 			<Adjustment data={data.adjustForm} name={data.product?.name} />
 			<Button href="/dashboard/products/{page.params.id}/ranges/{getCurrentMonthRange()}">
 				<History /> See Change History
+			</Button>
+			<Damaged data={data.damagedForm} name={data.product?.name} employees={data.employeesList} />
+			<Button href={`/dashboard/products/${page.params.id}/damaged/${getCurrentMonthRange()}`}>
+				<History /> See Damaged History
 			</Button>
 		{/if}
 		{#if data?.permList.some((p) => p.name === 'delete:products')}
@@ -146,7 +151,7 @@
 					'Enter when you want to be notified'
 				)}
 
-				{@render fe('Supplier', 'supplier', 'text', 'Enter the supplier of the product')}
+				{@render selects('supplier', data?.supplierList)}
 				<input hidden name="productId" value={data.product.id} />
 				<Button form="edit" type="submit" class="mt-4">
 					{#if $delayed}

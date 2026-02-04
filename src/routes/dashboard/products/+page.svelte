@@ -1,49 +1,48 @@
-  
-  <script lang='ts'>
-    import { columns } from "./columns";
-  
+<script lang="ts">
+	import { columns } from './columns';
 
-  let { data } = $props();
+	let { data } = $props();
 
-  import DataTable from '$lib/components/Table/data-table.svelte';
+	import DataTable from '$lib/components/Table/data-table.svelte';
 
-	import Loading from "$lib/components/Loading.svelte";
-	import { Frown, Plus } from "@lucide/svelte";
-	import { Button } from "$lib/components/ui/button";
+	import Loading from '$lib/components/Loading.svelte';
+	import { Frown, Plus } from '@lucide/svelte';
+	import { Button } from '$lib/components/ui/button';
+	import FilterMenu from '$lib/components/Table/FilterMenu.svelte';
 
-  
-   
-   
+	let filteredList = $derived(data?.productList);
 </script>
 
 <svelte:head>
-        <title> Products List</title>
+	<title>Products List</title>
 </svelte:head>
-  
 
- {#await data}
-  
-  <Loading  name="Customers"/>
- {:then customerList} 
+{#await data}
+	<Loading name="Customers" />
+{:then customerList}
+	{#if data.productList.length === 0}
+		<div class="flex h-96 w-full flex-col items-center justify-center lg:w-5xl">
+			<p class="justify-self-cente mt-4 flex flex-row gap-4 text-center text-4xl">
+				<Frown class="h-12 w-16  animate-bounce" />
+				Products List is Empty
+			</p>
+			<Button href="/dashboard/products/add-products"><Plus />Add New Products</Button>
+		</div>
+	{:else}
+		<h2 class="my-4 text-2xl">No of Products {data.productList?.length}</h2>
 
-  {#if data.productList.length === 0}
-   <div class="lg:w-5xl w-full h-96 flex flex-col justify-center items-center">
-   <p class="text-center flex flex-row gap-4 mt-4 text-4xl justify-self-cente"><Frown class="animate-bounce w-16  h-12" />
-     Products List is Empty </p>
-     <Button href="/dashboard/products/add-products"><Plus />Add New Products</Button>
+		<div class="mt-8 mb-4 w-[350px] p-0 pt-4 lg:w-full lg:p-0">
+			<FilterMenu
+				bind:filteredList
+				data={data?.productList}
+				filterKeys={['category', 'commission', 'quantity', 'supplier']}
+			/>
 
-     </div>
- {:else}
-     <h2 class="text-2xl my-4">No of Products {data.productList?.length} </h2>
-
- <div class="lg:w-full w-[350px] lg:p-0 p-0 mt-8 mb-4 pt-4">
-
-   <DataTable data={data.productList} {columns} filterBlacklist={['id', 'description', 'name']} />
- </div>
- {/if}
-  {:catch}
-
-    <div class="w-screen h-screen flex flex-col justify-center items-center"> 
-         <h1 class="text-red-500">Unexpected Error: Reload</h1>
-    </div>
-  {/await}
+			<DataTable data={data.productList} {columns} />
+		</div>
+	{/if}
+{:catch}
+	<div class="flex h-screen w-screen flex-col items-center justify-center">
+		<h1 class="text-red-500">Unexpected Error: Reload</h1>
+	</div>
+{/await}
