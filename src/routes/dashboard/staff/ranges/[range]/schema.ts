@@ -186,3 +186,53 @@ export const editContact = z.object({
 });
 
 export type EditContact = z.infer<typeof editContact>;
+
+const RelationShipEnum = z.enum(
+	[
+		'mother',
+		'father',
+		'spouse',
+		'son',
+		'daughter',
+		'grandchild',
+		'grandfather',
+		'grandmother',
+		'uncle',
+		'aunt',
+		'brother',
+		'sister',
+		'other'
+	],
+	'Relationship is required'
+);
+export const editFamily = z.object({
+	id: z.number('Family Member is not Found'),
+	name: z.string('Family member is required').min(1).max(100),
+	gender: z.enum(['male', 'female'], {
+		message: 'Please select a valid gender'
+	}),
+
+	phone: z.string(),
+	email: z.email().optional(),
+	emergencyContact: z.boolean().default(false),
+	otherRelationShip: z.string().optional(),
+	relationShip: RelationShipEnum,
+	status: z.boolean().default(true)
+});
+export type EditFamily = z.infer<typeof editFamily>;
+
+export const addFamily = z.object({
+	name: z.string('Family member is required').min(1).max(100),
+	gender: z.enum(['male', 'female'], {
+		message: 'Please select a valid gender'
+	}),
+
+	phone: z.string(),
+	email: z.email().optional(),
+	emergencyContact: z.boolean().default(false),
+	otherRelationShip: z.string().optional(),
+	relationShip: RelationShipEnum,
+	status: z.boolean().default(true)
+});
+
+export type AddFamily = z.infer<typeof addFamily>;

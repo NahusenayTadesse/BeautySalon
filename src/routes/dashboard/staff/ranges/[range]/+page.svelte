@@ -78,6 +78,8 @@
 	import Terminate from './terminate.svelte';
 	import Reinstate from './reinstate.svelte';
 	import Accounts from './accounts.svelte';
+	import Contacts from './contacts.svelte';
+	import Families from './Families.svelte';
 
 	import { page } from '$app/state';
 </script>
@@ -292,6 +294,15 @@
 		addForm={data?.addAccountForm}
 		paymentMethods={data?.bankList}
 	/>
+</div>
+
+<div class="mt-4">
+	<h4>Family Members</h4>
+	<Families data={data?.family} form={data?.editFamilyForm} addForm={data?.addFamilyForm} />
+</div>
+<div class="mt-4">
+	<h4>Contact Information</h4>
+	<Contacts data={data?.contacts} form={data?.editContactForm} addForm={data?.addContactForm} />
 </div>
 <div class="my-8 w-full lg:w-1/2">
 	<div class="mb-6">

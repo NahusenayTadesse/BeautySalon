@@ -18,7 +18,9 @@ import {
 	tipsService,
 	staffSchedule,
 	employeeTermination,
-	staffAccounts
+	staffAccounts,
+	staffContacts,
+	staffFamilies
 } from '$lib/server/db/schema';
 import { eq, and, sql } from 'drizzle-orm';
 import type { Actions, PageServerLoad } from './$types';
@@ -29,7 +31,18 @@ import { saveUploadedFile } from '$lib/server/upload';
 import { paymentMethods } from '$lib/server/fastData';
 
 import { currentMonthFilter } from '$lib/global.svelte';
-import { addSchedule, editSchedule, terminate, reinstate, addAccount, editAccount } from './schema';
+import {
+	addSchedule,
+	editSchedule,
+	terminate,
+	reinstate,
+	addAccount,
+	editAccount,
+	addContact,
+	editContact,
+	addFamily,
+	editFamily
+} from './schema';
 
 export const load: PageServerLoad = async ({ params }) => {
 	const { range } = params;
@@ -478,6 +491,171 @@ export const actions: Actions = {
 				type: 'error',
 				text: `Updated Account failed: ${err instanceof Error ? err.message : 'Unknown error'}`
 			});
+		}
+	},
+	addContact: async ({ request, locals, params }) => {
+		const { range } = params;
+
+		const id = range.split('-').pop();
+		const form = await superValidate(request, zod4(addContact));
+
+		if (!form.valid) {
+			return message(form, { type: 'error', text: `Error: check the form` });
+		}
+
+		const { contactDetail, contactType, status } = form.data;
+
+		try {
+			await db.transaction(async (tx) => {
+				await tx.insert(staffContacts).values({
+					staffId: Number(id),
+					contactDetail,
+					contactType,
+					isActive: status,
+					createdBy: locals?.user?.id
+				});
+
+				return message(form, {
+					type: 'success',
+					text: 'Contact Details Created Successfully!'
+				});
+			});
+		} catch (err) {
+			return message(form, {
+				type: 'error',
+				text: `Creating Contact failed: ${err instanceof Error ? err.message : 'Unknown error'}`
+			});
+		}
+	},
+	editContact: async ({ request, locals }) => {
+		const form = await superValidate(request, zod4(editContact));
+
+		if (!form.valid) {
+			return message(form, { type: 'error', text: `Error: check the form` });
+		}
+
+		const { id, contactDetail, contactType, status } = form.data;
+
+		try {
+			await db.transaction(async (tx) => {
+				await tx
+					.update(staffContacts)
+					.set({
+						contactDetail,
+						contactType,
+						isActive: status,
+						updatedBy: locals?.user?.id
+					})
+					.where(eq(staffContacts.id, id));
+
+				return message(form, {
+					type: 'success',
+					text: 'Contact Details Updated Successfully!'
+				});
+			});
+		} catch (err) {
+			return message(form, {
+				type: 'error',
+				text: `Updated Contact failed: ${err instanceof Error ? err.message : 'Unknown error'}`
+			});
+		}
+	},
+	addFamily: async ({ request, locals, params }) => {
+		const { range } = params;
+
+		const id = range.split('-').pop();
+		const form = await superValidate(request, zod4(addFamily));
+		if (!form.valid) {
+			// Stay on the same page and set a flash message
+			return message(form, { type: 'error', text: `Error: check the form` });
+		}
+		const {
+			name,
+			gender,
+			phone,
+			email,
+			relationShip,
+			otherRelationShip,
+			emergencyContact,
+			status
+		} = form.data;
+
+		try {
+			// Wrap the database operations in a transaction
+			await db.transaction(async (tx) => {
+				// 1. Update the employee identity
+
+				await tx.insert(staffFamilies).values({
+					name,
+					staffId: Number(id),
+					gender,
+					phone,
+					email,
+					relationship: relationShip,
+					otherRelationship: otherRelationShip,
+					emergencyContact,
+					isActive: status,
+					createdBy: locals?.user?.id
+				});
+			});
+			return message(form, {
+				type: 'success',
+				text: 'Family Member Details Added Successfully!'
+			});
+		} catch (err) {
+			console.error('Error added Family Member details:', err);
+			return message(form, { type: 'error', text: `Unexpected Error: ${err?.message}` });
+		}
+	},
+	editFamily: async ({ request, locals }) => {
+		const form = await superValidate(request, zod4(editFamily));
+		if (!form.valid) {
+			// Stay on the same page and set a flash message
+			return message(form, { type: 'error', text: `Error: check the form` });
+		}
+		const {
+			id,
+			name,
+			gender,
+			phone,
+			email,
+			relationShip,
+			otherRelationShip,
+			emergencyContact,
+			status
+		} = form.data;
+
+		try {
+			if (!id) {
+				return message(form, { type: 'error', text: `Employee Not Found` });
+			}
+
+			// Wrap the database operations in a transaction
+			await db.transaction(async (tx) => {
+				// 1. Update the employee identity
+
+				await tx
+					.update(staffFamilies)
+					.set({
+						name,
+						gender,
+						phone,
+						email,
+						relationship: relationShip,
+						otherRelationship: otherRelationShip,
+						emergencyContact,
+						isActive: status,
+						updatedBy: locals?.user?.id
+					})
+					.where(eq(staffFamilies.id, Number(id)));
+			});
+			return message(form, {
+				type: 'success',
+				text: 'Family Member Details Updated Successfully!'
+			});
+		} catch (err) {
+			console.error('Error updating Family Member details:', err);
+			return message(form, { type: 'error', text: `Unexpected Error: ${err?.message}` });
 		}
 	}
 };

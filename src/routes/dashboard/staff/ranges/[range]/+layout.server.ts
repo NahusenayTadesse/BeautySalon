@@ -14,12 +14,25 @@ import {
 	transactionProducts,
 	transactionServices,
 	user,
-	paymentMethods
+	paymentMethods,
+	staffContacts,
+	staffFamilies
 } from '$lib/server/db/schema';
 import { eq, and, sql, desc } from 'drizzle-orm';
 import type { LayoutServerLoad } from './$types';
 import { tipsService } from '$lib/server/db/schema';
-import { addAccount, addSchedule, editAccount, editSchedule, reinstate, terminate } from './schema';
+import {
+	addAccount,
+	addContact,
+	addSchedule,
+	editAccount,
+	editSchedule,
+	reinstate,
+	terminate,
+	editContact,
+	addFamily,
+	editFamily
+} from './schema';
 
 export const load: LayoutServerLoad = async ({ params, locals }) => {
 	const { range } = params;
@@ -33,6 +46,10 @@ export const load: LayoutServerLoad = async ({ params, locals }) => {
 	const reinstated = await superValidate(zod4(reinstate));
 	const addAccountForm = await superValidate(zod4(addAccount));
 	const editAccountForm = await superValidate(zod4(editAccount));
+	const addContactForm = await superValidate(zod4(addContact));
+	const editContactForm = await superValidate(zod4(editContact));
+	const addFamilyForm = await superValidate(zod4(addFamily));
+	const editFamilyForm = await superValidate(zod4(editFamily));
 
 	const staffMember = await db
 		.select({
@@ -121,6 +138,39 @@ export const load: LayoutServerLoad = async ({ params, locals }) => {
 		.leftJoin(paymentMethods, eq(staffAccounts.paymentMethodId, paymentMethods.id))
 		.where(eq(staffAccounts.staffId, Number(id)))
 		.orderBy(desc(staffAccounts.isActive));
+
+	let contacts = await db
+		.select({
+			id: staffContacts.id,
+			contactType: staffContacts.contactType,
+			contactDetail: staffContacts.contactDetail,
+			status: staffContacts.isActive,
+			addedBy: user.name,
+			addedById: user.id
+		})
+		.from(staffContacts)
+		.leftJoin(user, eq(staffContacts.createdBy, user.id))
+		.where(eq(staffContacts.staffId, Number(id)));
+
+	let family = await db
+		.select({
+			id: staffFamilies.id,
+			name: staffFamilies.name,
+			gender: staffFamilies.gender,
+			phone: staffFamilies.phone,
+			email: staffFamilies.email,
+			relationShip: staffFamilies.relationship, // Note: watch for casing (relationShip vs relationship)
+			otherRelationShip: staffFamilies.otherRelationship,
+			emergencyContact: staffFamilies.emergencyContact,
+			status: staffFamilies.isActive,
+			addedBy: user.name,
+			addedById: user.id
+		})
+		.from(staffFamilies)
+		.leftJoin(user, eq(staffFamilies.createdBy, user.id))
+		.where(eq(staffFamilies.staffId, Number(id)))
+		.orderBy(desc(staffFamilies.emergencyContact));
+
 	return {
 		staffMember,
 		form,
@@ -134,6 +184,12 @@ export const load: LayoutServerLoad = async ({ params, locals }) => {
 		reinstated,
 		addAccountForm,
 		editAccountForm,
-		accounts
+		accounts,
+		addContactForm,
+		editContactForm,
+		contacts,
+		addFamilyForm,
+		editFamilyForm,
+		family
 	};
 };

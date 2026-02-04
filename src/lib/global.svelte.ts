@@ -156,3 +156,16 @@ export type Item = {
 	value: string | number;
 	name: string;
 };
+
+export const formatEthiopianDate = (date: Date | undefined): string => {
+	if (!date) return '';
+
+	const formatter = new Intl.DateTimeFormat('am-ET', {
+		year: 'numeric',
+		month: 'long',
+		day: 'numeric',
+		calendar: 'ethiopic'
+	});
+
+	return formatter.format(date);
+};
