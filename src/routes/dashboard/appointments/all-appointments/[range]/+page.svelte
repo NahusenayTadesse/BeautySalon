@@ -1,6 +1,6 @@
 <script lang='ts'>
     import { columns } from "./columns";
-  
+
 
   let { data } = $props();
   import { buttonVariants } from "$lib/components/ui/button/index.js";
@@ -17,7 +17,7 @@
     import Button from "$lib/components/ui/button/button.svelte";
 	import { CalendarDays, Frown } from '@lucide/svelte';
 	import DateMonth from "$lib/formComponents/DateMonth.svelte";
-
+	import FilterMenu from '$lib/components/Table/FilterMenu.svelte';
   let todayDate = today(getLocalTimeZone());
   let value = $state<CalendarDate | undefined>(todayDate);
   let urlDate = $state(page.url.pathname.split('/').pop() || today(getLocalTimeZone()).toString());
@@ -25,19 +25,20 @@
 
   let placeholder = $derived(todayDate);
   let open = $state(false);
+  	let filteredList = $derived(data.appointmentsList);
 
-   
+
 </script>
 
 <svelte:head>
         <title> Appointments on {placeholder}</title>
 </svelte:head>
  <div>
-  
+
    <DateMonth start={data?.start} end={data?.end} link="/dashboard/appointments/all-appointments"  />
 
 
-  
+
   </div>
   <!-- <div class="lg:w-full w-4/5 mt-8">
  {#if data.appointmentsList.length === 0}
@@ -55,6 +56,8 @@
      <h2 class="text-2xl my-4">No of appointments {data.appointmentsList?.length} </h2>
 
  <div class="lg:w-full w-[350px] lg:p-0 p-2 mt-8 mb-4 pt-4">
-   <DataTable data={data.appointmentsList} {columns} filterBlacklist={['id','extraSettings', 'phone', 'bookedById', 'date']} />
+   	<FilterMenu bind:filteredList data={data.appointmentsList} filterKeys={['status', 'booker', 'customerName', 'paidAmount']} />
+
+   <DataTable data={filteredList} {columns} fileName="Appointment List for {data.start} to {data.end}" />
  </div>
  {/if}

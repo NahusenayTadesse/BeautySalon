@@ -9,7 +9,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 			id: staff.id,
 			name: sql<string>`TRIM(CONCAT(${staff.firstName}, ' ', COALESCE(${staff.lastName}, '')))`,
 
-			category: staffTypes.name,
+			position: staffTypes.name,
 			phone: staff.phone,
 			email: staff.email,
 			status: staff.employmentStatus,

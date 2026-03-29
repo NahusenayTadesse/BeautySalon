@@ -1,30 +1,26 @@
-  
+
   <script lang='ts'>
     import { columns } from "./columns";
-  
+
 
   let { data } = $props();
 
   import DataTable from '$lib/components/Table/data-table.svelte';
 
-	import Loading from "$lib/components/Loading.svelte";
 	import { Frown, Plus } from "@lucide/svelte";
 	import { Button } from "$lib/components/ui/button";
+    import FilterMenu from '$lib/components/Table/FilterMenu.svelte';
 
-  
-   
-   
+  let filteredList = $derived(data.serviceList);
+
 </script>
 
 <svelte:head>
         <title> Services List</title>
 </svelte:head>
-  
 
- {#await data}
-  
-  <Loading  name="Customers"/>
- {:then customerList} 
+
+
 
   {#if data.serviceList.length === 0}
    <div class="w-5xl h-96 flex flex-col justify-center items-center">
@@ -34,16 +30,11 @@
 
      </div>
  {:else}
-     <h2 class="text-2xl my-4">No of Services {data.serviceList?.length} </h2>
+     <h2 class="text-2xl my-4">No of Services: {data.serviceList?.length} </h2>
 
  <div class="lg:w-[90%] w-[350px] lg:p-0 p-2 mt-8 mb-4 pt-4">
+<FilterMenu bind:filteredList data={data?.serviceList} filterKeys={['category', 'price', 'commission', 'saleCount'  ]}  />
 
-   <DataTable data={data.serviceList} {columns} filterBlacklist={['id','name', 'description']} />
+   <DataTable data={filteredList} {columns} fileName="Services List" />
  </div>
  {/if}
-  {:catch}
-
-    <div class="w-screen h-screen flex flex-col justify-center items-center"> 
-         <h1 class="text-red-500">Unexpected Error: Reload</h1>
-    </div>
-  {/await}

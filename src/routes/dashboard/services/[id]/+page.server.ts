@@ -14,6 +14,7 @@ import { eq, and, sql } from 'drizzle-orm';
 import type { Actions, PageServerLoad } from './$types';
 import { fail } from 'sveltekit-superforms';
 import { setFlash } from 'sveltekit-flash-message/server';
+import { error } from '@sveltejs/kit';
 
 export const load: PageServerLoad = async ({ params, locals }) => {
 	const { id } = params;
@@ -31,14 +32,14 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 			duration: services.durationMinutes,
 			saleCount: sql<number>`SUM(${transactionServices.price})`,
 			createdBy: user.name,
-			createdAt: sql<string>`DATE_FORMAT(${services.createdAt}, '%Y-%m-%d')`
+			createdAt: services.createdAt
 		})
 		.from(services)
 		.leftJoin(serviceCategories, eq(serviceCategories.id, services.categoryId))
 		.leftJoin(transactionServices, eq(services.id, transactionServices.serviceId))
 		.leftJoin(transactions, eq(transactionServices.transactionId, transactions.id))
 		.leftJoin(user, eq(services.createdBy, user.id))
-		.where(and(eq(services.branchId, locals?.user?.branch), eq(services.id, id)))
+		.where(eq(services.id, Number(id)))
 		.groupBy(
 			services.id,
 			services.name,
@@ -57,6 +58,10 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 			description: serviceCategories.description
 		})
 		.from(serviceCategories);
+
+	if (!service) {
+		error(404, 'Service with this id not found');
+	}
 
 	return {
 		service,

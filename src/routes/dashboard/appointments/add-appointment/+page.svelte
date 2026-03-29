@@ -11,6 +11,7 @@
 	import { appointmentSchema, existingCustomerAppointment } from '$lib/ZodSchema';
 	import { superForm } from 'sveltekit-superforms/client';
 	import SelectComp from '$lib/formComponents/SelectComp.svelte';
+	import InputComp from '$lib/formComponents/InputComp.svelte';
 	import { fly } from 'svelte/transition';
 	import { buttonVariants } from '$lib/components/ui/button/index.js';
 	import * as Popover from '$lib/components/ui/popover/index.js';
@@ -293,41 +294,14 @@
 				getTodayDate()
 			)} -->
 
-					<input type="hidden" bind:value={$existingForm.appointmentDate} name="appointmentDate" />
+					<InputComp
+						form={existingForm}
+						errors={existingErrors}
+						label="Appointment Date"
+						name="appointmentDate"
+						type="date"
+					/>
 
-					<Popover.Root>
-						<Popover.Trigger
-							class={cn(
-								buttonVariants({
-									variant: 'outline',
-									class: 'justify-start '
-								}),
-								!date && 'text-muted-foreground'
-							)}
-						>
-							<CalendarIcon />
-							{$existingForm.appointmentDate ? date.toString() : 'Select Appointment Date'}
-						</Popover.Trigger>
-
-						<Popover.Content class="flex flex-wrap gap-2 border-t p-0 px-2 !pt-4">
-							{#each [{ label: 'Today', value: 0 }, { label: 'Tomorrow', value: 1 }, { label: 'In a week', value: 7 }] as preset (preset.value)}
-								<Button
-									variant="outline"
-									size="sm"
-									class="flex-1"
-									onclick={() => {
-										date = todayDate?.add({ days: preset.value });
-									}}
-								>
-									{preset.label}
-								</Button>
-							{/each}
-							<Calendar type="single" minValue={todayDate} bind:value={date} />
-						</Popover.Content>
-					</Popover.Root>
-					{#if $existingErrors.appointmentDate}
-						<span class="text-red-500">{$existingErrors.appointmentDate}</span>
-					{/if}
 					{@render fe2(
 						'Appointment Time',
 						'appointmentTime',
@@ -406,42 +380,8 @@
 				true,
 				getTodayDate()
 			)} -->
+					<InputComp {form} {errors} label="Appointment Date" name="appointmentDate" type="date" />
 
-					<input type="hidden" bind:value={$form.appointmentDate} name="appointmentDate" />
-
-					<Popover.Root>
-						<Popover.Trigger
-							class={cn(
-								buttonVariants({
-									variant: 'outline',
-									class: 'justify-start '
-								}),
-								!date && 'text-muted-foreground'
-							)}
-						>
-							<CalendarIcon />
-							{$form.appointmentDate ? date2.toString() : 'Select Appointment Date'}
-						</Popover.Trigger>
-
-						<Popover.Content class="flex flex-wrap gap-2 border-t p-0 px-2 !pt-4">
-							{#each [{ label: 'Today', value: 0 }, { label: 'Tomorrow', value: 1 }, { label: 'In a week', value: 7 }] as preset (preset.value)}
-								<Button
-									variant="outline"
-									size="sm"
-									class="flex-1"
-									onclick={() => {
-										date2 = todayDate?.add({ days: preset.value });
-									}}
-								>
-									{preset.label}
-								</Button>
-							{/each}
-							<Calendar type="single" minValue={todayDate} bind:value={date2} />
-						</Popover.Content>
-					</Popover.Root>
-					{#if $errors.appointmentDate}
-						<span class="text-red-500">{$errors.appointmentDate}</span>
-					{/if}
 					{@render fe(
 						'Appointment Time',
 						'appointmentTime',

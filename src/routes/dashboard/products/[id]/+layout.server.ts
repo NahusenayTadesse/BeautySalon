@@ -54,7 +54,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 			supplierId: productSuppliers.id,
 			saleCount: sql<number>`SUM(${transactionProducts.quantity})`,
 			createdBy: user.name,
-			createdAt: sql<string>`DATE_FORMAT(${products.createdAt}, '%Y-%m-%d')`,
+			createdAt: products.createdAt,
 			paidAmount: sql<number>`COALESCE(SUM(${transactions.amount}), 0)`
 		})
 		.from(products)

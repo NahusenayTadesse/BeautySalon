@@ -19,6 +19,8 @@
 	import { minutesToHoursString } from '$lib/global.svelte';
 	import Delete from '$lib/forms/Delete.svelte';
 	import SingleView from '$lib/components/SingleView.svelte';
+	import { formatEthiopianDate } from '$lib/global.svelte';
+
 
 	let singleTable = $derived([
 		{ name: 'Name', value: data.service?.name },
@@ -27,7 +29,7 @@
 		{ name: 'Service Description', value: data.service?.description },
 		{ name: 'Service Commission', value: data.service?.commission },
 		{ name: 'Service Duration', value: minutesToHoursString(data.service?.duration) },
-		{ name: 'Started On', value: data.service?.createdAt },
+		{ name: 'Started On', value: formatEthiopianDate(new Date(data.service?.createdAt)) },
 		{ name: 'Added By', value: data.service?.createdBy },
 		{
 			name: 'Sales in Money',

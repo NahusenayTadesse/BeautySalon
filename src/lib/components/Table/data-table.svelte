@@ -6,6 +6,7 @@
 		type ColumnFilter,
 		ColumnFiltering,
 		getSortedRowModel,
+		type RowSelectionState,
 		getFilteredRowModel,
 		type PaginationState,
 		type SortingState,
@@ -13,6 +14,7 @@
 		type VisibilityState,
 		type GlobalFilterColumn
 	} from '@tanstack/table-core';
+	import Pdf from './pdf.svelte';
 
 	import { Input } from '$lib/components/ui/input/index.js';
 
@@ -23,7 +25,9 @@
 		data,
 		columns,
 		search = true,
-		fileName = 'Spotless File'
+		class: className = '',
+		fileName = 'File',
+		selected = $bindable()
 	}: DataTableProps<TData, TValue> = $props();
 	// let filterSchema = $derived(
 	//   discoverFilterSchema(data).filter(meta => !filterBlacklist.includes(meta.key))
@@ -32,7 +36,7 @@
 	import { createSvelteTable, FlexRender } from '$lib/components/ui/data-table/index.js';
 	import * as Table from '$lib/components/ui/table/index.js';
 	import { Button } from '$lib/components/ui/button/index.js';
-	import { ChevronDownIcon, Frown } from '@lucide/svelte';
+	import { ChevronDownIcon, Frown, ListOrdered } from '@lucide/svelte';
 	import * as Resizable from '$lib/components/ui/resizable/index.js';
 	import ResizableHandle from '../ui/resizable/resizable-handle.svelte';
 	import { isMobile } from '$lib/global.svelte';
@@ -44,14 +48,16 @@
 		columns: ColumnDef<TData, TValue>[];
 		data: TData[];
 		search?: boolean;
-		filterBlacklist?: string[];
+		class?: string;
 		fileName?: string;
+		selected?: TData[];
 	};
 
 	let sorting = $state<SortingState>([]);
 	let globalFilter = $state<GlobalFilterColumn>();
 
 	let columnVisibility = $state<VisibilityState>({});
+	let rowSelection = $state<RowSelectionState>({});
 
 	const table = createSvelteTable({
 		get data() {
@@ -74,6 +80,9 @@
 
 			get globalFilter() {
 				return globalFilter;
+			},
+			get rowSelection() {
+				return rowSelection;
 			}
 		},
 		onPaginationChange: (updater) => {
@@ -104,6 +113,13 @@
 				columnVisibility = updater;
 			}
 		},
+		onRowSelectionChange: (updater) => {
+			if (typeof updater === 'function') {
+				rowSelection = updater(rowSelection);
+			} else {
+				rowSelection = updater;
+			}
+		},
 
 		getCoreRowModel: getCoreRowModel(),
 		getPaginationRowModel: getPaginationRowModel(),
@@ -128,91 +144,111 @@
 
 		return breakpoints;
 	}
+	if (selected) {
+		$effect(() => {
+			const selectedRows = table.getSelectedRowModel().rows;
+
+			// Extract the original data from those rows
+			selected = selectedRows.map((row) => row.original);
+		});
+	}
 </script>
 
 <!-- min-h-0 is required for flex-child overflow -->
+<!-- <div class="flex-1 text-sm text-muted-foreground">
+	{table.getFilteredSelectedRowModel().rows.length} of{''}
+	{table.getFilteredRowModel().rows.length} row(s) selected.
 
+	{#each table.getFilteredRowModel().rows as selected}
+		{selected?.id}
+	{/each}
+</div> -->
 <Resizable.PaneGroup
 	direction="horizontal"
-	class="mt-4 flex w-full min-w-full gap-0 rounded-lg lg:w-fit lg:max-w-[95%] lg:min-w-2xl "
+	class="lg:max-w-8xl mt-4 flex w-full min-w-full gap-0 rounded-lg lg:w-fit lg:min-w-2xl {className}"
 >
 	<Resizable.Pane
 		defaultSize={isMobile()
 			? 100
 			: table.getAllColumns().filter((col) => col.getIsVisible()).length * 20}
-		class="bg-white p-2 dark:bg-gray-950"
+		class="bg-background"
 	>
 		<ScrollArea orientation="vertical" class="w-full rounded-lg p-2">
 			<div class="flex min-w-full flex-col gap-2 rounded-md border-0 px-1">
 				{#if search}
-					<div>
-						<!-- <Filters
-      schema={filterSchema}
-      filters={columnFilters}
-      onChange={f => (columnFilters = f)}
-    /> -->
-					</div>
-					<div
-						class="sticky top-0 z-20 flex flex-row items-center gap-4 bg-background
-					 {isMobile() ? 'flex-wrap' : ''}"
+					<ScrollArea
+						orientation="horizontal"
+						class="flex w-full flex-row rounded-md border whitespace-nowrap"
 					>
-						<Input
-							type="search"
-							placeholder="Search Table..."
-							class="w-2/3"
-							bind:value={globalFilter}
-							oninput={() => table.setGlobalFilter(globalFilter)}
-						/>
-						<DropdownMenu.Root>
-							<DropdownMenu.Trigger>
-								{#snippet child({ props })}
-									<Button {...props} variant="outline" class="ml-auto"
-										>Columns <ChevronDownIcon class="size-5" />
-									</Button>
-								{/snippet}
-							</DropdownMenu.Trigger>
-							<DropdownMenu.Content align="end">
-								{#each table.getAllColumns().filter((col) => col.getCanHide()) as column (column)}
-									<DropdownMenu.CheckboxItem
-										class="capitalize"
-										bind:checked={() => column.getIsVisible(), (v) => column.toggleVisibility(!!v)}
-									>
-										{column.id.replace(/([a-z])([A-Z])/g, '$1 $2')}
-									</DropdownMenu.CheckboxItem>
-								{/each}
-							</DropdownMenu.Content>
-						</DropdownMenu.Root>
+						<div
+							class="flex w-full space-x-4 p-4
+						"
+						>
+							<Input
+								type="search"
+								placeholder="Search Table..."
+								class="w-64 lg:w-full"
+								bind:value={globalFilter}
+								oninput={() => table.setGlobalFilter(globalFilter)}
+							/>
+							<DropdownMenu.Root>
+								<DropdownMenu.Trigger>
+									{#snippet child({ props })}
+										<Button {...props} variant="outline" class="ml-auto"
+											>Columns <ChevronDownIcon class="size-5" />
+										</Button>
+									{/snippet}
+								</DropdownMenu.Trigger>
+								<DropdownMenu.Content align="end">
+									{#each table.getAllColumns().filter((col) => col.getCanHide()) as column (column)}
+										<DropdownMenu.CheckboxItem
+											class="capitalize"
+											bind:checked={
+												() => column.getIsVisible(), (v) => column.toggleVisibility(!!v)
+											}
+										>
+											{column.id.replace(/([a-z])([A-Z])/g, '$1 $2')}
+										</DropdownMenu.CheckboxItem>
+									{/each}
+								</DropdownMenu.Content>
+							</DropdownMenu.Root>
 
-						<DropdownMenu.Root>
-							<DropdownMenu.Trigger>
-								{#snippet child({ props })}
-									<Button {...props} variant="outline" class="ml-auto"
-										>Pages <ChevronDownIcon class="size-5" />
-									</Button>
-								{/snippet}
-							</DropdownMenu.Trigger>
-							<DropdownMenu.Content align="end">
-								{#each getTableBreakpoints(data) as column (column)}
-									<DropdownMenu.Item
-										class="capitalize"
-										onclick={() => {
-											table.setPageSize(column);
-										}}
-									>
-										{#snippet child({ props })}
-											<Button
-												{...props}
-												variant={pagination.pageSize === column ? 'default' : 'ghost'}
-												size="icon"
-												class="w-full"
-												>{column}
-											</Button>
-										{/snippet}
-									</DropdownMenu.Item>
-								{/each}
-							</DropdownMenu.Content>
-						</DropdownMenu.Root>
-					</div>
+							<DropdownMenu.Root>
+								<DropdownMenu.Trigger>
+									{#snippet child({ props })}
+										<Button {...props} variant="outline" class="ml-auto"
+											>Pages <ChevronDownIcon class="size-5" />
+										</Button>
+									{/snippet}
+								</DropdownMenu.Trigger>
+								<DropdownMenu.Content align="center" class="flex w-4! flex-col">
+									{#each getTableBreakpoints(data) as column (column)}
+										<DropdownMenu.Item
+											class="w-4! capitalize"
+											onclick={() => {
+												table.setPageSize(column);
+											}}
+										>
+											{#snippet child({ props })}
+												<Button
+													{...props}
+													variant={pagination.pageSize === column ? 'default' : 'ghost'}
+													size="icon"
+													class="max-w-16"
+													>{column}
+												</Button>
+											{/snippet}
+										</DropdownMenu.Item>
+									{/each}
+								</DropdownMenu.Content>
+							</DropdownMenu.Root>
+							<Pdf {fileName} tableId="#{uniqueTableId}" {data} />
+							<Button variant="outline">
+								<ListOrdered />
+								{table.getFilteredRowModel().rows.length} Results
+							</Button>
+						</div>
+					</ScrollArea>
 				{/if}
 				<div class="max-h-96 rounded-md border">
 					<Table.Root id={uniqueTableId} class="relative max-h-96">
@@ -224,7 +260,7 @@
 											colspan={header.colSpan}
 											class="{index === 1
 												? 'sticky left-0 z-10 bg-background'
-												: ''} p-0 pr-2 text-start"
+												: ''} p-0 px-2 text-start"
 										>
 											{#if !header.isPlaceholder}
 												<FlexRender

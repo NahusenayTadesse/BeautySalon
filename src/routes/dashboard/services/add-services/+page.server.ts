@@ -41,7 +41,7 @@ export const load: PageServerLoad = async ({ parent }) => {
 };
 
 export const actions: Actions = {
-	addProduct: async ({ request, cookies }) => {
+	addProduct: async ({ request, cookies, locals }) => {
 		const form = await superValidate(request, zod4(serviceSchema));
 
 		if (!form.valid) {
@@ -54,16 +54,21 @@ export const actions: Actions = {
 		const { serviceName, category, description, durationMinutes, price } = form.data;
 
 		try {
-			await db
-				.insert(services)
-				.values({ serviceName, categoryId: category, description, durationMinutes, price });
-			setFlash({ type: 'success', message: 'Service added successfully.' }, cookies);
+			await db.insert(services).values({
+				name: serviceName,
+				categoryId: category,
+				description,
+				durationMinutes,
+				price,
+				createdBy: locals?.user?.id
+			});
+			// setFlash({ type: 'success', message: 'Service added successfully.' }, cookies);
 			return message(form, { type: 'success', text: 'Service added successfully' });
 		} catch (err) {
-			setFlash(
-				{ type: 'error', message: 'An error occurred while adding the service. ' + err?.message },
-				cookies
-			);
+			// setFlash(
+			// 	{ type: 'error', message: 'An error occurred while adding the service. ' + err?.message },
+			// 	cookies
+			// );
 			return message(form, {
 				type: 'error',
 				text: 'An error occurred while adding the service. ' + err?.message

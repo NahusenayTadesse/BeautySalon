@@ -3,6 +3,7 @@ import DataTableLinks from '$lib/components/Table/data-table-links.svelte';
 import DataTableActions from './data-table-actions.svelte'; // Assuming a new actions component
 import DataTableSort from '$lib/components/Table/data-table-sort.svelte';
 import Statuses from '$lib/components/Table/statuses.svelte';
+import { formatEthiopianDate } from '$lib/global.svelte';
 
 // NOTE: You must ensure your backend query includes 'name' and 'position'
 // from the staff table to display them here!
@@ -56,7 +57,12 @@ export const columns = [
 		accessorKey: 'payPeriod',
 		header: 'Pay Period',
 		// Show 'N/A' if the payroll entry is null
-		cell: (info) => info.getValue() || '— N/A —',
+		cell: ({ row }) =>
+			row.original.payStart || row.original.payEnd
+				? formatEthiopianDate(new Date(row.original.payStart)) +
+					' - ' +
+					formatEthiopianDate(new Date(row.original.payEnd))
+				: 'Not Paid Yet',
 		sortable: false // Usually not sortable
 	},
 
@@ -165,7 +171,7 @@ export const columns = [
 	{
 		accessorKey: 'paymentDate',
 		header: 'Payment Date',
-		cell: (info) => info.getValue() || 'N/A',
+		cell: (info) => formatEthiopianDate(new Date(info.getValue())) || 'N/A',
 		sortable: true
 	},
 

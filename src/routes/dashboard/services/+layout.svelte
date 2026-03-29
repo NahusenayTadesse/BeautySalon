@@ -7,6 +7,11 @@
 </script>
 
 <div class="mb-8 flex flex-row items-center justify-start gap-2">
+   	<Button
+		href="/dashboard/services"
+		variant={page.url.pathname === '/dashboard/services' ? 'default' : 'outline'}
+		><Sheet /> Services</Button
+	>
 	{#if data?.permList?.some((p) => p.name === 'add:services')}
 		<Button
 			href="/dashboard/services/add-services"
@@ -19,6 +24,7 @@
 		variant={page.url.pathname === '/dashboard/services/categories' ? 'default' : 'outline'}
 		><Sheet /> Categories</Button
 	>
+
 </div>
 
 {@render children?.()}

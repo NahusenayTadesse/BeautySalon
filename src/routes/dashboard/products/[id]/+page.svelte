@@ -15,7 +15,7 @@
 	import { ArrowLeft, Pencil, Save, History } from '@lucide/svelte';
 	import SelectComp from '$lib/formComponents/SelectComp.svelte';
 	import type { Snapshot } from '@sveltejs/kit';
-	import { getCurrentMonthRange } from '$lib/global.svelte';
+	import { formatEthiopianDate, getCurrentMonthRange } from '$lib/global.svelte';
 	import { Textarea } from '$lib/components/ui/textarea/index.js';
 	import Delete from '$lib/forms/Delete.svelte';
 	import SingleView from '$lib/components/SingleView.svelte';
@@ -33,7 +33,7 @@
 		{ name: 'Product Commission', value: data.product?.commission },
 		{ name: 'Reorder Notification Quantity', value: data.product?.reorderLevel },
 		{ name: 'Product Supplier', value: data?.product?.supplier },
-		{ name: 'Added On', value: data.product?.createdAt },
+		{ name: 'Added On', value: formatEthiopianDate(data.product?.createdAt) },
 		{ name: 'Added By', value: data.product?.createdBy },
 		{
 			name: 'Number of Sells',

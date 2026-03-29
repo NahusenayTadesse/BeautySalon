@@ -1,142 +1,136 @@
- 
- 	import { renderComponent } from '$lib/components/ui/data-table/index.js';
+import { renderComponent } from '$lib/components/ui/data-table/index.js';
 import DataTableLinks from '$lib/components/Table/data-table-links.svelte';
 import Copy from '$lib/Copy.svelte';
-    import DataTableActions from './data-table-actions.svelte';
+import DataTableActions from './data-table-actions.svelte';
 import DataTableSort from '$lib/components/Table/data-table-sort.svelte';
+import { formatEthiopianDate } from '$lib/global.svelte';
 
+export const columns = [
+	{
+		accessorKey: 'index',
+		header: '#',
+		cell: (info) => info.row.index + 1,
+		sortable: false
+	},
 
+	{
+		accessorKey: 'date',
+		header: ({ column }) =>
+			renderComponent(DataTableSort, {
+				name: 'Date',
+				onclick: column.getToggleSortingHandler()
+			}),
+		sortable: true,
+		cell: ({ row }) => formatEthiopianDate(new Date(row.original.date))
+	},
 
-  
+	{
+		accessorKey: 'bookedAppointments',
+		header: ({ column }) =>
+			renderComponent(DataTableSort, {
+				name: 'Booked Appointments',
+				onclick: column.getToggleSortingHandler()
+			}),
+		sortable: true,
+		cell: ({ row }) => row.original.bookedAppointments
+	},
 
- export const columns = [
+	{
+		accessorKey: 'productsSold',
+		header: ({ column }) =>
+			renderComponent(DataTableSort, {
+				name: 'Products Sold',
+				onclick: column.getToggleSortingHandler()
+			}),
+		sortable: true,
+		cell: ({ row }) => row.original.productsSold
+	},
 
-    {
-      accessorKey: 'index',
-      header: '#',
-      cell: info => info.row.index+1,
-      sortable: false
-    },
-   
-     {
-    accessorKey: 'date',
-    header: ({ column }) =>
-      renderComponent(DataTableSort, {
-        name: 'Date',
-        onclick: column.getToggleSortingHandler(),
-      }),
-    sortable: true,
-    cell: ({ row }) => row.original.date,
-  },
+	{
+		accessorKey: 'serviceRendered',
+		header: ({ column }) =>
+			renderComponent(DataTableSort, {
+				name: 'Service Rendered',
+				onclick: column.getToggleSortingHandler()
+			}),
+		sortable: true,
+		cell: ({ row }) => row.original.serviceRendered
+	},
 
-  {
-    accessorKey: 'bookedAppointments',
-    header: ({ column }) =>
-      renderComponent(DataTableSort, {
-        name: 'Booked Appointments',
-        onclick: column.getToggleSortingHandler(),
-      }),
-    sortable: true,
-    cell: ({ row }) => row.original.bookedAppointments,
-  },
+	{
+		accessorKey: 'dailyExpenses',
+		header: ({ column }) =>
+			renderComponent(DataTableSort, {
+				name: 'Daily Expenses',
+				onclick: column.getToggleSortingHandler()
+			}),
+		sortable: true,
+		cell: ({ row }) => row.original.dailyExpenses
+	},
 
-  {
-    accessorKey: 'productsSold',
-    header: ({ column }) =>
-      renderComponent(DataTableSort, {
-        name: 'Products Sold',
-        onclick: column.getToggleSortingHandler(),
-      }),
-    sortable: true,
-    cell: ({ row }) => row.original.productsSold,
-  },
+	{
+		accessorKey: 'dailyIncome',
+		header: ({ column }) =>
+			renderComponent(DataTableSort, {
+				name: 'Daily Income',
+				onclick: column.getToggleSortingHandler()
+			}),
+		sortable: true,
+		cell: ({ row }) => row.original.dailyIncome
+	},
 
-  {
-    accessorKey: 'serviceRendered',
-    header: ({ column }) =>
-      renderComponent(DataTableSort, {
-        name: 'Service Rendered',
-        onclick: column.getToggleSortingHandler(),
-      }),
-    sortable: true,
-    cell: ({ row }) => row.original.serviceRendered,
-  },
+	{
+		accessorKey: 'transactions',
+		header: ({ column }) =>
+			renderComponent(DataTableSort, {
+				name: 'Transactions',
+				onclick: column.getToggleSortingHandler()
+			}),
+		sortable: true,
+		cell: ({ row }) => row.original.transactions
+	},
 
-  {
-    accessorKey: 'dailyExpenses',
-    header: ({ column }) =>
-      renderComponent(DataTableSort, {
-        name: 'Daily Expenses',
-        onclick: column.getToggleSortingHandler(),
-      }),
-    sortable: true,
-    cell: ({ row }) => row.original.dailyExpenses,
-  },
+	{
+		accessorKey: 'staffPaid',
+		header: ({ column }) =>
+			renderComponent(DataTableSort, {
+				name: 'Staff Paid',
+				onclick: column.getToggleSortingHandler()
+			}),
+		sortable: true,
+		cell: ({ row }) => row.original.staffPaid
+	},
 
-  {
-    accessorKey: 'dailyIncome',
-    header: ({ column }) =>
-      renderComponent(DataTableSort, {
-        name: 'Daily Income',
-        onclick: column.getToggleSortingHandler(),
-      }),
-    sortable: true,
-    cell: ({ row }) => row.original.dailyIncome,
-  },
+	{
+		accessorKey: 'totalStaffPaid',
+		header: ({ column }) =>
+			renderComponent(DataTableSort, {
+				name: 'Total Staff Paid',
+				onclick: column.getToggleSortingHandler()
+			}),
+		sortable: true,
+		cell: ({ row }) => row.original.totalStaffPaid
+	},
 
-  {
-    accessorKey: 'transactions',
-    header: ({ column }) =>
-      renderComponent(DataTableSort, {
-        name: 'Transactions',
-        onclick: column.getToggleSortingHandler(),
-      }),
-    sortable: true,
-    cell: ({ row }) => row.original.transactions,
-  },
+	{
+		accessorKey: 'staffHired',
+		header: ({ column }) =>
+			renderComponent(DataTableSort, {
+				name: 'Staff Hired',
+				onclick: column.getToggleSortingHandler()
+			}),
+		sortable: true,
+		cell: ({ row }) => row.original.staffHired
+	},
 
-  {
-    accessorKey: 'staffPaid',
-    header: ({ column }) =>
-      renderComponent(DataTableSort, {
-        name: 'Staff Paid',
-        onclick: column.getToggleSortingHandler(),
-      }),
-    sortable: true,
-    cell: ({ row }) => row.original.staffPaid,
-  },
-
-  {
-    accessorKey: 'totalStaffPaid',
-    header: ({ column }) =>
-      renderComponent(DataTableSort, {
-        name: 'Total Staff Paid',
-        onclick: column.getToggleSortingHandler(),
-      }),
-    sortable: true,
-    cell: ({ row }) => row.original.totalStaffPaid,
-  },
-
-  {
-    accessorKey: 'staffHired',
-    header: ({ column }) =>
-      renderComponent(DataTableSort, {
-        name: 'Staff Hired',
-        onclick: column.getToggleSortingHandler(),
-      }),
-    sortable: true,
-    cell: ({ row }) => row.original.staffHired,
-  },
-
-  {
-    accessorKey: 'staffFired',
-    header: ({ column }) =>
-      renderComponent(DataTableSort, {
-        name: 'Staff Fired',
-        onclick: column.getToggleSortingHandler(),
-      }),
-    sortable: true,
-    cell: ({ row }) => row.original.staffFired,
-
-    },
-  ];
+	{
+		accessorKey: 'staffFired',
+		header: ({ column }) =>
+			renderComponent(DataTableSort, {
+				name: 'Staff Fired',
+				onclick: column.getToggleSortingHandler()
+			}),
+		sortable: true,
+		cell: ({ row }) => row.original.staffFired
+	}
+];

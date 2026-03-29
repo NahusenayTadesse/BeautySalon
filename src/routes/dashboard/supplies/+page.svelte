@@ -5,7 +5,6 @@
 
 	import DataTable from '$lib/components/Table/data-table.svelte';
 
-	import Loading from '$lib/components/Loading.svelte';
 	import { Frown, Plus } from '@lucide/svelte';
 	import { Button } from '$lib/components/ui/button';
 	import FilterMenu from '$lib/components/Table/FilterMenu.svelte';
@@ -17,9 +16,6 @@
 	<title>Supplies List</title>
 </svelte:head>
 
-{#await data}
-	<Loading name="Customers" />
-{:then customerList}
 	{#if data.supplyList.length === 0}
 		<div class="flex h-96 w-5xl flex-col items-center justify-center gap-4">
 			<p class="mt-4 flex flex-row gap-4 justify-self-center text-center text-4xl">
@@ -35,11 +31,6 @@
 
    <DataTable data={data.supplyList} {columns} />
  </div> -->
-		<FilterMenu data={data?.supplyList} filterKeys={['type']} bind:filteredList />
-		<DataTable data={filteredList} {columns} fileName="Supplies" />
+		<FilterMenu data={data?.supplyList} filterKeys={['type', 'quantity', 'unitOfMeasure' ]} bind:filteredList />
+		<DataTable data={filteredList} {columns} fileName="Supplies List"  />
 	{/if}
-{:catch}
-	<div class="flex h-screen w-screen flex-col items-center justify-center">
-		<h1 class="text-red-500">Unexpected Error: Reload</h1>
-	</div>
-{/await}

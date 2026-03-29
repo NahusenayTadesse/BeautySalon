@@ -81,9 +81,7 @@
 	<title>Salaries List for {data.month} {data.year}</title>
 </svelte:head>
 
-{#await data}
-	<Loading name="Salaries" />
-{:then payrollData}
+
 	{#if data?.payrollData.length === 0}
 		<div class="flex h-96 w-5xl flex-col items-center justify-center">
 			<p class="justify-self-cente mt-4 flex flex-row gap-4 text-center text-4xl">
@@ -129,14 +127,8 @@
 		<Filter
 			data={data?.payrollData}
 			bind:filteredList
-			filterKeys={['bank', 'department', 'status']}
+			filterKeys={['bank', 'basicSalary', 'department', 'status']}
 		/>
-		<div class="mt-4 w-full lg:w-7xl">
-			<DataTable data={filteredList} {columns} />
-		</div>
+			<DataTable data={filteredList} {columns}  class="max-w-6xl!"  fileName="Salaries List for {data.month} {data.year}" />
+
 	{/if}
-{:catch}
-	<div class="flex h-screen w-screen flex-col items-center justify-center">
-		<h1 class="text-red-500">Unexpected Error: Reload</h1>
-	</div>
-{/await}

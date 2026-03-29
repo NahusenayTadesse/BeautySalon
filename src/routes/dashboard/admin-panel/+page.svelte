@@ -4,7 +4,7 @@
 	let users = [
 		{ name: 'Users', href: '/dashboard/users' },
 		{ name: 'Roles', href: '/dashboard/admin-panel/roles' },
-		{ name: 'Services', href: '/dashboard/admin-panel/add-services' }
+		{ name: 'Payment Methods', href: '/dashboard/admin-panel/payment-methods' }
 	];
 </script>
 

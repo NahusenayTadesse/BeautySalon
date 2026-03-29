@@ -8,15 +8,18 @@
 	import Loading from '$lib/components/Loading.svelte';
 	import { Frown } from '@lucide/svelte';
 	import DateMonth from '$lib/formComponents/DateMonth.svelte';
+	import FilterMenu from '$lib/components/Table/FilterMenu.svelte';
+
+	let filteredList = $derived(data.allTransactions);
+
+
 </script>
 
 <svelte:head>
 	<title>Transactions</title>
 </svelte:head>
 
-{#await data}
-	<Loading name="Transactions" />
-{:then reports}
+
 	{#if data.allTransactions.length === 0}
 		<div class="flex h-96 w-5xl flex-col items-center justify-center">
 			<p class="justify-self-cente mt-4 flex flex-row gap-4 text-center text-4xl">
@@ -31,17 +34,8 @@
 			<h2 class="my-4 text-2xl">No of Transactions {data.allTransactions?.length}</h2>
 
 			<DateMonth start={data?.start} end={data?.end} link="/dashboard/transactions/ranges" />
+          <FilterMenu bind:filteredList data={data.allTransactions} filterKeys={['amount', 'paymentMethods', 'noOfProducts', 'noOfServices', 'noOfSupplies', 'recievedBy']} />
 
-			<!-- <div class="lg:w-[1250px] w-[350px] lg:p-0 p-2 mt-8 mb-4 pt-4 px-2">
-
-
-   <DataTable data={data.allTransactions} {columns}  />
- </div> -->
-			<DataTable data={data.allTransactions} {columns} />
+			<DataTable data={filteredList} {columns} class="max-w-6xl!" fileName="Transactions List from {data.start} - {data.end}" />
 		</div>
 	{/if}
-{:catch}
-	<div class="flex h-screen w-screen flex-col items-center justify-center">
-		<h1 class="text-red-500">Unexpected Error: Reload</h1>
-	</div>
-{/await}

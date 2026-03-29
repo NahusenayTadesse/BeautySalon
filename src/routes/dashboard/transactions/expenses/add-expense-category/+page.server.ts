@@ -1,68 +1,86 @@
-import { setError, superValidate } from 'sveltekit-superforms';
+import { setError, superValidate, message, fail } from 'sveltekit-superforms';
 import { zod4 } from 'sveltekit-superforms/adapters';
-import { setFlash } from 'sveltekit-flash-message/server';
+import { eq } from 'drizzle-orm';
 
-import { fail } from '@sveltejs/kit';
-
-import { positionSchema as schema } from '$lib/ZodSchema';
+import { add, edit } from './schema';
 import { db } from '$lib/server/db';
-import { expensesType } from '$lib/server/db/schema/';
-import type { PageServerLoad, Actions } from './$types.js';
+import { expensesType as department } from '$lib/server/db/schema/';
+import type { Actions } from './$types';
+import type { PageServerLoad } from './$types.js';
 
 export const load: PageServerLoad = async () => {
-	const form = await superValidate(zod4(schema));
+	const form = await superValidate(zod4(add));
+	const editForm = await superValidate(zod4(edit));
 
-	const allCategories = await db
+	const allData = await db
 		.select({
-			value: expensesType.id,
-			name: expensesType.name,
-			description: expensesType.description
+			id: department.id,
+			name: department.name,
+			description: department.description,
+			status: department.isActive
 		})
-		.from(expensesType);
+		.from(department);
 
 	return {
 		form,
-		allCategories
+		editForm,
+		allData
 	};
 };
 
 export const actions: Actions = {
-	addExpensesType: async ({ request, cookies }) => {
-		const form = await superValidate(request, zod4(schema));
+	add: async ({ request }) => {
+		const form = await superValidate(request, zod4(add));
 
 		if (!form.valid) {
-			setFlash({ type: 'error', message: 'Please check the form for Errors' }, cookies);
-
-			return fail(400, {
-				form
-			});
+			return message(form, { type: 'error', text: 'Please check the form for Errors' });
 		}
 
-		const { name, description } = form.data;
+		const { name, description, status } = form.data;
 
 		try {
-			await db.insert(expensesType).values({ name, description });
+			await db.insert(department).values({
+				name,
+				description,
+				isActive: status
+			});
 
-			setFlash({ type: 'success', message: `Expense Category created successfully!` }, cookies);
-			return message(form, { type: 'success', text: 'Expense Category created successfully!' });
+			return message(form, { type: 'success', text: 'Service Category Successfully Added' });
 		} catch (err: any) {
-			setFlash(
-				{
-					type: 'error',
-					message:
-						err.code === 'ER_DUP_ENTRY'
-							? 'Positions Name is already taken. Please choose another one.'
-							: err.message
-				},
-				cookies
-			);
+			if (err.code === 'ER_DUP_ENTRY') setError(form, 'name', 'Service Category already exists.');
+			return message(form, {
+				type: 'error',
+				text:
+					err.code === 'ER_DUP_ENTRY'
+						? 'Educational Level already exists. Please choose another one.'
+						: err.message
+			});
+		}
+	},
+	edit: async ({ request }) => {
+		const form = await superValidate(request, zod4(edit));
+		if (!form.valid) {
+			return fail(400, { form });
+		}
 
-			if (err.code === 'ER_DUP_ENTRY') {
-				return setError(form, 'name', 'Category Name already exists.');
-				return message(form, { type: 'error', text: 'Category Name already exists.' });
-			} else {
-				return message(form, { type: 'error', text: err.message });
-			}
+		const { id, name, description, status } = form.data;
+
+		try {
+			await db
+				.update(department)
+				.set({ name, description, isActive: status })
+				.where(eq(department.id, Number(id)));
+			return message(form, { type: 'success', text: 'Expense Category Successfully Updated' });
+		} catch (err: any) {
+			if (err.code === 'ER_DUP_ENTRY') return;
+			setError(form, 'name', 'Educational Level name already exists.');
+			return message(form, {
+				type: 'error',
+				text:
+					err.code === 'ER_DUP_ENTRY'
+						? 'Expense Category name is already taken. Please choose another one.'
+						: err.message
+			});
 		}
 	}
-} satisfies Actions;
+};

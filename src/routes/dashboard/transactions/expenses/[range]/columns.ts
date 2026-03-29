@@ -2,6 +2,7 @@ import { renderComponent } from '$lib/components/ui/data-table/index.js';
 import DataTableLinks from '$lib/components/Table/data-table-links.svelte';
 import DataTableActions from './data-table-actions.svelte';
 import DataTableSort from '$lib/components/Table/data-table-sort.svelte';
+import { formatEthiopianDate } from '$lib/global.svelte';
 
 export const columns = [
 	{
@@ -21,7 +22,7 @@ export const columns = [
 		cell: ({ row }) => {
 			return renderComponent(DataTableLinks, {
 				id: row.original.id,
-				name: row.original.date,
+				name: formatEthiopianDate(new Date(row.original.date)),
 				link: '/dashboard/transactions/expenses/single'
 			});
 		}

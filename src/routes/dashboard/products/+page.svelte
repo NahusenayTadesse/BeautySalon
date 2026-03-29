@@ -35,10 +35,10 @@
 			<FilterMenu
 				bind:filteredList
 				data={data?.productList}
-				filterKeys={['category', 'commission', 'quantity', 'supplier']}
+				filterKeys={['category', 'commission', 'saleCount', 'quantity', 'supplier']}
 			/>
 
-			<DataTable data={data.productList} {columns} />
+			<DataTable data={data.productList} {columns} fileName="Products List" />
 		</div>
 	{/if}
 {:catch}

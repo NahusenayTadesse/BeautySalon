@@ -1,5 +1,6 @@
 import { renderComponent } from '$lib/components/ui/data-table/index.js';
 import DataTableSort from '$lib/components/Table/data-table-sort.svelte';
+import DataTableLinks from '$lib/components/Table/data-table-links.svelte';
 import { formatETB } from '$lib/global.svelte';
 
 export const columns = [
@@ -111,5 +112,25 @@ export const columns = [
 			}),
 		sortable: true,
 		cell: (info) => info.getValue() || 'Account Not Found'
+	},
+
+	{
+		accessorKey: 'reciept',
+		header: ({ column }) =>
+			renderComponent(DataTableSort, {
+				name: 'Payment Receipt',
+				onclick: column.getToggleSortingHandler()
+			}),
+		sortable: true,
+		// Using DataTableLinks to view staff profile
+		cell: ({ row }) => {
+			// Use staffId for the link, but ensure staffName is selected in the query
+			return renderComponent(DataTableLinks, {
+				id: row.original.recieptLink,
+				name: 'View Receipt Link',
+				link: '/dashboard/files',
+				target: '_blank'
+			});
+		}
 	}
 ];

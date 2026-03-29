@@ -20,7 +20,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 			phone: customers.phone,
 			status: appointments.status,
 			bookedById: user.id,
-			bookedBy: user.name,
+			booker: user.name,
 			date: sql<string>`DATE_FORMAT(${appointments.appointmentDate}, '%Y-%m-%d')`,
 			time: sql<string>`DATE_FORMAT(${appointments.appointmentTime}, '%H:%i')`,
 			notes: appointments.notes,
@@ -52,6 +52,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 		.orderBy(asc(appointments.appointmentTime));
 
 	return {
-		appointmentsList
+		appointmentsList,
+		date
 	};
 };

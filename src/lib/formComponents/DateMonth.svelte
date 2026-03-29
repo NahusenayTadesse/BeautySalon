@@ -9,6 +9,7 @@
 	import { buttonVariants } from '$lib/components/ui/button/index.js';
 	import Button from '$lib/components/ui/button/button.svelte';
 	import { isMobile } from '$lib/global.svelte';
+	import { goto } from '$app/navigation';
 
 	let {
 		id = null,
@@ -39,10 +40,11 @@
 
 		return isNaN(d.getTime()) // make sure we really have a valid date
 			? 'Pick a date'
-			: d.toLocaleDateString('en-US', {
+			: d.toLocaleDateString('am-ET', {
 					year: 'numeric',
 					month: 'short',
-					day: 'numeric'
+					day: 'numeric',
+					calendar: 'ethiopic'
 				});
 	}
 
@@ -54,7 +56,7 @@
 		class={cn(
 			buttonVariants({
 				variant: 'outline',
-				class: 'w-[280px] justify-start text-start font-normal'
+				class: 'w-70 justify-start text-start font-normal'
 			}),
 			!value && 'text-muted-foreground'
 		)}
@@ -67,6 +69,14 @@
 			: 'Pick a date'}
 	</Popover.Trigger>
 	<Popover.Content bind:ref={contentRef} class="w-full p-0">
+		<div class="text-sm text-muted-foreground">
+			Ethiopian Date: <span class="font-semibold text-foreground"
+				>{formatDate(value.start ?? 'Pick a start date') +
+					' - ' +
+					formatDate(value.end ?? 'Pick an end date')}</span
+			>
+		</div>
+
 		<RangeCalendar
 			bind:value
 			class="relative w-auto rounded-lg border pb-16 shadow-sm"
@@ -75,11 +85,14 @@
 		<Button
 			disabled={!value.start || !value.end}
 			class="absolute right-2 bottom-2"
-			href={id === null
-				? `${link}/${value.start}-${value.end}`
-				: `${link}/ranges/${value.start}-${value.end}-${id}`}
 			onclick={() => {
 				open = false;
+
+				goto(
+					id === null
+						? `${link}/${value.start}-${value.end}`
+						: `${link}/ranges/${value.start}-${value.end}-${id}`
+				);
 			}}
 		>
 			<SlidersHorizontal /> Filter
