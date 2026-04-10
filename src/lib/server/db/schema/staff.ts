@@ -32,12 +32,13 @@ export const staff = mysqlTable(
 		id: int('id').primaryKey().autoincrement(),
 		firstName: varchar('first_name', { length: 50 }).notNull(),
 		lastName: varchar('last_name', { length: 50 }).notNull(),
-		email: varchar('email', { length: 255 }).unique().notNull(),
+		grandFatherName: varchar('grand_father_name', { length: 50 }),
+		email: varchar('email', { length: 255 }),
 		phone: varchar('phone', { length: 20 }),
 		type: int('type_id')
 			.notNull()
 			.references(() => staffTypes.id),
-		hireDate: timestamp('hire_date').notNull(),
+		hireDate: timestamp('hire_date'),
 		govtId: varchar('govt_id', { length: 255 }),
 		contract: varchar('contract', { length: 255 }),
 		terminationDate: datetime('termination_date'),

@@ -6,7 +6,7 @@
 	import { Plus } from '@lucide/svelte';
 	import { Button } from '$lib/components/ui/button/index.js';
 	import { zod4Client } from 'sveltekit-superforms/adapters';
-	import { staffSchema } from '$lib/zodschemas/appointmentSchema';
+	import { staffSchema } from './schema';
 	import { superForm } from 'sveltekit-superforms/client';
 	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';
 	import SelectComp from '$lib/formComponents/SelectComp.svelte';
@@ -14,7 +14,7 @@
 	import InputComp from '$lib/formComponents/InputComp.svelte';
 
 	let { data } = $props();
-	const { form, errors, enhance, message, delayed, capture, restore } = superForm(data.form, {
+	const { form, errors, enhance, message, delayed, capture, restore, allErrors } = superForm(data.form, {
 		taintedMessage: () => {
 			return new Promise((resolve) => {
 				resolve(window.confirm('Do you want to leave?\nChanges you made may not be saved.'));
@@ -26,6 +26,7 @@
 
 	export const snapshot: Snapshot = { capture, restore };
 	import { toast } from 'svelte-sonner';
+	import Errors from '$lib/formComponents/Errors.svelte';
 	$effect(() => {
 		if ($message) {
 			if ($message.type === 'error') {
@@ -78,7 +79,7 @@
 	<div class="flex w-full flex-col justify-start gap-2">
 		<Label for={name} class="capitalize">{name.replace(/([a-z])([A-Z])/g, '$1 $2')}:</Label>
 
-		<SelectComp {name} bind:value={$form[name]} {items} />
+		<SelectComp {name} bind:value={$form[name]} {items} required />
 		{#if $errors[name]}<span class="text-red-500">{$errors[name]}</span>{/if}
 	</div>
 {/snippet}
@@ -96,17 +97,22 @@
 			method="POST"
 			enctype="multipart/form-data"
 		>
-			<div class="flex flex-row gap-2">
-				{@render fe('First Name', 'firstName', 'text', "Enter Staff's First Name", true)}
-				{@render fe('Last Name', 'lastName', 'text', "Enter Staff's last Name", true)}
-			</div>
+		          <Errors allErrors = {$allErrors} />
 
-			{@render selects('position', data?.allPositions)}
+				{@render fe('First Name', 'firstName', 'text', "Enter Staff's First Name", true)}
+
+				{@render fe('Father Name', 'lastName', 'text', "Enter Staff's last Name", true)}
+				{@render fe('Grand Father Name', 'grandFatherName', 'text', "Enter Staff's Grand Father Name", false)}
+
+
+			<!-- {@render selects('position', data?.allPositions)} -->
+
+			<InputComp label="Position" {form} {errors} name="position" type="select" placeholder="Enter Position" required items={data?.allPositions} />
 
 			{@render fe('Phone', 'phone', 'tel', 'Enter Phone Number', true)}
 
-			{@render fe('Email', 'email', 'email', 'Enter Email', true)}
-			{@render fe('Salary', 'salary', 'number', 'Enter Salary', true)}
+			{@render fe('Email', 'email', 'email', 'Enter Email', false)}
+			{@render fe('Salary', 'salary', 'number', 'Enter Salary', false)}
 			<!-- <div class="flex w-full flex-col justify-start gap-2">
 				<Label for="hiredAt" class="capitalize">Hired On</Label>
 

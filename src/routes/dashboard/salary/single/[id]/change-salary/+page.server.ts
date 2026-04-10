@@ -1,4 +1,4 @@
-import { superValidate } from 'sveltekit-superforms';
+import { superValidate, message } from 'sveltekit-superforms';
 import { zod4 } from 'sveltekit-superforms/adapters';
 import { salaryChangeSchema as schema } from './schema';
 
@@ -40,24 +40,34 @@ export const actions: Actions = {
 			//   setFlash({ type: 'error', message: 'No active salary found' }, cookies);
 			//   return fail(400, { form });
 			// }
+			//
 
-			await db
-				.update(salaries)
-				.set({
-					endDate: new Date(),
-					updatedBy: locals.user?.id
+			const existingSalary = await db
+				.select({
+					id: salaries.id
 				})
-				.where(and(eq(salaries.id, isNull(salaries.endDate)), eq(salaries.staffId, id)));
+				.from(salaries)
+				.where(eq(salaries.staffId, Number(id)))
+				.limit(1)
+				.then((res) => res[0]);
+
+			if (existingSalary) {
+				await db
+					.update(salaries)
+					.set({
+						endDate: new Date(),
+						updatedBy: locals.user?.id
+					})
+					.where(and(eq(salaries.id, isNull(salaries.endDate)), eq(salaries.staffId, Number(id))));
+			}
 
 			await db.insert(salaries).values({
 				staffId: Number(id),
 				amount,
 				startDate: new Date(),
-				createdBy: locals.user?.id,
-				branchId: locals.user?.branch
+				createdBy: locals.user?.id
 			});
 
-			// Stay on the same page and set a flash message
 			setFlash({ type: 'success', message: 'New Salary Successuflly Changed' }, cookies);
 			return message(form, { type: 'success', text: 'New Salary Successuflly Changed' });
 		} catch (err) {

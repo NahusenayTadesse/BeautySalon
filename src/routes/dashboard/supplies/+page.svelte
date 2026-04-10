@@ -17,7 +17,7 @@
 </svelte:head>
 
 	{#if data.supplyList.length === 0}
-		<div class="flex h-96 w-5xl flex-col items-center justify-center gap-4">
+	<div class="flex lg:h-96 h-auto w-full lg:w-5xl flex-col items-center justify-center">
 			<p class="mt-4 flex flex-row gap-4 justify-self-center text-center text-4xl">
 				<Frown class="h-12 w-16  animate-bounce" />
 				No supplies added Yet

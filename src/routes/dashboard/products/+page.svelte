@@ -17,11 +17,8 @@
 	<title>Products List</title>
 </svelte:head>
 
-{#await data}
-	<Loading name="Customers" />
-{:then customerList}
 	{#if data.productList.length === 0}
-		<div class="flex h-96 w-full flex-col items-center justify-center lg:w-5xl">
+	<div class="flex lg:h-96 h-auto w-full lg:w-5xl flex-col items-center justify-center">
 			<p class="justify-self-cente mt-4 flex flex-row gap-4 text-center text-4xl">
 				<Frown class="h-12 w-16  animate-bounce" />
 				Products List is Empty
@@ -38,11 +35,6 @@
 				filterKeys={['category', 'commission', 'saleCount', 'quantity', 'supplier']}
 			/>
 
-			<DataTable data={data.productList} {columns} fileName="Products List" />
+			<DataTable data={data.productList} {columns} fileName="Products List"   />
 		</div>
 	{/if}
-{:catch}
-	<div class="flex h-screen w-screen flex-col items-center justify-center">
-		<h1 class="text-red-500">Unexpected Error: Reload</h1>
-	</div>
-{/await}

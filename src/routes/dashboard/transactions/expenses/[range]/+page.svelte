@@ -18,7 +18,7 @@
 	<Loading name="Expenses" />
 {:then reports}
 	{#if data.allTransactions.length === 0}
-		<div class="flex h-96 w-5xl flex-col items-center justify-center">
+	<div class="flex lg:h-96 h-auto w-full lg:w-5xl flex-col items-center justify-center">
 			<p class="justify-self-cente mt-4 flex flex-row gap-4 text-center text-4xl">
 				<Frown class="h-12 w-16  animate-bounce" />
 

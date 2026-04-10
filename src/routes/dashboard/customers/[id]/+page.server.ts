@@ -143,10 +143,6 @@ export const actions: Actions = {
 			await db.delete(customers).where(eq(customers.id, id));
 
 			setFlash({ type: 'success', message: 'Customer Deleted Successfully!' }, cookies);
-			return message(form, {
-				type: 'success',
-				text: 'Customer Deleted Successfully!'
-			});
 		} catch (err) {
 			console.error('Error deleting customer:', err);
 			setFlash({ type: 'error', message: `Unexpected Error: ${err?.message}` }, cookies);

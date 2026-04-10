@@ -2,7 +2,7 @@ import { superValidate, message } from 'sveltekit-superforms';
 import { zod4 } from 'sveltekit-superforms/adapters';
 import { fail } from '@sveltejs/kit';
 
-import { staffSchema } from '$lib/zodschemas/appointmentSchema';
+import { staffSchema } from './schema';
 import { db } from '$lib/server/db';
 import { staffTypes as positions, salaries, staff } from '$lib/server/db/schema/';
 import type { Actions } from './$types';
@@ -48,20 +48,6 @@ export const load: PageServerLoad = async ({ parent }) => {
 	};
 };
 
-// import fs from 'node:fs';
-// import path from 'node:path';
-// import { generateUserId } from '$lib/global.svelte';
-// import { Readable } from 'node:stream';
-// import { pipeline } from 'node:stream/promises';
-// import { env } from '$env/dynamic/private';
-// import { setFlash } from 'sveltekit-flash-message/server';
-// const FILES_DIR: string = env.FILES_DIR ?? '.tempFiles';
-
-// if (!fs.existsSync(FILES_DIR)) {
-// 	fs.mkdirSync(FILES_DIR, { recursive: true });
-// }
-//
-
 import { saveUploadedFile } from '$lib/server/upload';
 
 export const actions: Actions = {
@@ -69,48 +55,63 @@ export const actions: Actions = {
 		console.log('connected');
 		const form = await superValidate(request, zod4(staffSchema));
 
+		console.log(form);
+
 		if (!form.valid) {
-			return fail(400, {
-				form
-			});
+			return message(
+				form,
+				{ type: 'error', text: 'Please check the form for errors' },
+				{ status: 400 }
+			);
 		}
 
-		const { firstName, lastName, email, phone, position, salary, hiredAt, contract, govId } =
-			form.data;
+		const {
+			firstName,
+			lastName,
+			grandFatherName,
+			email,
+			phone,
+			position,
+			salary,
+			hiredAt,
+			contract,
+			govId
+		} = form.data;
 
 		try {
-			const imageName = await saveUploadedFile(govId);
+			const imageName = govId ? await saveUploadedFile(govId) : null;
 
-			const contractName = await saveUploadedFile(contract);
+			const contractName = contract ? await saveUploadedFile(contract) : null;
 
 			const [staffMember] = await db
 				.insert(staff)
 				.values({
 					firstName,
 					lastName,
+					grandFatherName,
 					email,
 					phone,
 					govtId: imageName,
 					contract: contractName,
 					type: position,
-					hireDate: new Date(hiredAt),
-					createdBy: locals.user?.id,
-					branchId: locals.user?.branch
+					hireDate: hiredAt ? new Date(hiredAt) : null,
+					createdBy: locals.user?.id
 				})
 				.$returningId();
-
-			await db.insert(salaries).values({
-				amount: salary,
-				staffId: staffMember.id,
-				createdBy: locals.user?.id,
-				branchId: locals.user?.branch
-			});
+			if (salary) {
+				await db.insert(salaries).values({
+					amount: salary,
+					staffId: staffMember.id,
+					createdBy: locals.user?.id
+				});
+			}
 
 			delete form.data.govId;
 			delete form.data.contract;
 			return message(form, { type: 'success', text: 'Staff Successfully Added' });
 		} catch (err) {
-			return message(form, { type: 'error', text: `Error: ${err.message}` });
+			console.error(err);
+			return message(form, { type: 'error', text: `Error: ${err.message}` }, { status: 500 });
 		}
 	}
 };

@@ -88,7 +88,7 @@
 				{/if}
 			</Button>
 		{/if}
-		{#if data?.permList?.some((p) => p.name === 'delete:services')}
+		{#if data?.permList?.some((p) => p.name === 'delete:services' && data?.service.saleCount === null || data?.service.saleCount === undefined)}
 			<Delete redirect="/dashboard/services" />
 		{/if}
 	</div>

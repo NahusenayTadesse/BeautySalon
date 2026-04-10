@@ -2,7 +2,7 @@
 	import { Input } from '$lib/components/ui/input/index.js';
 	import { Label } from '$lib/components/ui/label/index.js';
 	import { zod4Client } from 'sveltekit-superforms/adapters';
-	import { editStaff } from '$lib/zodschemas/appointmentSchema';
+	import { editStaff } from './schema.js';
 
 	let { data } = $props();
 
@@ -11,8 +11,10 @@
 	import { fileProxy, superForm } from 'sveltekit-superforms/client';
 
 	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';
-	import { ArrowLeft, Pencil, Plus, Save, Trash } from '@lucide/svelte';
+	import { ArrowLeft, Eye, Pencil, Plus, Save, Trash } from '@lucide/svelte';
 	import SelectComp from '$lib/formComponents/SelectComp.svelte';
+	import InputComp from '$lib/formComponents/InputComp.svelte';
+
 	import type { Snapshot } from '@sveltejs/kit';
 
 	import DatePicker2 from '$lib/formComponents/DatePicker2.svelte';
@@ -24,7 +26,7 @@
 	import SingleView from '$lib/components/SingleView.svelte';
 
 	let singleTable = $derived([
-		{ name: 'Name', value: `${data.staffMember?.firstName} ${data.staffMember?.lastName}` },
+		{ name: 'Name', value: `${data.staffMember?.firstName} ${data.staffMember?.lastName} ${data.staffMember?.grandFatherName}` },
 		{ name: 'Position', value: data.staffMember?.category },
 		{ name: 'Hired On', value: data.staffMember?.hireDate },
 		{ name: 'Added By', value: data.staffMember?.addedBy },
@@ -58,10 +60,10 @@
 
 	$form.firstName = data?.staffMember?.firstName;
 	$form.lastName = data?.staffMember?.lastName;
+	$form.grandFatherName = data?.staffMember?.grandFatherName;
 	$form.position = data?.staffMember?.categoryId;
 	$form.phone = data?.staffMember?.phone;
 	$form.email = data?.staffMember?.email;
-	$form.salary = data?.staffMember?.salary;
 	$form.hiredAt = data?.staffMember?.hireDate;
 
 	export const snapshot: Snapshot = { capture, restore };
@@ -92,8 +94,8 @@
 	>
 </svelte:head>
 
-<SingleView title="Staff Details">
-	<div class="mt-4 flex w-full flex-row items-start justify-start gap-2 pl-4">
+<SingleView title="Staff Details" class="lg:w-full!" >
+	<div class="mt-4 flex w-full flex-row flex-wrap items-start justify-start gap-2 pl-4">
 		<Button onclick={() => (edit = !edit)}>
 			{#if !edit}
 				<Pencil class="h-4 w-4" />
@@ -118,7 +120,14 @@
 		<Button href="/dashboard/staff/ranges/{page.params.range}/guarantor">Guarantor</Button>
 	</div>
 	{#if edit === false}
-		<div class="w-full p-4"><SingleTable {singleTable} /></div>
+		<div class="w-full p-4"><SingleTable {singleTable} />
+			{#if data?.staffMember?.govId}
+				<Button href="/dashboard/files/{data?.staffMember?.govId}" target="_blank"> <Eye /> View Government Id</Button>
+			{/if}
+			{#if data?.staffMember?.contract}
+				<Button href="/dashboard/files/{data?.staffMember?.contract}" target="_blank"><Eye /> View Contract</Button>
+			{/if}
+		</div>
 	{/if}
 	{#if edit}
 		<div class="w-full p-4">
@@ -130,130 +139,27 @@
 				method="POST"
 				enctype="multipart/form-data"
 			>
-				<div class="flex flex-row gap-2">
-					{@render fe('First Name', 'firstName', 'text', "Enter Staff's First Name", true)}
-					{@render fe('Last Name', 'lastName', 'text', "Enter Staff's last Name", true)}
-				</div>
+
+
+
+					{@render fe('Name', 'firstName', 'text', "Enter Staff's Name", true)}
+					{@render fe('Father Name', 'lastName', 'text', "Enter Staff's Father Name", true)}
+					{@render fe('Grand Father Name', 'grandFatherName', 'text', "Enter Staff's Grand Father Name", true)}
 
 				{@render selects('position', data?.categories)}
 
 				{@render fe('Phone', 'phone', 'tel', 'Enter Phone Number', true)}
 
 				{@render fe('Email', 'email', 'email', 'Enter Email', true)}
+				<!-- {@render fe('Salary', 'salary', 'number', 'Enter Salary', true)} -->
 
-				<div class="flex w-full flex-col justify-start gap-2">
-					<Label for="hiredAt" class="capitalize">Hired On</Label>
-
-					<DatePicker2 bind:data={$form.hiredAt} />
-
-					{#if $errors.hiredAt}<span class="text-red-500">{$errors.hiredAt}</span>{/if}
-					<input type="text" name="hiredAt" bind:value={$form.hiredAt} />
-				</div>
-
-				{#if govtId === false && data.staffMember?.govId}
-					<div class="relative">
-						<button
-							onclick={() => {
-								govtId = true;
-							}}
-							type="button"
-							title="Replace Gov't ID"><Trash class="absolute top-0 right-0" /></button
-						>
-						<img
-							src="/dashboard/files/{data.staffMember?.govId}"
-							alt=""
-							srcset=""
-							transition:fly={{ x: -200, duration: 300 }}
-						/>
-					</div>
-				{/if}
-
-				{#if govtId || data.staffMember?.govId === null}
-					<div
-						class="relative flex w-full flex-col justify-start gap-2"
-						transition:fly={{ x: -200, duration: 300 }}
-					>
-						<button
-							onclick={() => {
-								govtId = false;
-							}}
-							type="button"
-							title="Replace Gov't ID"
-						>
-							<Trash class="absolute top-0 right-0" /></button
-						>
-
-						<Label for="govId" class="capitalize">Upload new staff member Goverment Id</Label>
-						<Input
-							type="file"
-							name="govId"
-							accept="image/*,application/pdf"
-							bind:files={$govId}
-							multiple={false}
-						/>
-						{#if $errors.govId}
-							<span>{$errors.govId}</span>
-						{/if}
-					</div>
-				{/if}
-
-				{#if contractPdf === false && data.staffMember?.contract}
-					{#if data.staffMember?.contract?.endsWith('.pdf')}
-						<div class="relative">
-							<button
-								onclick={() => {
-									contractPdf = true;
-								}}
-								type="button"
-								title="Replace Contract"><Trash class="absolute top-0 right-0" /></button
-							>
-
-							<object
-								data="/dashboard/files/{data.staffMember?.contract}"
-								type="application/pdf"
-								width="100%"
-								height="600px"
-								title="Contract for {$form.firstName} {$form.lastName}"
-								transition:fly={{ x: -200, duration: 300 }}
-							>
-								<p>
-									Your browser does not support PDFs.
-									<a
-										href="/dashboard/files/{$form.contract}"
-										download="{$form.firstName} {$form.lastName} Contract PDF">Download the PDF</a
-									>.
-								</p>
-							</object>
-						</div>
-					{/if}
-				{/if}
-
-				{#if contractPdf || data.staffMember?.contract === null}
-					<div
-						class="relative flex w-full flex-col justify-start gap-2"
-						transition:fly={{ x: -200, duration: 300 }}
-					>
-						<button
-							onclick={() => {
-								contractPdf = false;
-							}}
-							type="button"
-							title="Replace Contract"><Trash class="absolute top-0 right-0" /></button
-						>
-
-						<Label for="contract" class="capitalize">Upload new staff member Contract</Label>
-						<Input
-							type="file"
-							name="contract"
-							accept="image/*,application/pdf"
-							bind:files={$contract}
-							multiple={false}
-						/>
-						{#if $errors.govId}
-							<span>{$errors.govId}</span>
-						{/if}
-					</div>
-				{/if}
+				<InputComp {form} {errors} label="Hired On" name="hiredAt" type="date" placeholder="Enter Hired On"  />
+				<InputComp {form} {errors} label="Goverment Id" name="govId" type="file" placeholder="Enter Goverment Id"
+			    image={data?.staffMember?.govId ? data?.staffMember?.govId : ''}
+			 />
+				<InputComp {form} {errors} label="Contract" name="contract" type="file" placeholder="Enter Contract"
+			    image={data?.staffMember?.contract ? data?.staffMember?.contract : ''}
+			 />
 				<input type="hidden" name="staffId" bind:value={$form.staffId} />
 				<Button type="submit" class="mt-4" form="main">
 					{#if $delayed}

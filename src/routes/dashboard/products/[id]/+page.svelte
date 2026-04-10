@@ -107,7 +107,7 @@
 				<History /> See Damaged History
 			</Button>
 		{/if}
-		{#if data?.permList.some((p) => p.name === 'delete:products')}
+		{#if data?.permList.some((p) => p.name === 'delete:products' && data?.product.saleCount === null || data?.product.saleCount === undefined )}
 			<Delete redirect="/dashboard/products" />
 		{/if}
 	</div>

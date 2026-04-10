@@ -98,7 +98,7 @@
 			label="Description"
 			type="textarea"
 			name="description"
-			placeholder="Enter Department Description"
+			placeholder="Enter Category Description"
 			required={true}
 			rows={10}
 		/>
@@ -116,9 +116,9 @@
 
 		<Button type="submit" form="main">
 			{#if $delayed}
-				<LoadingBtn name="Adding Department" />
+				<LoadingBtn name="Adding Category" />
 			{:else}
-				<Plus /> Add Position
+				<Plus /> Add Category
 			{/if}
 		</Button>
 	</form>

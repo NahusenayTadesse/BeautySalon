@@ -1,6 +1,6 @@
 import { message, superValidate } from 'sveltekit-superforms';
 import { zod4 } from 'sveltekit-superforms/adapters';
-import { editStaff as schema } from '$lib/zodschemas/appointmentSchema';
+import { editStaff as schema } from './schema.js';
 
 import { db } from '$lib/server/db';
 import {
@@ -195,14 +195,24 @@ export const actions: Actions = {
 			return fail(400, { form });
 		}
 
-		const { staffId, firstName, lastName, position, phone, email, hiredAt, govId, contract } =
-			form.data;
+		const {
+			staffId,
+			firstName,
+			lastName,
+			grandFatherName,
+			position,
+			phone,
+			email,
+			hiredAt,
+			govId,
+			contract
+		} = form.data;
 
 		try {
 			const files = await db
 				.select({ govtId: staff.govtId, contract: staff.contract })
 				.from(staff)
-				.where(eq(staff.id, staffId))
+				.where(eq(staff.id, Number(staffId)))
 				.then((rows) => rows[0]);
 			let newGovId: string | null;
 			let newContract: string | null;
@@ -227,18 +237,19 @@ export const actions: Actions = {
 				.set({
 					firstName,
 					lastName,
+					grandFatherName,
 					type: position,
 					phone,
 					email,
-					hireDate: new Date(hiredAt),
+					hireDate: hiredAt ? new Date(hiredAt) : undefined,
 					govtId: newGovId,
 					contract: newContract,
 					updatedBy: locals?.user?.id
 				})
-				.where(eq(staff.id, staffId));
+				.where(eq(staff.id, Number(staffId)));
 
 			// Stay on the same page and set a flash message
-			setFlash({ type: 'success', message: 'Service Updated Successuflly' }, cookies);
+			setFlash({ type: 'success', message: 'Staff Member Updated Successfully!' }, cookies);
 			return message(form, { type: 'success', text: 'Staff Member Updated Successfully!' });
 		} catch (err) {
 			setFlash({ type: 'error', message: `Unexpected Error: ${err?.message}` }, cookies);

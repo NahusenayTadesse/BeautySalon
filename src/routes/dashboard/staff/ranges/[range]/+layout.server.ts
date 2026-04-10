@@ -1,6 +1,6 @@
 import { superValidate } from 'sveltekit-superforms';
 import { zod4 } from 'sveltekit-superforms/adapters';
-import { editStaff as schema } from '$lib/zodschemas/appointmentSchema';
+import { editStaff as schema } from './schema';
 
 import { db } from '$lib/server/db';
 import {
@@ -56,6 +56,7 @@ export const load: LayoutServerLoad = async ({ params, locals }) => {
 			id: staff.id,
 			firstName: staff.firstName,
 			lastName: staff.lastName,
+			grandFatherName: staff.grandFatherName,
 			category: staffTypes.name,
 			categoryId: staffTypes.id,
 			phone: staff.phone,

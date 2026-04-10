@@ -8,7 +8,7 @@
 	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';
 	import { goto } from '$app/navigation';
 
-	import { Eye, Plus, EyeClosed } from '@lucide/svelte';
+	import { Eye, Save, EyeClosed } from '@lucide/svelte';
 	import { zod4Client } from 'sveltekit-superforms/adapters';
 	import { changePasswordSchema } from './schema';
 	import { superForm } from 'sveltekit-superforms/client';
@@ -98,7 +98,7 @@
 				{#if $delayed}
 					<LoadingBtn name="Changing Password" />
 				{:else}
-					<Plus class="h-4 w-4" />
+					<Save class="h-4 w-4" />
 
 					Change Password
 				{/if}

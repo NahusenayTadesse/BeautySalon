@@ -86,7 +86,7 @@
 							label="Description"
 							type="textarea"
 							name="description"
-							placeholder="Enter Department Description"
+							placeholder="Enter Category Description"
 							required={true}
 							rows={10}
 						/>

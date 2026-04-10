@@ -98,6 +98,6 @@
 
 	<div class="mt-8 mb-4 w-[350px] p-2 pt-4 lg:w-full lg:p-0">
 		<FilterMenu bind:filteredList data={data.appointmentsList} filterKeys={['status', 'booker', 'customerName', 'paidAmount']} />
-		<DataTable data={filteredList} {columns} fileName="Appointment List for {formatEthiopianDate(new Date(data?.date)}" />
+		<DataTable data={filteredList} {columns} fileName="Appointment List for {formatEthiopianDate(new Date(data?.date))}" />
 	</div>
 {/if}

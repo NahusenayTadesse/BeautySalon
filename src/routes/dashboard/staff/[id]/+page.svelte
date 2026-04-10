@@ -22,6 +22,7 @@
 	import { commissionProduct, commissionService, overtime } from './columns.js';
 	import DateMonth from '$lib/formComponents/DateMonth.svelte';
 	import SingleView from '$lib/components/SingleView.svelte';
+	import InputComp from '$lib/formComponents/InputComp.svelte';
 
 	let singleTable = $derived([
 		{ name: 'Name', value: `${data.staffMember?.firstName} ${data.staffMember?.lastName}` },
@@ -111,15 +112,23 @@
 				{@render fe('Email', 'email', 'email', 'Enter Email', true)}
 				{@render fe('Salary', 'salary', 'number', 'Enter Salary', true)}
 
-				<div class="flex w-full flex-col justify-start gap-2">
+				<InputComp {form} {errors} label="Hired On" name="hiredAt" type="text" placeholder="Enter Hired On"  />
+				<InputComp {form} {errors} label="Goverment Id" name="govId" type="file" placeholder="Enter Goverment Id"
+			    image={data?.staffMember?.govtId ? data?.staffMember?.govtId : ''}
+			 />
+				<InputComp {form} {errors} label="Contract" name="contract" type="file" placeholder="Enter Contract"
+			    image={data?.staffMember?.contract ? data?.staffMember?.contract : ''}
+			 />
+
+				<!-- <div class="flex w-full flex-col justify-start gap-2">
 					<Label for="hiredAt" class="capitalize">Hired On</Label>
 
 					<DatePicker2 bind:data={$form.hiredAt} />
 
 					{#if $errors.hiredAt}<span class="text-red-500">{$errors.hiredAt}</span>{/if}
 					<input type="text" name="hiredAt" bind:value={$form.hiredAt} />
-				</div>
-
+				</div> -->
+<!--
 				{#if govtId === false && data.staffMember?.govId}
 					<div class="relative">
 						<button
@@ -223,7 +232,7 @@
 							<span>{$errors.govId}</span>
 						{/if}
 					</div>
-				{/if}
+				{/if} -->
 				<input type="hidden" name="staffId" bind:value={$form.staffId} />
 				<Button type="submit" class="mt-4" form="main">
 					{#if $delayed}

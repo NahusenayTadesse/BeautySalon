@@ -76,8 +76,7 @@ export async function load({ locals, params }) {
 			name: sql<string>`TRIM(CONCAT(${prds.name}, ' ', COALESCE(CONCAT(${prds.price}, ' ETB'), '')))`,
 			price: prds.price
 		})
-		.from(prds)
-		.where(eq(prds.branchId, Number(locals.user?.branch)));
+		.from(prds);
 
 	const fetchedStaff = await db
 		.select({
@@ -147,7 +146,6 @@ export const actions: Actions = {
 						paymentStatus: 'paid', // or map from UI if you add the field
 						paymentMethodId: paymentMethod,
 						recieptLink,
-						branchId: locals.user?.branch,
 						createdBy: locals.user?.id
 					})
 					.$returningId();
@@ -176,7 +174,6 @@ export const actions: Actions = {
 									Number(getPrice(fetchedProducts, Number(products[idx].product))) *
 										Number(products[idx].noofproducts) +
 									Number(products[idx].tip || 0),
-								branchId: locals.user?.branch,
 								createdBy: locals.user?.id,
 								appointmentId: Number(id)
 							}))
@@ -193,7 +190,6 @@ export const actions: Actions = {
 								Number(getCommission(fetchedProducts, Number(products[idx].product))) *
 								Number(products[idx].noofproducts),
 							commissionDate: today,
-							branchId: locals.user?.branch,
 							createdBy: locals.user?.id
 						}))
 					);
@@ -204,7 +200,6 @@ export const actions: Actions = {
 							staffId: products[idx].staff,
 							amount: Number(products[idx].tip) + Number(gTip),
 							tipDate: today,
-							branchId: locals.user?.branch,
 							createdBy: locals.user?.id
 						}))
 					);
@@ -247,7 +242,6 @@ export const actions: Actions = {
 							staffId: services[idx].staff,
 							amount: Number(getCommission(fetchedServices, Number(services[idx].serviceTip))),
 							commissionDate: today,
-							branchId: locals.user?.branch,
 							createdBy: locals.user?.id
 						}))
 					);
@@ -258,7 +252,6 @@ export const actions: Actions = {
 							staffId: services[idx].staff,
 							amount: Number(services[idx].serviceTip) + Number(gTip),
 							tipDate: today,
-							branchId: locals.user?.branch,
 							createdBy: locals.user?.id
 						}))
 					);
@@ -302,7 +295,11 @@ export const actions: Actions = {
 		} catch (e) {
 			console.error(e?.message);
 			setFlash({ type: 'error', message: 'Error ' + e?.message }, cookies);
-			return message(form, { type: 'error', text: 'Error ' + e?.message });
+			return message(
+				form,
+				{ type: 'error', text: 'Error adding sale ' + e?.message },
+				{ status: 500 }
+			);
 		}
 	}
 };

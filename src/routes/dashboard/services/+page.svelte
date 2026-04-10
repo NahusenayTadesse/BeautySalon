@@ -23,7 +23,7 @@
 
 
   {#if data.serviceList.length === 0}
-   <div class="w-5xl h-96 flex flex-col justify-center items-center">
+     	<div class="flex lg:h-96 h-auto w-full lg:w-5xl flex-col items-center justify-center">
    <p class="text-center flex flex-row gap-4 mt-4 text-4xl justify-self-cente"><Frown class="animate-bounce w-16  h-12" />
      No services added yet </p>
      <Button href="/dashboard/services/add-services"><Plus />Add New Services</Button>

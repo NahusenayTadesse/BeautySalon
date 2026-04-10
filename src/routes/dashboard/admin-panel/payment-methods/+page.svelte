@@ -85,7 +85,7 @@
 </script>
 
 <svelte:head>
-	<title>Product Categories</title>
+	<title>Payment Methods</title>
 </svelte:head>
 
 <DialogComp title="+ Add New Payment Method or Bank" variant="default">
