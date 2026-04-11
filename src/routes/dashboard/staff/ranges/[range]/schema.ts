@@ -53,37 +53,16 @@ export const editGuarantor = z.object({
 	relation: z.string().optional(),
 	salary: z.number('Salary is required').min(0).max(1000000),
 	photo: z
-		.instanceof(File, {
-			message: 'Please upload a valid image (JPG, PNG, WebP, HEIC/HEIF) or PDF.'
-		})
-		.refine((file) => file.size > 0, 'File cannot be empty.')
-		.refine((file) => file.size <= MAX_FILE_SIZE, `Max file size is 10MB.`)
-		.refine(
-			(file) => ACCEPTED_FILE_TYPES.includes(file.type),
-			'Please upload a valid image (JPG, PNG, WebP, HEIC/HEIF) or PDF.'
-		)
+		.file('Please upload a valid image (JPG, PNG, WebP, HEIC/HEIF) or PDF.')
+		.max(10_000_000, 'Max file size is 10MB.')
 		.optional(),
 	govtId: z
-		.instanceof(File, {
-			message: 'Please upload a valid image (JPG, PNG, WebP, HEIC/HEIF) or PDF.'
-		})
-		.refine((file) => file.size > 0, 'File cannot be empty.')
-		.refine((file) => file.size <= MAX_FILE_SIZE, `Max file size is 10MB.`)
-		.refine(
-			(file) => ACCEPTED_FILE_TYPES.includes(file.type),
-			'Please upload a valid image (JPG, PNG, WebP, HEIC/HEIF) or PDF.'
-		)
+		.file('Please upload a valid image (JPG, PNG, WebP, HEIC/HEIF) or PDF.')
+		.max(10_000_000, 'Max file size is 10MB.')
 		.optional(),
 	document: z
-		.instanceof(File, {
-			message: 'Please upload a valid image (JPG, PNG, WebP, HEIC/HEIF) or PDF.'
-		})
-		.refine((file) => file.size > 0, 'File cannot be empty.')
-		.refine((file) => file.size <= MAX_FILE_SIZE, `Max file size is 10MB.`)
-		.refine(
-			(file) => ACCEPTED_FILE_TYPES.includes(file.type),
-			'Please upload a valid image (JPG, PNG, WebP, HEIC/HEIF) or PDF.'
-		)
+		.file('Please upload a valid image (JPG, PNG, WebP, HEIC/HEIF) or PDF.')
+		.max(10_000_000, 'Max file size is 10MB.')
 		.optional(),
 	subcity: z.string('Subsity is required'),
 	street: z.string('Street is required'),
@@ -116,35 +95,14 @@ export const addGuarantor = z.object({
 	relation: z.string().optional(),
 	salary: z.number('Salary is required').min(0).max(1000000),
 	photo: z
-		.instanceof(File, {
-			message: 'Please upload a valid image (JPG, PNG, WebP, HEIC/HEIF) or PDF.'
-		})
-		.refine((file) => file.size > 0, 'File cannot be empty.')
-		.refine((file) => file.size <= MAX_FILE_SIZE, `Max file size is 10MB.`)
-		.refine(
-			(file) => ACCEPTED_FILE_TYPES.includes(file.type),
-			'Please upload a valid image (JPG, PNG, WebP, HEIC/HEIF) or PDF.'
-		),
+		.file('Please upload a valid image (JPG, PNG, WebP, HEIC/HEIF) or PDF.')
+		.max(10_000_000, 'Max file size is 10MB.'),
 	govtId: z
-		.instanceof(File, {
-			message: 'Please upload a valid image (JPG, PNG, WebP, HEIC/HEIF) or PDF.'
-		})
-		.refine((file) => file.size > 0, 'File cannot be empty.')
-		.refine((file) => file.size <= MAX_FILE_SIZE, `Max file size is 10MB.`)
-		.refine(
-			(file) => ACCEPTED_FILE_TYPES.includes(file.type),
-			'Please upload a valid image (JPG, PNG, WebP, HEIC/HEIF) or PDF.'
-		),
+		.file('Please upload a valid image (JPG, PNG, WebP, HEIC/HEIF) or PDF.')
+		.max(10_000_000, 'Max file size is 10MB.'),
 	document: z
-		.instanceof(File, {
-			message: 'Please upload a valid image (JPG, PNG, WebP, HEIC/HEIF) or PDF.'
-		})
-		.refine((file) => file.size > 0, 'File cannot be empty.')
-		.refine((file) => file.size <= MAX_FILE_SIZE, `Max file size is 10MB.`)
-		.refine(
-			(file) => ACCEPTED_FILE_TYPES.includes(file.type),
-			'Please upload a valid image (JPG, PNG, WebP, HEIC/HEIF) or PDF.'
-		),
+		.file('Please upload a valid image (JPG, PNG, WebP, HEIC/HEIF) or PDF.')
+		.max(10_000_000, 'Max file size is 10MB.'),
 	subcity: z.string('Subsity is required'),
 	street: z.string('Street is required'),
 	kebele: z.string('Kebele is required'),
@@ -263,23 +221,13 @@ export const editStaff = z.object({
 		.optional(),
 
 	govId: z
-		.instanceof(File, { message: 'A file is required.' })
-		.refine((file) => file.size > 0, 'File cannot be empty.')
-		.refine((file) => file.size <= MAX_FILE_SIZE, `Max file size is 10MB.`)
-		.refine(
-			(file) => ACCEPTED_FILE_TYPES.includes(file.type),
-			'Please upload a valid image (JPG, PNG, WebP, HEIC/HEIF) or PDF.'
-		)
+		.file('Please upload a valid image (JPG, PNG, WebP, HEIC/HEIF) or PDF.')
+		.max(10_000_000, 'Max file size is 10MB.')
 		.optional(),
 
 	contract: z
-		.instanceof(File, { message: 'A file is required.' })
-		.refine((file) => file.size > 0, 'File cannot be empty.')
-		.refine((file) => file.size <= MAX_FILE_SIZE, `Max file size is 10MB.`)
-		.refine(
-			(file) => ACCEPTED_FILE_TYPES.includes(file.type),
-			'Please upload a valid image (JPG, PNG, WebP, HEIC/HEIF) or PDF.'
-		)
+		.file('Please upload a valid image (JPG, PNG, WebP, HEIC/HEIF) or PDF.')
+		.max(10_000_000, 'Max file size is 10MB.')
 		.optional()
 });
 

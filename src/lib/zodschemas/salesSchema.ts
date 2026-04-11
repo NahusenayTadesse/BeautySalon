@@ -53,15 +53,8 @@ export const salesSchema = z
 		generalTip: z.number().nonnegative('General Tip cannot be less than zero').default(0),
 		total: z.number().nonnegative('Total cannot be less than zero'),
 		receipt: z
-			.instanceof(File, {
-				message: 'Please upload a valid image (JPG, PNG, WebP, HEIC/HEIF) or PDF.'
-			})
-			.refine((file) => file.size > 0, 'File cannot be empty.')
-			.refine((file) => file.size <= MAX_FILE_SIZE, `Max file size is 10MB.`)
-			.refine(
-				(file) => ACCEPTED_FILE_TYPES.includes(file.type),
-				'Please upload a valid image (JPG, PNG, WebP, HEIC/HEIF) or PDF.'
-			)
+			.file('Please upload a valid image (JPG, PNG, WebP, HEIC/HEIF) or PDF.')
+			.max(10_000_000, 'Max file size is 10MB.')
 	})
 	.refine(
 		(data) => data.products.length > 0 || data.services.length > 0,

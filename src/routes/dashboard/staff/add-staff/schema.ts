@@ -34,23 +34,13 @@ export const staffSchema = z.object({
 	salary: z.number().nonnegative('Salary must be a non-negative number').optional(),
 
 	govId: z
-		.file('A file is required.')
-		.refine((file) => file.size > 0, 'File cannot be empty.')
-		.refine((file) => file.size <= MAX_FILE_SIZE, `Max file size is 10MB.`)
-		.refine(
-			(file) => ACCEPTED_FILE_TYPES.includes(file.type),
-			'Please upload a valid image (JPG, PNG, WebP, HEIC/HEIF) or PDF.'
-		)
+		.file('Please upload a valid image (JPG, PNG, WebP, HEIC/HEIF) or PDF.')
+		.max(10_000_000, 'Max file size is 10MB.')
 		.optional(),
 
 	contract: z
-		.file('A file is required.')
-		.refine((file) => file.size > 0, 'File cannot be empty.')
-		.refine((file) => file.size <= MAX_FILE_SIZE, `Max file size is 10MB.`)
-		.refine(
-			(file) => ACCEPTED_FILE_TYPES.includes(file.type),
-			'Please upload a valid image (JPG, PNG, WebP, HEIC/HEIF) or PDF.'
-		)
+		.file('Please upload a valid image (JPG, PNG, WebP, HEIC/HEIF) or PDF.')
+		.max(10_000_000, 'Max file size is 10MB.')
 		.optional()
 });
 

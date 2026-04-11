@@ -39,12 +39,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 		.leftJoin(transactionSupplies, eq(transactionSupplies.transactionId, transactions.id))
 		.leftJoin(paymentMethods, eq(transactions.paymentMethodId, paymentMethods.id))
 		.leftJoin(user, eq(transactions.createdBy, user.id))
-		.where(
-			and(
-				eq(transactions.branchId, locals.user?.branch),
-				currentMonthFilter(transactions.createdAt, start, end)
-			)
-		)
+		.where(currentMonthFilter(transactions.createdAt, start, end))
 		.groupBy(
 			transactions.id,
 			transactions.createdAt,
