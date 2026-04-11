@@ -38,8 +38,7 @@ export const actions: Actions = {
 				total: Number(hours) * Number(amountPerHour),
 				reason,
 				date,
-				createdBy: locals.user?.id,
-				branchId: locals.user?.branch
+				createdBy: locals.user?.id
 			});
 
 			setFlash({ type: 'success', message: 'Overtime Successuflly Added' }, cookies);

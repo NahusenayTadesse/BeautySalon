@@ -184,7 +184,7 @@ export const actions: Actions = {
 
 					await tx.insert(commissionProduct).values(
 						products.map((_, idx) => ({
-							saleItemId: products[idx].product,
+							saleItemId: txnPrdId.id,
 							staffId: products[idx].staff,
 							amount:
 								Number(getCommission(fetchedProducts, Number(products[idx].product))) *
@@ -196,7 +196,7 @@ export const actions: Actions = {
 
 					await tx.insert(tipsProduct).values(
 						products.map((_, idx) => ({
-							saleItemId: products[idx].product,
+							saleItemId: txnPrdId.id,
 							staffId: products[idx].staff,
 							amount: Number(products[idx].tip) + Number(gTip),
 							tipDate: today,
@@ -238,7 +238,7 @@ export const actions: Actions = {
 					const today = new Date();
 					await tx.insert(commissionService).values(
 						services.map((_, idx) => ({
-							saleItemId: services[idx].service,
+							saleItemId: txnsrvid[idx].id,
 							staffId: services[idx].staff,
 							amount: Number(getCommission(fetchedServices, Number(services[idx].serviceTip))),
 							commissionDate: today,
@@ -248,7 +248,7 @@ export const actions: Actions = {
 
 					await tx.insert(tipsService).values(
 						services.map((_, idx) => ({
-							saleItemId: services[idx].service,
+							saleItemId: txnsrvid[idx].id,
 							staffId: services[idx].staff,
 							amount: Number(services[idx].serviceTip) + Number(gTip),
 							tipDate: today,

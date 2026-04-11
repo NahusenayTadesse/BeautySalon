@@ -37,8 +37,7 @@ export const actions: Actions = {
 
 				description,
 				bonusDate,
-				createdBy: locals.user?.id,
-				branchId: locals.user?.branch
+				createdBy: locals.user?.id
 			});
 
 			// Stay on the same page and set a flash message
