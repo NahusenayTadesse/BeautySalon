@@ -226,9 +226,6 @@ export const appointmentSchema = z.object({
 		.min(7, 'Phone number is too short')
 		.max(15, 'Phone number is too long')
 		.regex(/^[0-9+\-()\s]+$/, 'Invalid phone number'),
-	gender: z.string().refine((val) => ['male', 'female'].includes(val), {
-		message: 'Please select a gender'
-	}),
 	appointmentDate: z.string().refine(
 		(val) => {
 			const d = new Date(val);

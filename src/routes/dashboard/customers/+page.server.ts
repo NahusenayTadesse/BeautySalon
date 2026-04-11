@@ -22,7 +22,6 @@ export const load: PageServerLoad = async ({ locals }) => {
 		.from(customers)
 		.leftJoin(appointments, eq(customers.id, appointments.customerId))
 		.leftJoin(user, eq(customers.createdBy, user.id))
-		.where(and(eq(customers.branchId, locals?.user?.branch)))
 		.groupBy(
 			customers.id,
 			user.name,
@@ -49,13 +48,12 @@ export const actions: Actions = {
 		const { firstName, lastName, gender, phone } = form.data;
 
 		try {
-			 await db.insert(customers).values({
+			await db.insert(customers).values({
 				firstName,
 				lastName,
 				gender: gender === 'male' || gender === 'female' ? gender : undefined,
 				phone,
-				createdBy: locals?.user?.id,
-        branchId: locals?.user?.branch
+				createdBy: locals?.user?.id
 			});
 
 			// Stay on the same page and set a flash message
@@ -63,17 +61,25 @@ export const actions: Actions = {
 			return {
 				form
 			};
-		} catch(err){
-             console.error("Error" + err)
-             setFlash({ type: 'error', message: err.code === 'ER_DUP_ENTRY' ? 'Phone number is already taken. Please choose another one.': err.message }, cookies);
-                    
-                 if(err.code === 'ER_DUP_ENTRY')
-                        return setError(form, 'phone', 'Phone Number already exists.');
-                       
-             
-                     return fail(400, {
-                     form
-                   });
-        }
+		} catch (err) {
+			console.error('Error' + err);
+			setFlash(
+				{
+					type: 'error',
+					message:
+						err.code === 'ER_DUP_ENTRY'
+							? 'Phone number is already taken. Please choose another one.'
+							: err.message
+				},
+				cookies
+			);
+
+			if (err.code === 'ER_DUP_ENTRY')
+				return setError(form, 'phone', 'Phone Number already exists.');
+
+			return fail(400, {
+				form
+			});
+		}
 	}
 };

@@ -177,8 +177,7 @@ export const actions: Actions = {
 					.values({
 						amount: adjustment,
 						recieptLink,
-						createdBy: locals.user?.id,
-						branchId: locals.user?.branch
+						createdBy: locals.user?.id
 					})
 					.$returningId();
 

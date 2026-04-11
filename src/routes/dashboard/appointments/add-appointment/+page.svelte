@@ -13,13 +13,9 @@
 	import SelectComp from '$lib/formComponents/SelectComp.svelte';
 	import InputComp from '$lib/formComponents/InputComp.svelte';
 	import { fly } from 'svelte/transition';
-	import { buttonVariants } from '$lib/components/ui/button/index.js';
-	import * as Popover from '$lib/components/ui/popover/index.js';
-	import { gender } from '$lib/global.svelte';
 
 	import { CalendarDate, getLocalTimeZone, today } from '@internationalized/date';
-	import { Calendar } from '$lib/components/ui/calendar/index.js';
-	import { cn } from '$lib/utils.js';
+
 	import Errors from '$lib/formComponents/Errors.svelte';
 	import { toast } from 'svelte-sonner';
 	let { data } = $props();
@@ -370,7 +366,7 @@
 					{@render fe('Customer Last Name', 'lastName', 'text', 'Enter Customer Last Name', false)}
 					{@render fe('Customer Phone Number', 'phone', 'tel', 'Enter Customer Phone Number', true)}
 					<!-- {@render fe('Customer Gender', 'gender', 'text', 'Select Customer Gender', true)} -->
-					{@render selects('gender', gender)}
+
 
 					<!-- {@render fe(
 				'Appointment Date',

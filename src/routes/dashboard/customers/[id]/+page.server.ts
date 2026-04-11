@@ -40,7 +40,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 			.from(customers)
 			.leftJoin(appointments, eq(customers.id, appointments.customerId))
 			.leftJoin(user, eq(customers.createdBy, user.id))
-			.where(and(eq(customers.branchId, locals?.user?.branch), eq(customers.id, id)))
+			.where(eq(customers.id, Number(id)))
 			.groupBy(
 				customers.id,
 				user.name,
@@ -68,7 +68,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 			.leftJoin(customers, eq(appointments.customerId, customers.id))
 			.leftJoin(transactions, eq(transactionBookingFee.transactionId, transactions.id))
 			.leftJoin(user, eq(transactions.createdBy, user.id))
-			.where(and(eq(appointments.branchId, locals?.user?.branch), eq(appointments.id, id)))
+			.where(eq(appointments.id, Number(id)))
 			.orderBy(transactions.createdAt);
 
 		const allMethods = await db

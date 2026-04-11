@@ -92,6 +92,8 @@ export const actions: Actions = {
 
 		const { products, services, paymentMethod, total, receipt, generalTip } = form.data;
 
+		console.log(form.data);
+
 		const gTip: number = Number(generalTip / (products.length + services.length));
 
 		try {
@@ -109,6 +111,7 @@ export const actions: Actions = {
 						createdBy: locals.user?.id
 					})
 					.$returningId();
+				console.log(txn);
 
 				const fetchedProducts = await tx // ← tx, not db
 					.select({ value: prds.id, price: prds.price, commissionPct: prds.commissionAmount })
@@ -117,6 +120,7 @@ export const actions: Actions = {
 				const fetchedServices = await tx // ← tx, not db
 					.select({ value: srvs.id, price: srvs.price, commissionPct: srvs.commissionAmount })
 					.from(srvs);
+				console.log(fetchedProducts, fetchedServices);
 
 				// 2. product lines
 				if (products.length) {
@@ -195,7 +199,7 @@ export const actions: Actions = {
 					const today = new Date();
 					await tx.insert(commissionService).values(
 						services.map((_, idx) => ({
-							saleItemId: services[idx].service,
+							saleItemId: txnsrvid[idx].id,
 							staffId: services[idx].staff,
 							amount: Number(getCommission(fetchedServices, Number(services[idx].serviceTip))),
 							commissionDate: today,
@@ -205,7 +209,7 @@ export const actions: Actions = {
 
 					await tx.insert(tipsService).values(
 						services.map((_, idx) => ({
-							saleItemId: services[idx].service,
+							saleItemId: txnsrvid[idx].id,
 							staffId: services[idx].staff,
 							amount: Number(services[idx].serviceTip) + Number(gTip),
 							tipDate: today,
@@ -249,7 +253,7 @@ export const actions: Actions = {
 
 			return message(form, { type: 'success', text: 'New Sale Successfully Added' });
 		} catch (e) {
-			console.error(e?.message);
+			console.error(e);
 			return message(form, { type: 'error', text: 'Error ' + e?.message }, { status: 500 });
 		}
 	}

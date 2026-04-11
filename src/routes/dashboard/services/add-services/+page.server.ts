@@ -51,7 +51,7 @@ export const actions: Actions = {
 			});
 		}
 
-		const { serviceName, category, description, durationMinutes, price } = form.data;
+		const { serviceName, category, commission, description, durationMinutes, price } = form.data;
 
 		try {
 			await db.insert(services).values({
@@ -59,6 +59,7 @@ export const actions: Actions = {
 				categoryId: category,
 				description,
 				durationMinutes,
+				commission: commission ?? 0,
 				price,
 				createdBy: locals?.user?.id
 			});

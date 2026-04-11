@@ -32,12 +32,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 		.leftJoin(user, eq(appointments.createdBy, user.id))
 		.leftJoin(transactionBookingFee, eq(appointments.id, transactionBookingFee.appointmentId))
 		.leftJoin(transactions, eq(transactionBookingFee.transactionId, transactions.id))
-		.where(
-			and(
-				eq(appointments.branchId, Number(locals?.user?.branch)),
-				eq(appointments.appointmentDate, date)
-			)
-		)
+		.where(eq(appointments.appointmentDate, date))
 		.groupBy(
 			appointments.id,
 			customers.firstName,

@@ -32,22 +32,12 @@ export const load: PageServerLoad = async ({ locals, parent }) => {
 			// name: customers.firstName
 			name: sql<string>`concat(${customers.firstName}, ' ', ${customers.lastName}, ' - ', ${customers.phone})`
 		})
-		.from(customers)
-		.where(and(eq(customers.isActive, true), eq(customers.branchId, locals?.user?.branch)));
-
-	const productsList = await db
-		.select({
-			value: products.id,
-			name: products.name
-		})
-		.from(products)
-		.where(and(eq(products.isActive, true), eq(products.branchId, locals?.user?.branch)));
+		.from(customers);
 
 	return {
 		form,
 		existingForm,
-		customersList,
-		productsList
+		customersList
 	};
 };
 
@@ -57,12 +47,10 @@ export const actions: Actions = {
 
 		if (!form.valid) {
 			// Stay on the same page and set a flash message
-			setFlash({ type: 'error', message: 'Please check your form data.' }, cookies);
-			return fail(400, { form });
+			return message(form, { type: 'error', text: 'Please check your form.' }, { status: 400 });
 		}
 
-		const { firstName, lastName, phone, gender, appointmentDate, appointmentTime, notes } =
-			form.data;
+		const { firstName, lastName, phone, appointmentDate, appointmentTime, notes } = form.data;
 
 		try {
 			const [customer] = await db
@@ -71,8 +59,6 @@ export const actions: Actions = {
 					firstName,
 					lastName,
 					phone,
-					gender,
-					branchId: locals?.user?.branch,
 					createdBy: locals?.user?.id
 				})
 				.$returningId();
@@ -83,8 +69,7 @@ export const actions: Actions = {
 				appointmentTime,
 				status: 'pending',
 				notes,
-				createdBy: locals?.user?.id,
-				branchId: locals?.user?.branch
+				createdBy: locals?.user?.id
 			});
 
 			const today = new Date();
@@ -107,21 +92,26 @@ export const actions: Actions = {
 			} else {
 				await db.insert(reports).values({
 					reportDate: today,
-					bookedAppointments: 1,
-					branchId: locals?.user?.branch
+					bookedAppointments: 1
 				});
 			}
 
-			setFlash({ type: 'success', message: 'New Appointment Successfully Added' }, cookies);
-			return message(form, 'New Appointment Successfully Added');
+			return message(form, { type: 'success', text: 'New Appointment Successfully Added' });
 		} catch (err) {
-			return message(form, {
-				type: 'error',
-				text:
-					err.code === 'ER_DUP_ENTRY'
-						? 'Phone number is already taken. Please choose another one.'
-						: err.message
-			});
+			if (err.code === 'ER_DUP_ENTRY') {
+				setError(form, 'phone', 'Phone Number already exists.', { status: 400 });
+			}
+			return message(
+				form,
+				{
+					type: 'error',
+					text:
+						err.code === 'ER_DUP_ENTRY'
+							? 'Phone number is already taken. Please choose another one.'
+							: err.message
+				},
+				{ status: 500 }
+			);
 
 			// if (err.code === 'ER_DUP_ENTRY')
 			// 	return setError(form, 'phone', 'Phone Number already exists.');
@@ -137,15 +127,13 @@ export const actions: Actions = {
 
 		if (!form.valid) {
 			// Stay on the same page and set a flash message
-			setFlash({ type: 'error', message: 'Please check your form data.' }, cookies);
-			return fail(400, { form });
+			return message(form, { type: 'error', text: 'Please Check your form.' }, { status: 400 });
 		}
 		const { customerId, appointmentDate, appointmentTime, notes } = form.data;
 
 		if (!customerId) {
 			setError(form, 'customerId', 'Customer is required.');
-			setFlash({ type: 'error', message: 'Customer Name is required.' }, cookies);
-			return fail(400, { form });
+			return message(form, { type: 'error', text: 'Customer Name is required' }, { status: 400 });
 		}
 
 		try {
@@ -155,8 +143,7 @@ export const actions: Actions = {
 				appointmentTime,
 				status: 'pending',
 				notes,
-				createdBy: locals?.user?.id,
-				branchId: locals?.user?.branch
+				createdBy: locals?.user?.id
 			});
 
 			const today = new Date();
@@ -179,8 +166,7 @@ export const actions: Actions = {
 			} else {
 				await db.insert(reports).values({
 					reportDate: today,
-					bookedAppointments: 1,
-					branchId: locals?.user?.branch
+					bookedAppointments: 1
 				});
 			}
 
@@ -190,7 +176,11 @@ export const actions: Actions = {
 		} catch (err) {
 			console.error('Error' + err);
 
-			return message(form, { type: 'error', text: 'Error: Something Went Wrong Try Again' });
+			return message(
+				form,
+				{ type: 'error', text: 'Error: Something Went Wrong Try Again' },
+				{ status: 500 }
+			);
 		}
 	}
 };

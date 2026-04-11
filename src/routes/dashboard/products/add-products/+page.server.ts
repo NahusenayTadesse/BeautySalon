@@ -86,7 +86,6 @@ export const actions: Actions = {
 				supplier,
 				reorderLevel,
 				cost: costPerUnit,
-				branchId: locals?.user?.branch,
 				createdBy: locals?.user?.id
 			});
 

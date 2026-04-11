@@ -22,6 +22,20 @@
       "when": 1775815763565,
       "tag": "0002_curved_stellaris",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "5",
+      "when": 1775911467856,
+      "tag": "0003_square_magneto",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "5",
+      "when": 1775911643186,
+      "tag": "0004_strange_risque",
+      "breakpoints": true
     }
   ]
 }
