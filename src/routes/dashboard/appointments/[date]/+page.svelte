@@ -17,6 +17,7 @@
 	import FilterMenu from '$lib/components/Table/FilterMenu.svelte';
 	import { CalendarDays, Frown } from '@lucide/svelte';
 	import { formatEthiopianDate } from '$lib/global.svelte';
+	import MobileProp from '$lib/components/mobileProp.svelte';
 
 	let todayDate = today(getLocalTimeZone());
 	let value = $state<CalendarDate | undefined>(todayDate);
@@ -26,6 +27,8 @@
 	let placeholder = $derived(todayDate);
 	let open = $state(false);
 	let filteredList = $derived(data.appointmentsList);
+
+
 </script>
 
 <svelte:head>
@@ -94,10 +97,12 @@
 		</p>
 	</div>
 {:else}
-	<h2 class="my-4 text-2xl">No of appointments {data.appointmentsList?.length}</h2>
+	<h2 class="my-4 text-2xl hidden lg:block">No of appointments: {data.appointmentsList?.length}</h2>
 
-	<div class="mt-8 mb-4 w-[350px] p-2 pt-4 lg:w-full lg:p-0">
-		<FilterMenu bind:filteredList data={data.appointmentsList} filterKeys={['status', 'booker', 'customerName', 'paidAmount']} />
+	<div class="mt-8 flex flex-col gap-4 mb-4 w-87.5 p-2 pt-4 lg:w-full lg:p-0">
+	<div class="lg:hidden block">   <MobileProp bind:appointments={filteredList} /></div>
+
+        <h2 class="lg:hidden block">Full Details</h2>
 		<DataTable data={filteredList} {columns} fileName="Appointment List for {formatEthiopianDate(new Date(data?.date))}" />
 	</div>
 {/if}

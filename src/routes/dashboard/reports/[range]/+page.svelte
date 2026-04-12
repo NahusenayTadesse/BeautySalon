@@ -9,6 +9,7 @@
 	import { Frown } from '@lucide/svelte';
 	import DateMonth from '$lib/formComponents/DateMonth.svelte';
 	import FilterMenu from '$lib/components/Table/FilterMenu.svelte';
+	import MobileProp from './mobileProp.svelte';
 	let filteredList = $derived(data.allReports);
 </script>
 
@@ -27,14 +28,21 @@
 			<DateMonth start={data?.start} end={data?.end} link="/dashboard/reports" />
 		</div>
 	{:else}
-	  <div class="flex flex-col gap-4">
-		<h2 class="my-4 text-2xl">No of Reports: {data.allReports?.length}</h2>
+	  <div class="flex flex-col gap-6">
+		<h2 class="my-4 text-2xl lg:hidden block">No of Reports: {data.allReports?.length}</h2>
 
 
 		<DateMonth start={data?.start} end={data?.end} link="/dashboard/reports" />
 
 		<FilterMenu bind:filteredList data={data.allReports}
 	 filterKeys={['bookedAppointments', 'productsSold', 'serviceRendered', 'dailyExpenses', 'dailyIncome', 'transactions', 'staffPaid', 'totalStaffPaid', 'staffHired', 'staffFired']} />
+
+		<div class="">
+			<MobileProp bind:reports={filteredList} />
+		</div>
+		<div>
+		<h2 class="">Full Details</h2>
 		<DataTable data={filteredList} {columns} class="lg:max-w-6xl!" fileName="Reports for {data?.start} to {data?.end}" />
+		</div>
 			</div>
 	{/if}

@@ -18,6 +18,8 @@
 	import { CalendarDays, Frown } from '@lucide/svelte';
 	import DateMonth from "$lib/formComponents/DateMonth.svelte";
 	import FilterMenu from '$lib/components/Table/FilterMenu.svelte';
+	import MobileProp from '$lib/components/mobileProp.svelte';
+	import { formatEthiopianDate } from "$lib/global.svelte";
   let todayDate = today(getLocalTimeZone());
   let value = $state<CalendarDate | undefined>(todayDate);
   let urlDate = $state(page.url.pathname.split('/').pop() || today(getLocalTimeZone()).toString());
@@ -53,11 +55,12 @@
      No appointments for this date range, try another date range. </p>
      </div>
  {:else}
-     <h2 class="text-2xl my-4">No of appointments {data.appointmentsList?.length} </h2>
+	<h2 class="my-4 text-2xl hidden lg:block">No of appointments: {data.appointmentsList?.length}</h2>
 
- <div class="lg:w-full w-[350px] lg:p-0 p-2 mt-8 mb-4 pt-4">
-   	<FilterMenu bind:filteredList data={data.appointmentsList} filterKeys={['status', 'booker', 'customerName', 'paidAmount']} />
+	<div class="mt-8 flex flex-col gap-4 mb-4 w-87.5 p-2 pt-4 lg:w-full lg:p-0">
+	<div class="lg:hidden block">   <MobileProp bind:appointments={filteredList} /></div>
 
-   <DataTable data={filteredList} {columns} fileName="Appointment List for {data.start} to {data.end}" />
- </div>
+        <h2 class="lg:hidden block">Full Details </h2>
+		<DataTable data={filteredList} {columns} fileName="Appointment List for {data.start} to {data.end}"  />
+	</div>
  {/if}

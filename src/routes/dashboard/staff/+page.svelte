@@ -9,6 +9,7 @@
 	import { Frown, Plus } from '@lucide/svelte';
 	import { Button } from '$lib/components/ui/button';
 	import FilterMenu from '$lib/components/Table/FilterMenu.svelte';
+	import MobileProp from './mobileProp.svelte';
 
 	let filteredList = $derived(data.staffList);
 </script>
@@ -27,7 +28,8 @@
 			<Button href="/dashboard/staff/add-staff"><Plus />Add New Staff Members</Button>
 		</div>
 	{:else}
-		<h2 class="my-4 text-2xl">No of Staff: {data.staffList?.length}</h2>
+	<div class="flex flex-col gap-6">
+		<h2 class="my-4 text-2xl lg:block hidden">No of Staff: {data.staffList?.length}</h2>
 
 		<!-- <div class="lg:w-full w-[350px] lg:p-0 p-2 mt-8 mb-4 pt-4">
 
@@ -38,5 +40,12 @@
 			bind:filteredList
 			filterKeys={['position', 'years', 'status']}
 		/>
-		<DataTable data={data.staffList} {columns} />
+		<div class="lg:hidden block">
+			<MobileProp bind:staffList={filteredList} />
+		</div>
+		<div>
+		<h2 class="lg:hidden block">Full Details</h2>
+		<DataTable data={filteredList} {columns} />
+		</div>
+	</div>
 	{/if}
