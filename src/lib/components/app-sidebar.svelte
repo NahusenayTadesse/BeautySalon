@@ -31,15 +31,17 @@
 
 	const originalNavigation = [
 		{ title: 'Dashboard', url: '/dashboard', icon: LayoutDashboard },
+			{ title: 'Sales', url: '/dashboard/sales', icon: BanknoteArrowUp },
 		{ title: 'Customers', url: '/dashboard/customers', icon: Users },
 		{ title: 'Appointments', url: '/dashboard/appointments', icon: Calendar },
+			{ title: 'Services', url: '/dashboard/services', icon: SquareChartGantt },
 		{ title: 'Products', url: '/dashboard/products', icon: ShoppingBasket },
-		{ title: 'Services', url: '/dashboard/services', icon: SquareChartGantt },
+
 		{ title: 'Supplies', url: '/dashboard/supplies', icon: Container },
 		{ title: 'Reports', url: '/dashboard/reports', icon: ChartArea },
 		{ title: 'Staff', url: '/dashboard/staff', icon: IdCardLanyard },
 		{ title: 'Salary', url: '/dashboard/salary', icon: Banknote },
-		{ title: 'Sales', url: '/dashboard/sales', icon: BanknoteArrowUp },
+
 		{ title: 'Transactions', url: '/dashboard/transactions', icon: ScanLine },
 		{ title: 'Users', url: '/dashboard/users', icon: User },
 		{ title: 'Admin Panel', url: '/dashboard/admin-panel', icon: UserRoundCog }

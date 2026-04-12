@@ -48,7 +48,7 @@
   {/if}
  </div> -->
   {#if data.appointmentsList.length === 0}
-   <div class="w-5xl h-96 flex justify-center items-center">
+     	<div class="mt-8 flex h-auto w-full flex-col items-center justify-center gap-8 lg:h-96 lg:w-5xl">
    <p class="text-center flex flex-row gap-4 mt-4 text-4xl justify-self-cente"><Frown class="animate-bounce w-16  h-12" />
      No appointments for this date range, try another date range. </p>
      </div>

@@ -17,7 +17,7 @@
 	let { report }: { report: TodayReport } = $props();
 
 	// Calculate net income
-	const netIncome = $derived(report ? report.dailyIncome - report.dailyExpenses - report.staffPaid : 0);
+	const netIncome = $derived(report ? Number(report.dailyIncome) - Number(report.dailyExpenses) - Number(report.staffPaid) : 0);
 	const isPositive = $derived(netIncome >= 0);
 
 	// Format currency
@@ -116,6 +116,18 @@
 					<p class="text-xs text-muted-foreground mt-1">Booked today</p>
 				</CardContent>
 			</Card>
+			<Card class="hover:shadow-lg transition-shadow duration-200">
+				<CardHeader class="pb-2">
+					<CardTitle class="flex items-center justify-between text-sm font-medium text-muted-foreground">
+						<span>Services</span>
+						<ClipboardListIcon class="size-4 text-violet-500" />
+					</CardTitle>
+				</CardHeader>
+				<CardContent>
+					<div class="text-2xl font-bold text-violet-600">{report.serviceRendered}</div>
+					<p class="text-xs text-muted-foreground mt-1">Completed</p>
+				</CardContent>
+			</Card>
 
 			<!-- Products Sold -->
 			<Card class="hover:shadow-lg-lg transition-shadow-lg duration-200">
@@ -132,18 +144,7 @@
 			</Card>
 
 			<!-- Services Rendered -->
-			<Card class="hover:shadow-lg transition-shadow duration-200">
-				<CardHeader class="pb-2">
-					<CardTitle class="flex items-center justify-between text-sm font-medium text-muted-foreground">
-						<span>Services</span>
-						<ClipboardListIcon class="size-4 text-violet-500" />
-					</CardTitle>
-				</CardHeader>
-				<CardContent>
-					<div class="text-2xl font-bold text-violet-600">{report.serviceRendered}</div>
-					<p class="text-xs text-muted-foreground mt-1">Completed</p>
-				</CardContent>
-			</Card>
+
 		</div>
 	</div>
 {:else}
@@ -153,4 +154,3 @@
 		</CardContent>
 	</Card>
 {/if}
-

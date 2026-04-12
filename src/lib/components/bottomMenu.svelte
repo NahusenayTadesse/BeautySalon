@@ -11,7 +11,7 @@
 	const mobNav = [
 		{ title: 'Dashboard', url: '/dashboard/', icon: LayoutDashboard },
 		{ title: 'Appointments', url: '/dashboard/appointments', icon: Calendar },
-		{ title: 'Products', url: '/dashboard/products', icon: ShoppingBasket },
+		{ title: 'Sales', url: '/dashboard/sales', icon: ShoppingBasket },
 		{ title: 'Services', url: '/dashboard/services', icon: SquareChartGantt },
 		{ title: 'Supplies', url: '/dashboard/supplies', icon: Container }
 	];

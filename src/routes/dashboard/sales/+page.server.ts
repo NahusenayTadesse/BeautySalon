@@ -81,7 +81,7 @@ TRIM(
 import { saveUploadedFile } from '$lib/server/upload';
 
 export const actions: Actions = {
-	addSales: async ({ request, cookies, locals }) => {
+	addSales: async ({ request, locals }) => {
 		const formData = await request.formData();
 
 		const form = await superValidate(formData, zod4(schema));
@@ -95,6 +95,12 @@ export const actions: Actions = {
 		console.log(form.data);
 
 		const gTip: number = Number(generalTip / (products.length + services.length));
+
+		const totalTips: number =
+			Number(
+				products.reduce((acc, p) => acc + p.tip, 0) +
+					services.reduce((acc, s) => acc + s.serviceTip, 0)
+			) + Number(generalTip);
 
 		try {
 			const recieptLink = await saveUploadedFile(receipt);
@@ -237,6 +243,7 @@ export const actions: Actions = {
 							productsSold: sql<number>`${reports.productsSold} + ${sumProduct}`,
 							servicesRendered: sql<number>`${reports.servicesRendered} + ${services.length}`,
 							dailyIncome: sql`${sql`IFNULL(${reports.dailyIncome}, 0)`} + ${total}`,
+							totalStaffPaid: sql`${sql`IFNULL(${reports.totalStaffPaid}, 0)`} + ${totalTips}`,
 							transactions: sql<number>`${reports.transactions} + 1`
 						})
 						.where(and(eq(reports.id, existingReport.id)));
@@ -245,6 +252,7 @@ export const actions: Actions = {
 						reportDate: today,
 						productsSold: sumProduct,
 						servicesRendered: services.length,
+						totalStaffPaid: String(totalTips),
 						dailyIncome: total,
 						transactions: 1
 					});

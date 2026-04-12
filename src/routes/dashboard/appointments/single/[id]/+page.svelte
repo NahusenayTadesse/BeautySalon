@@ -168,8 +168,7 @@
 			<div class="mt-4 flex w-full flex-col lg:w-8/10">
 				<DataTable data={data.reciepts} {columns} {search} />
 				<Button
-					size="lg"
-					class="w-lg"
+					class="lg:w-lg"
 					href="/dashboard/sales/appointments/{data.appointmentsList.id}"
 				>
 					<Plus /> Add Sales for Customer</Button

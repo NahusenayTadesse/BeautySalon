@@ -13,19 +13,19 @@
 </svelte:head>
 
 <div
-	class="min-h-dvh w-full rounded-lg border bg-gradient-to-br from-background/10 via-background/10
+	class="min-h-dvh w-full rounded-lg border bg-linear-to-br from-background/10 via-background/10
  to-muted/30 backdrop-blur-md transition-colors duration-300"
 >
 	<!-- Header Section -->
 	<div
-		class="rounded-xl border-b border-border/50 bg-gradient-to-r from-primary/5 via-accent/5
+		class="rounded-xl border-b border-border/50 bg-linear-to-r from-primary/5 via-accent/5
 	 to-secondary/5 shadow-sm backdrop-blur-sm"
 	>
 		<div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
 			<div class="flex items-center justify-between">
 				<div class="space-y-1">
 					<h1
-						class="bg-gradient-to-r from-primary to-black bg-clip-text text-3xl font-bold text-transparent dark:to-white"
+						class="bg-linear-to-r from-primary to-black bg-clip-text text-3xl font-bold text-transparent dark:to-white"
 					>
 						Dashboard
 					</h1>
@@ -40,6 +40,7 @@
 		{#if data?.permList?.some((p) => p.name === 'view:reports')}
 			<Reports report={data.todayReport} />
 		{/if}
+
 		<!-- Stats Grid -->
 		{#if data?.permList?.some((p) => p.name === 'view:appointments')}
 			<div class="mb-8 grid gap-6">

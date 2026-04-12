@@ -91,17 +91,6 @@ export const columns = [
 	},
 
 	{
-		accessorKey: 'staffPaid',
-		header: ({ column }) =>
-			renderComponent(DataTableSort, {
-				name: 'Staff Paid',
-				onclick: column.getToggleSortingHandler()
-			}),
-		sortable: true,
-		cell: ({ row }) => row.original.staffPaid
-	},
-
-	{
 		accessorKey: 'totalStaffPaid',
 		header: ({ column }) =>
 			renderComponent(DataTableSort, {
@@ -109,7 +98,7 @@ export const columns = [
 				onclick: column.getToggleSortingHandler()
 			}),
 		sortable: true,
-		cell: ({ row }) => row.original.totalStaffPaid
+		cell: ({ row }) => 'ETB ' + row.original.totalStaffPaid
 	},
 
 	{
