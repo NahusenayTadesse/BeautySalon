@@ -141,9 +141,7 @@ export const actions: Actions = {
 			) + Number(generalTip);
 
 		try {
-			const recieptLink = await saveUploadedFile(receipt);
-			delete form.data.receipt;
-			await db.transaction(async (tx) => {
+			const newTransaction = await db.transaction(async (tx) => {
 				// 1. master transaction row
 				const [txn] = await tx
 					.insert(transactions)
@@ -296,9 +294,19 @@ export const actions: Actions = {
 						transactions: 1
 					});
 				}
+
+				return txn.id;
 			});
 
-			setFlash({ type: 'success', message: 'New Sale Successfully Added' }, cookies);
+			if (receipt && receipt.size > 0 && newTransaction) {
+				// Fire and forget — don't await, don't block the user
+				saveUploadedFile(receipt)
+					.then((recieptLink) =>
+						db.update(transactions).set({ recieptLink }).where(eq(transactions.id, newTransaction!))
+					)
+					.catch((err) => console.error('Receipt upload failed for txn', newTransaction, err));
+			}
+
 			return message(form, { type: 'success', text: 'New Sale Successfully Added' });
 		} catch (e) {
 			console.error(e?.message);

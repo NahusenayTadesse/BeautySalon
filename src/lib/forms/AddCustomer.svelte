@@ -63,20 +63,11 @@
 		{/if}
 	</div>
 {/snippet}
-{#snippet selects(name, items)}
-	<div class="flex w-full flex-col justify-start gap-2">
-		<Label for={name} class="capitalize">{name.replace(/([a-z])([A-Z])/g, '$1 $2')}:</Label>
 
-		<SelectComp {name} bind:value={$form[name]} {items} />
-		{#if $errors[name]}<span class="text-red-500">{$errors[name]}</span>{/if}
-	</div>
-{/snippet}
 
 <form {action} use:enhance method="post" id="edit" class="flex w-full flex-col gap-4 p-4">
-	{@render fe('Customer First Name', 'firstName', 'text', 'Edit Customer First Name', true)}
-	{@render fe('Customer Last Name', 'lastName', 'text', 'Edit Customer Last Name')}
-	{@render fe('Customer Phone', 'phone', 'tel;', 'Edit Customer Phone', true)}
-	{@render selects('gender', gender)}
+	{@render fe('Customer Name', 'name', 'text', 'Edit Customer Name', true)}
+	{@render fe('Customer Phone', 'phone', 'tel', 'Edit Customer Phone', true)}
 	<Button type="submit" class="mt-4" form="edit">
 		{#if $delayed}
 			<LoadingBtn name="Adding Customer" />

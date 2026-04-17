@@ -14,7 +14,7 @@ import {
 	transactions,
 	transactionServices
 } from '$lib/server/db/schema';
-import { eq, sql, and } from 'drizzle-orm';
+import { eq, sql, and, inArray } from 'drizzle-orm';
 import { superValidate, message } from 'sveltekit-superforms';
 import { zod4 } from 'sveltekit-superforms/adapters';
 import { salesSchema as schema } from '$lib/zodschemas/salesSchema';
@@ -103,9 +103,7 @@ export const actions: Actions = {
 			) + Number(generalTip);
 
 		try {
-			const recieptLink = await saveUploadedFile(receipt);
-			delete form.data.receipt;
-			await db.transaction(async (tx) => {
+			const newTransaction = await db.transaction(async (tx) => {
 				// 1. master transaction row
 				const [txn] = await tx
 					.insert(transactions)
@@ -113,21 +111,31 @@ export const actions: Actions = {
 						amount: total,
 						paymentStatus: 'paid', // or map from UI if you add the field
 						paymentMethodId: paymentMethod,
-						recieptLink,
+
 						createdBy: locals.user?.id
 					})
 					.$returningId();
 				console.log(txn);
+				let fetchedProducts;
+				if (products && products.length) {
+					const productIds = products.map((p) => p.product);
 
-				const fetchedProducts = await tx // ← tx, not db
-					.select({ value: prds.id, price: prds.price, commissionPct: prds.commissionAmount })
-					.from(prds);
+					fetchedProducts = await tx // ← tx, not db
+						.select({ value: prds.id, price: prds.price, commissionPct: prds.commissionAmount })
+						.from(prds)
+						.where(inArray(prds.id, productIds));
+					const serviceIds = services.map((p) => p.product);
+				}
+				let fetchedServices;
+				if (services) {
+					const serviceIds = services.map((p) => p.service);
+					fetchedServices = await tx // ← tx, not db
+						.select({ value: srvs.id, price: srvs.price, commissionPct: srvs.commissionAmount })
+						.from(srvs)
+						.where(inArray(srvs.id, serviceIds));
 
-				const fetchedServices = await tx // ← tx, not db
-					.select({ value: srvs.id, price: srvs.price, commissionPct: srvs.commissionAmount })
-					.from(srvs);
-				console.log(fetchedProducts, fetchedServices);
-
+					console.log(fetchedServices);
+				}
 				// 2. product lines
 				if (products.length) {
 					const txnPrdId = await tx
@@ -257,7 +265,17 @@ export const actions: Actions = {
 						transactions: 1
 					});
 				}
+				return txn.id;
 			});
+
+			if (receipt && receipt.size > 0 && newTransaction) {
+				// Fire and forget — don't await, don't block the user
+				saveUploadedFile(receipt)
+					.then((recieptLink) =>
+						db.update(transactions).set({ recieptLink }).where(eq(transactions.id, newTransaction!))
+					)
+					.catch((err) => console.error('Receipt upload failed for txn', newTransaction, err));
+			}
 
 			return message(form, { type: 'success', text: 'New Sale Successfully Added' });
 		} catch (e) {

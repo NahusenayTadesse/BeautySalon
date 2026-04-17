@@ -121,9 +121,9 @@
 				<h2>Products</h2>
 			{/if}
 
-			{#each $form.products as _, i}
+			{#each [...$form.products].reverse() as _, i}
 				<div class={singleContainer} transition:fly={{ x: -200, duration: 200 }}>
-					{i + 1}
+					{$form.products.length - (i)}
 					<div class={arrParts}>
 						<Label for="staff">Selling Staff Member</Label>
 						<ComboboxComp
@@ -180,9 +180,10 @@
 						variant="outline"
 						title="Remove this product from list"
 						onclick={() => {
-							$form.products.splice(i, 1);
-							$form.products = $form.products;
-						}}
+    const originalIndex = $form.products.length - 1 - i;
+    $form.products.splice(originalIndex, 1);
+    $form.products = $form.products;
+}}
 					>
 						<X class="h-8 w-8" />
 					</Button>
@@ -193,9 +194,9 @@
 				<h2>Services</h2>
 			{/if}
 
-			{#each $form.services as _, i}
+			{#each [...$form.services].reverse() as _, i}
 				<div class={singleContainer} transition:fly={{ x: -200, duration: 200 }}>
-					{i + 1}
+					{$form.services.length - (i)}
 					<div class={arrParts}>
 						<Label for="staff">Service Provider</Label>
 
@@ -238,9 +239,10 @@
 						variant="outline"
 						title="Remove this service from list"
 						onclick={() => {
-							$form.services.splice(i, 1);
-							$form.services = $form.services;
-						}}
+    const originalIndex = $form.services.length - 1 - i;
+    $form.services.splice(originalIndex, 1);
+    $form.services = $form.services;
+}}
 					>
 						<X class="h-8 w-8" />
 					</Button>
@@ -307,6 +309,8 @@
 		{#if $errors._errors}
 			<p class={errorsStyle}>{$errors._errors}</p>
 		{/if}
+
+			<Errors allErrors={$allErrors} />
 
 		<div class="mt-3 flex gap-2">
 			<Button type="submit">

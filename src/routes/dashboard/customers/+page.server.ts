@@ -45,13 +45,14 @@ export const actions: Actions = {
 			setFlash({ type: 'error', message: 'Please check your form.' }, cookies);
 			return fail(400, { form });
 		}
-		const { firstName, lastName, gender, phone } = form.data;
+		const { name, phone } = form.data;
+
+		const [firstName, lastName] = name.split(' ');
 
 		try {
 			await db.insert(customers).values({
 				firstName,
 				lastName,
-				gender: gender === 'male' || gender === 'female' ? gender : undefined,
 				phone,
 				createdBy: locals?.user?.id
 			});
