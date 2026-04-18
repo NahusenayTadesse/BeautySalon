@@ -5,6 +5,9 @@
 
 	import ComboboxComp from '$lib/formComponents/ComboboxComp.svelte';
 	import { Plus, X, BrushCleaning } from '@lucide/svelte';
+	import DialogComp from '$lib/formComponents/DialogComp.svelte';
+	import AddCustomer from '$lib/forms/AddCustomer.svelte';
+
 
 	let { data } = $props();
 
@@ -24,7 +27,7 @@
 	let errorsStyle = `text-red-500 text-sm`;
 
 	import { zod4Client } from 'sveltekit-superforms/adapters';
-	import { salesSchema } from '$lib/zodschemas/salesSchema';
+	import { salesSchema } from './schema';
 	import { superForm } from 'sveltekit-superforms/client';
 	import { fly } from 'svelte/transition';
 	import LoadingBtn from '$lib/formComponents/LoadingBtn.svelte';
@@ -42,7 +45,8 @@
 			},
 			resetForm: true,
 			dataType: 'json',
-			validators: zod4Client(salesSchema)
+			validators: zod4Client(salesSchema),
+			id: 'sales-form',
 		}
 	);
 
@@ -51,6 +55,7 @@
 		if ($message) {
 			if ($message.type === 'error') {
 				toast.error($message.text);
+
 			} else {
 				toast.success($message.text);
 			}
@@ -90,6 +95,14 @@
 		$form.serviceAmount = checkoutTotalService;
 		$form.total = total;
 	});
+
+	function handleNewCustomer(newId: number) {
+        $form.customer = newId;
+        // The Combobox usually reacts to the bound value,
+        // so this should auto-select the new customer.
+
+        toast.success("Customer selected automatically");
+    }
 </script>
 
 <svelte:head>
@@ -107,11 +120,18 @@
 	</div>
 {/snippet}
 
+{#key data.customers}
+<DialogComp title="Add New Customer" variant="default">
+						<AddCustomer onCustomerAdded={handleNewCustomer} data={data?.addCus} action="?/addCustomer" />
+					</DialogComp>
+					{/key}
+
 <form action="?/addSales" method="post" enctype="multipart/form-data" use:enhance>
 	<div
 		class="mt-6 w-full max-w-3xl rounded-lg border border-slate-200 bg-white p-4 shadow dark:border-slate-700 dark:bg-slate-800"
 	>
 		<Errors allErrors={$allErrors} />
+
 		<div class="flex flex-row gap-4">
 			<Button type="button" onclick={() => addProduct()}><Plus /> Add Product</Button>
 			<Button type="button" onclick={() => addService()}><Plus /> Add Service</Button>
@@ -290,6 +310,8 @@
 				</div>
 
 				{@render combo('paymentMethod', data.allMethods)}
+					{@render combo('customer', data.customers)}
+
 
 				<FileUpload name="receipt" {form} {errors} />
 			</div>
@@ -312,8 +334,8 @@
 
 			<Errors allErrors={$allErrors} />
 
-		<div class="mt-3 flex gap-2">
-			<Button type="submit">
+		<div class="mt-3 flex lg:flex-row flex-col gap-2">
+			<Button type="submit" class="w-full lg:w-auto">
 				{#if $delayed}
 					<LoadingBtn name="Adding Sale" />
 				{:else}

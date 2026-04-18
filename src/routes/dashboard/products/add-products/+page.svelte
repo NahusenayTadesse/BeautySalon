@@ -10,7 +10,7 @@
 	import { Plus } from '@lucide/svelte';
 	import { Button } from '$lib/components/ui/button/index.js';
 	import { zod4Client } from 'sveltekit-superforms/adapters';
-	import { inventoryItemSchema as schema } from '$lib/ZodSchema';
+	import { inventoryItemSchema as schema } from './schema';
 	import { superForm } from 'sveltekit-superforms/client';
 	import SelectComp from '$lib/formComponents/SelectComp.svelte';
 	import Errors from '$lib/formComponents/Errors.svelte';
@@ -114,7 +114,7 @@
 				'0'
 			)}
 			{@render fe('Price', 'price', 'number', 'Enter the price of item', true, '0')}
-			{@render fe('Commission', 'commission', 'number', 'Enter the commision of item', true, '0')}
+			{@render fe('Commission', 'commission', 'number', 'Enter the commision of item', false, '0')}
 			{@render selects('supplier', data?.supplierList)}
 			{@render fe(
 				'Reorder Notify Level',

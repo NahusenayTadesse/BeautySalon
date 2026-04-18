@@ -8,11 +8,13 @@
 	import { Button } from '$lib/components/ui/button/index.js';
 	import { Download, Eye } from '@lucide/svelte';
 	import SingleView from '$lib/components/SingleView.svelte';
+	import { formatEthiopianDate } from '$lib/global.svelte';
 
 	let singleTable = $derived([
-		{ name: 'Date', value: data.singleTransaction?.date },
+		{ name: 'Date', value: formatEthiopianDate(new Date(data.singleTransaction?.date)) },
 		{ name: 'Amount', value: 'ETB ' + data.singleTransaction?.amount },
 		{ name: 'Payment Method', value: data.singleTransaction?.paymentMethods },
+		{ name: 'Customer', value: data.singleTransaction?.customerName },
 		{ name: 'No of Products', value: data.singleTransaction?.noOfProducts },
 		{ name: 'No of Services', value: data.singleTransaction?.noOfServices },
 		{ name: 'No of Supplies', value: data.singleTransaction?.noOfSupplies },

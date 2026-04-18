@@ -2,7 +2,7 @@ import { superValidate, message } from 'sveltekit-superforms';
 import { zod4 } from 'sveltekit-superforms/adapters';
 import { fail } from '@sveltejs/kit';
 
-import { inventoryItemSchema } from '$lib/ZodSchema';
+import { inventoryItemSchema } from './schema';
 import { db } from '$lib/server/db';
 import {
 	products as inventory,
@@ -59,8 +59,11 @@ export const actions: Actions = {
 
 		if (!form.valid) {
 			// Stay on the same page and set a flash message
-			setFlash({ type: 'error', message: 'Please check your form data.' }, cookies);
-			return message(form, { type: 'error', text: 'Please check your form data.' });
+			return message(
+				form,
+				{ type: 'error', text: 'Please check your form data.' },
+				{ status: 500 }
+			);
 		}
 
 		const {
@@ -90,19 +93,18 @@ export const actions: Actions = {
 			});
 
 			// Stay on the same page and set a flash message
-			setFlash({ type: 'success', message: 'New Product Successuflly Added' }, cookies);
 
 			return message(form, { type: 'success', text: 'New Product Successfully Added' });
 		} catch (err) {
-			setFlash(
-				{ type: 'error', message: 'An error occurred while adding the product.' + err?.message },
-				cookies
+			console.error(err);
+			return message(
+				form,
+				{
+					type: 'error',
+					text: 'An error occurred while adding the product.' + err?.message
+				},
+				{ status: 500 }
 			);
-
-			return message(form, {
-				type: 'error',
-				text: 'An error occurred while adding the product.' + err?.message
-			});
 		}
 	}
 };

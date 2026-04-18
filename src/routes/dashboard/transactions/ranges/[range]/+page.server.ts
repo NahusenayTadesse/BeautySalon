@@ -5,7 +5,8 @@ import {
 	transactions,
 	transactionServices,
 	transactionSupplies,
-	user
+	user,
+	customers
 } from '$lib/server/db/schema';
 import { and, desc, eq, sql } from 'drizzle-orm';
 
@@ -26,6 +27,8 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 			date: sql<string>`DATE_FORMAT(${transactions.createdAt}, '%W %Y-%m-%d')`,
 			amount: transactions.amount,
 			paymentMethods: paymentMethods.name,
+			customerName: sql<string>`TRIM(CONCAT(${customers.firstName}, ' ', COALESCE(${customers.lastName}, '')))`,
+			customerId: customers.id,
 			noOfProducts: sql<number>`COUNT(${transactionProducts.id})`,
 			noOfServices: sql<number>`COUNT(${transactionServices.id})`,
 			noOfSupplies: sql<number>`COUNT(${transactionSupplies.id})`,
@@ -38,6 +41,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 		.leftJoin(transactionServices, eq(transactionServices.transactionId, transactions.id))
 		.leftJoin(transactionSupplies, eq(transactionSupplies.transactionId, transactions.id))
 		.leftJoin(paymentMethods, eq(transactions.paymentMethodId, paymentMethods.id))
+		.leftJoin(customers, eq(transactions.customerId, customers.id))
 		.leftJoin(user, eq(transactions.createdBy, user.id))
 		.where(currentMonthFilter(transactions.createdAt, start, end))
 		.groupBy(

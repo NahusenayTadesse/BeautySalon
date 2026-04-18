@@ -7,6 +7,7 @@
 
 	import Loading from '$lib/components/Loading.svelte';
 	import { Frown } from '@lucide/svelte';
+	import MobileProp from './mobileProp.svelte';
 </script>
 
 <svelte:head>
@@ -25,5 +26,12 @@
 		<h2 class="my-4 text-2xl">No of customers {data.customersList?.length}</h2>
 
 
-		<DataTable data={data.customersList} {columns} />
+		<div class="lg:hidden block">
+			<MobileProp customers ={data.customersList} />
+		</div>
+		<div>
+		<h2 class="lg:hidden block">Full Details</h2>
+
+		<DataTable data={data.customersList}  {columns} fileName="Customers List" />
+		</div>
 	{/if}

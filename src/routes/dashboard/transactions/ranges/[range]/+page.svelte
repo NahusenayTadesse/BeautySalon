@@ -9,6 +9,7 @@
 	import { Frown } from '@lucide/svelte';
 	import DateMonth from '$lib/formComponents/DateMonth.svelte';
 	import FilterMenu from '$lib/components/Table/FilterMenu.svelte';
+	import MobileProp from './mobileProp.svelte';
 
 	let filteredList = $derived(data.allTransactions);
 
@@ -34,8 +35,13 @@
 			<h2 class="my-4 text-2xl">No of Transactions {data.allTransactions?.length}</h2>
 
 			<DateMonth start={data?.start} end={data?.end} link="/dashboard/transactions/ranges" />
-          <FilterMenu bind:filteredList data={data.allTransactions} filterKeys={['amount', 'paymentMethods', 'noOfProducts', 'noOfServices', 'noOfSupplies', 'recievedBy']} />
-
+          <FilterMenu bind:filteredList data={data.allTransactions} filterKeys={['amount', 'customerName', 'paymentMethods', 'noOfProducts', 'noOfServices', 'noOfSupplies', 'recievedBy']} />
+          <div class="lg:hidden block">
+				<MobileProp bind:transactions ={filteredList} />
+			</div>
+			<div>
+			<h2 class="lg:hidden block">Full Details</h2>
 			<DataTable data={filteredList} {columns} class="max-w-6xl!" fileName="Transactions List from {data.start} - {data.end}" />
+			</div>
 		</div>
 	{/if}

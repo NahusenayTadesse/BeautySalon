@@ -9,6 +9,7 @@
 	import { Frown, Plus } from '@lucide/svelte';
 	import { Button } from '$lib/components/ui/button';
 	import FilterMenu from '$lib/components/Table/FilterMenu.svelte';
+	import MobileComp from './mobileComp.svelte';
 
 	let filteredList = $derived(data?.productList);
 </script>
@@ -35,6 +36,14 @@
 				filterKeys={['category', 'commission', 'saleCount', 'quantity', 'supplier']}
 			/>
 
+			<div class="lg:hidden block">
+				<MobileComp bind:products ={filteredList} />
+			</div>
+			<div>
+			<h2 class="lg:hidden block">Full Details</h2>
+
+
 			<DataTable data={data.productList} {columns} fileName="Products List"   />
+			</div>
 		</div>
 	{/if}

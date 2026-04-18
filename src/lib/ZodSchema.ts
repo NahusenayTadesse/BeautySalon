@@ -40,7 +40,7 @@ export const inventoryItemSchema = z.object({
 	commission: z
 		.number({ message: 'Commission is required, enter 0 if it is not decided yet' })
 		.positive({ message: 'Price must be a positive number.' }),
-	supplier: z.number('Supplier is required'),
+	supplier: z.number('Supplier is required').optional(),
 	reorderLevel: z.coerce
 		.number()
 		.int({ message: 'Reorder Level can only be full numbers, no decimals.' })
@@ -49,6 +49,7 @@ export const inventoryItemSchema = z.object({
 	costPerUnit: z
 		.number({ message: 'Cost is required' })
 		.positive({ message: 'Cost must be a positive number.' })
+		.optional()
 });
 
 export type InventoryItemSchema = typeof inventoryItemSchema;
@@ -291,7 +292,7 @@ export const editCustomer = z.object({
 export type EditCustomer = z.infer<typeof editCustomer>;
 
 export const addCustomer = z.object({
-	name: z.string().min(1, 'N is required').max(50, 'Name is too long'),
+	name: z.string().min(1, 'Name is required').max(50, 'Name is too long'),
 	phone: z
 		.string()
 		.min(7, 'Phone number is too short')

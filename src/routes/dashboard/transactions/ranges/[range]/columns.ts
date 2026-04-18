@@ -51,6 +51,24 @@ export const columns = [
 	},
 
 	{
+		accessorKey: 'customerName',
+		header: ({ column }) =>
+			renderComponent(DataTableSort, {
+				name: 'Customer Name',
+				onclick: column.getToggleSortingHandler()
+			}),
+
+		sortable: true,
+		cell: ({ row }) => {
+			return renderComponent(DataTableLinks, {
+				id: row.original.customerId,
+				name: row.original.customerName,
+				link: '/dashboard/customers'
+			});
+		}
+	},
+
+	{
 		accessorKey: 'recievedBy',
 		header: ({ column }) =>
 			renderComponent(DataTableSort, {

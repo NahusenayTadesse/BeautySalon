@@ -9,20 +9,22 @@
 	// import { createRoleSchema } from "$lib/ZodSchema";
 	import type { Infer, SuperValidated } from 'sveltekit-superforms';
 	import { superForm } from 'sveltekit-superforms';
-	import SelectComp from '$lib/formComponents/SelectComp.svelte';
-	import { gender } from '$lib/global.svelte';
+
 
 	let {
 		data,
+		onCustomerAdded,
 		action = '/dashboard/cusotmers?/addCustomer'
-	}: { data: SuperValidated<Infer<AddCustomerSchema>>; action: string } = $props();
+	}: { data: SuperValidated<Infer<AddCustomerSchema>>; action: string, onCustomerAdded?: (id: number) => void } = $props();
 
 	const { form, errors, enhance, delayed, message } = superForm(data, {
-		taintedMessage: () => {
-			return new Promise((resolve) => {
-				resolve(window.confirm('Do you want to leave?\nChanges you made may not be saved.'));
-			});
-		}
+	onUpdated({ form }) {
+            if ($message?.type === 'success' && onCustomerAdded) {
+                // Pass the ID back to the main Sales page
+                onCustomerAdded($message.id);
+            }
+        }
+
 	});
 
 	import { toast } from 'svelte-sonner';
@@ -32,6 +34,10 @@
 				toast.error($message.text);
 			} else {
 				toast.success($message.text);
+
+				if(onCustomerAdded){
+					onCustomerAdded($message.id);
+				}
 			}
 		}
 	});

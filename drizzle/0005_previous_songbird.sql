@@ -1,0 +1,2 @@
+ALTER TABLE `transactions` ADD `customer_id` int;--> statement-breakpoint
+ALTER TABLE `transactions` ADD CONSTRAINT `transactions_customer_id_customers_id_fk` FOREIGN KEY (`customer_id`) REFERENCES `customers`(`id`) ON DELETE no action ON UPDATE no action;

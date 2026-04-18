@@ -14,7 +14,8 @@ import {
 	transactions,
 	paymentMethods,
 	transactionSupplies,
-	supplies
+	supplies,
+	customers
 } from '$lib/server/db/schema';
 import { eq, and, sql } from 'drizzle-orm';
 import type { Actions, PageServerLoad } from './$types';
@@ -34,6 +35,8 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 			noOfProducts: sql<number>`COUNT(${transactionProducts.id})`,
 			noOfServices: sql<number>`COUNT(${transactionServices.id})`,
 			noOfSupplies: sql<number>`COUNT(${transactionSupplies.id})`,
+			customerName: sql<string>`TRIM(CONCAT(${customers.firstName}, ' ', COALESCE(${customers.lastName}, '')))`,
+			customerId: customers.id,
 			recievedBy: user.name,
 			recievedById: user.id,
 			recieptLink: transactions.recieptLink
@@ -43,6 +46,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 		.leftJoin(transactionServices, eq(transactionServices.transactionId, transactions.id))
 		.leftJoin(transactionSupplies, eq(transactionSupplies.transactionId, transactions.id))
 		.leftJoin(paymentMethods, eq(transactions.paymentMethodId, paymentMethods.id))
+		.leftJoin(customers, eq(transactions.customerId, customers.id))
 		.leftJoin(user, eq(transactions.createdBy, user.id))
 		.groupBy(
 			transactions.id,

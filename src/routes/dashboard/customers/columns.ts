@@ -82,6 +82,20 @@ export const columns = [
 		}
 	},
 	{
+		accessorKey: 'salesCount',
+		header: ({ column }) =>
+			renderComponent(DataTableSort, {
+				name: 'Sales Counts',
+				onclick: column.getToggleSortingHandler()
+			}),
+		sortable: true,
+
+		cell: (info) => {
+			const n = Number(info.getValue()); // number of days
+			return 'ETB ' + n;
+		}
+	},
+	{
 		accessorKey: 'appointmentCount',
 		header: ({ column }) =>
 			renderComponent(DataTableSort, {

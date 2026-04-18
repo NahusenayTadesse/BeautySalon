@@ -10,7 +10,7 @@ import {
 	year,
 	unique
 } from 'drizzle-orm/mysql-core';
-import { appointments } from './customer-appointment';
+import { appointments, customers } from './customer-appointment';
 import { staff } from './staff';
 import { secureFields } from './secureFields';
 import { services } from './services';

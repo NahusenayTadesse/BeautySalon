@@ -1,6 +1,6 @@
 import type { Actions, PageServerLoad } from './$types';
 import { db } from '$lib/server/db';
-import { appointments, customers, user } from '$lib/server/db/schema';
+import { appointments, customers, transactions, user } from '$lib/server/db/schema';
 import { eq, and, sql } from 'drizzle-orm';
 import { setFlash } from 'sveltekit-flash-message/server';
 import { fail, setError, superValidate } from 'sveltekit-superforms';
@@ -14,6 +14,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 			customerName: sql<string>`TRIM(CONCAT(${customers.firstName}, ' ', COALESCE(${customers.lastName}, '')))`,
 			phone: customers.phone,
 			appointmentCount: sql<number>`COUNT(${appointments.id})`,
+			salesCount: sql<number>`SUM(${transactions.amount})`,
 			daysSinceJoined: sql<number>`DATEDIFF(CURRENT_DATE, ${customers.createdAt})`,
 			createdBy: user.name,
 			createdById: user.id,
@@ -21,6 +22,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 		})
 		.from(customers)
 		.leftJoin(appointments, eq(customers.id, appointments.customerId))
+		.leftJoin(transactions, eq(customers.id, transactions.customerId))
 		.leftJoin(user, eq(customers.createdBy, user.id))
 		.groupBy(
 			customers.id,
